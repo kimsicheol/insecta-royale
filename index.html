@@ -285,10 +285,15 @@
     box-shadow:0 8px 28px rgba(212,160,60,.5),0 0 0 4px rgba(212,160,60,.15);
     animation:obtnPulse 1.8s ease-in-out infinite;}
   @keyframes obtnPulse{0%,100%{box-shadow:0 8px 28px rgba(212,160,60,.5),0 0 0 4px rgba(212,160,60,.12);}50%{box-shadow:0 8px 34px rgba(212,160,60,.7),0 0 0 7px rgba(212,160,60,.22);}}
-  .obtn:active{transform:translateY(2px);}
   .obtn.ghost{background:transparent;color:var(--bone-dim);border:1px solid #2a3a1c;
     box-shadow:none;margin-left:10px;}
   .obtn:active{transform:translateY(2px);}
+  .win-tabs{display:flex;gap:6px;justify-content:center;margin:16px 0 12px;flex-wrap:wrap;}
+  .wtab{font-size:14px;font-weight:800;padding:10px 20px;border-radius:11px;border:1px solid #2a3a1c;
+    background:#10160a;color:var(--bone-dim);cursor:pointer;transition:all .15s;}
+  .wtab:hover{border-color:var(--chitin);color:var(--bone);}
+  .wtab.on{background:var(--toxin);color:#0c1108;border-color:var(--toxin);box-shadow:0 4px 14px rgba(143,209,59,.3);}
+  .wtab-pane{width:100%;display:flex;flex-direction:column;align-items:center;}
   @media (max-width:520px){
     .grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 12px 26px;}
     .card .cv{height:96px;}
@@ -364,21 +369,32 @@
   <h2 id="winTitle">승리</h2>
   <p id="winMsg"></p>
   <div class="big">획득 코인 ◈ <span id="winCoins">0</span></div>
-  <div class="fuse" id="fusePanel">
-    <div class="fuse-title" id="fuseTitleEl">🧬 합성 연구소 — 보유한 두 곤충을 합쳐 출전</div>
-    <div class="fuse-slots">
-      <div class="fuse-slot" id="fuseA">주 곤충<br>외형·필살기·상성</div>
-      <span class="fuse-plus">＋</span>
-      <div class="fuse-slot" id="fuseB">보조 곤충<br>특수능력</div>
-    </div>
-    <div class="fuse-pool" id="fusePool"></div>
-    <div class="fuse-result" id="fuseResult"></div>
-    <div class="fuse-dex" id="fuseDex"></div>
+  <div class="win-tabs" id="winTabs">
+    <button class="wtab on" data-tab="shop" id="wtabShop">🛒 상점</button>
+    <button class="wtab" data-tab="fuse" id="wtabFuse">🧬 합성</button>
+    <button class="wtab" data-tab="meta" id="wtabMeta">🔒 능력</button>
   </div>
-  <div class="meta" id="metaPanel"></div>
-  <p id="deploySingleEl" style="font-size:12px;color:var(--bone-dim);margin-top:2px;">또는 아래에서 단일 종을 선택·구매</p>
-  <p id="shopHintEl" style="font-size:12px;color:var(--bone-dim);margin-top:2px;">다음 스테이지에서 사용할 종을 구매·선택하라</p>
-  <div class="shop" id="shop"></div>
+  <div class="wtab-pane" data-pane="shop">
+    <p id="shopHintEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">다음 스테이지에서 사용할 종을 구매·선택하라</p>
+    <div class="shop" id="shop"></div>
+  </div>
+  <div class="wtab-pane" data-pane="fuse" style="display:none;">
+    <p id="deploySingleEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">보유한 두 곤충을 합쳐 더 강한 합성체로 출전</p>
+    <div class="fuse" id="fusePanel">
+      <div class="fuse-title" id="fuseTitleEl">🧬 합성 연구소 — 보유한 두 곤충을 합쳐 출전</div>
+      <div class="fuse-slots">
+        <div class="fuse-slot" id="fuseA">주 곤충<br>외형·필살기·상성</div>
+        <span class="fuse-plus">＋</span>
+        <div class="fuse-slot" id="fuseB">보조 곤충<br>특수능력</div>
+      </div>
+      <div class="fuse-pool" id="fusePool"></div>
+      <div class="fuse-result" id="fuseResult"></div>
+      <div class="fuse-dex" id="fuseDex"></div>
+    </div>
+  </div>
+  <div class="wtab-pane" data-pane="meta" style="display:none;">
+    <div class="meta" id="metaPanel"></div>
+  </div>
   <button class="obtn" id="nextBtn">다음 스테이지 ▸</button>
 </div>
 
@@ -902,6 +918,7 @@ const TXT = {
     dexAll:'전체', dexEmpty:'조건에 맞는 합성체가 없습니다',
     statHp:'체력', statSpd:'속도', statAtk:'공격', statRange:'사거리', sp:'필살기', mut:'특수능력',
     metaTitle:'🔒 능력 고정 (메타 성장) — 코인으로 흡수 능력을 영구 장착', metaEmpty:'빈 슬롯',
+    tabShop:'🛒 상점', tabFuse:'🧬 합성', tabMeta:'🔒 능력',
     title:'곤충 배틀로얄',
     subtitle:'10마리의 절지류가 한 투기장에 떨어진다. <b>최후의 1마리</b>만 살아남는다. 종마다 <b>상성</b>이 있고, 좀비를 처치하면 그 종의 <b>능력을 흡수</b>해 일시 진화한다. 상대를 쓰러뜨려 <b>잡아먹으면 체력을 크게 회복</b>한다. 🔊 풀숲의 밤벌레 합창과 정교한 타격음으로 몰입을 더했다.',
     victory:'승리', defeat:'전 멸', coinsEarned:'획득 코인', finalReach:'최종 도달 스테이지', coinWord:'코인',
@@ -923,6 +940,7 @@ const TXT = {
     dexAll:'All', dexEmpty:'No hybrids match',
     statHp:'HP', statSpd:'SPD', statAtk:'ATK', statRange:'Range', sp:'Special', mut:'Ability',
     metaTitle:'🔒 Permanent Abilities — lock an absorbed ability with coins', metaEmpty:'Empty slot',
+    tabShop:'🛒 Shop', tabFuse:'🧬 Fuse', tabMeta:'🔒 Abilities',
     title:'INSECTA ROYALE',
     subtitle:'10 arthropods are dropped into one arena. Only the <b>last one standing</b> survives. Each species has <b>matchups</b>; kill a zombie to <b>absorb its ability</b> and evolve temporarily. Defeat and <b>devour foes to heal greatly</b>. 🔊 Night-insect ambience and crisp impact SFX deepen the immersion.',
     victory:'VICTORY', defeat:'WIPED OUT', coinsEarned:'Coins earned', finalReach:'Final stage reached', coinWord:'Coins',
@@ -969,6 +987,7 @@ function applyStaticLang(){
   setH('deploySingleEl', t('deploySingle'));
   setH('shopHintEl', t('shopHint'));
   set('nextBtn', t('nextStage'));
+  set('wtabShop', t('tabShop')); set('wtabFuse', t('tabFuse')); set('wtabMeta', t('tabMeta'));
   set('retryBtn', t('retry'));
   set('winTitle', t('victory'));
   set('loseTitle', t('defeat'));
@@ -2559,7 +2578,15 @@ function showWin(){
   buildShop();
   buildFusePanel();
   buildMetaPanel();
+  setWinTab('shop');     // 기본 탭은 상점(가장 단순)
+  winScreen.scrollTop=0;
 }
+// 승리 화면 탭 전환 — 한 번에 한 섹션만 표시
+function setWinTab(tab){
+  document.querySelectorAll('.wtab').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
+  document.querySelectorAll('.wtab-pane').forEach(p=>{ p.style.display = (p.dataset.pane===tab)?'flex':'none'; });
+}
+document.querySelectorAll('.wtab').forEach(b=>b.addEventListener('click',()=>setWinTab(b.dataset.tab)));
 // ===== 메타 성장: 영구 능력 고정 슬롯 =====
 function buildMetaPanel(){
   const el=document.getElementById('metaPanel'); if(!el) return;
