@@ -79,6 +79,13 @@
     padding:10px 20px;cursor:pointer;transition:all .15s;}
   .diffbtn:hover{border-color:var(--chitin);color:var(--bone);}
   .diffbtn.sel{color:#0c1108;background:var(--toxin);border-color:var(--toxin);box-shadow:0 4px 14px rgba(143,209,59,.3);}
+  .diffbtn.locked{opacity:.45;cursor:not-allowed;border-style:dashed;}
+  .diffbtn.locked:hover{border-color:#2a3a1c;color:var(--bone-dim);}
+  .record{font-size:12px;color:var(--bone-dim);margin:0 0 10px;text-align:center;line-height:1.5;}
+  .rec-t{color:var(--chitin);font-weight:800;}
+  .rec-unlock{margin-top:6px;font-size:13px;color:var(--toxin);font-weight:800;animation:recPop .6s ease;}
+  .rec-stats{margin-top:3px;font-size:11px;color:var(--bone-dim);}
+  @keyframes recPop{0%{transform:scale(.5);opacity:0;}60%{transform:scale(1.18);}100%{transform:scale(1);opacity:1;}}
   .carousel{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #carCanvas{width:100%;height:100%;display:block;touch-action:none;}
   .car-name{position:absolute;top:12px;left:50%;transform:translateX(-50%);
@@ -340,6 +347,7 @@
     <button class="diffbtn" data-diff="hard">어려움</button>
   </div>
   <div class="startbar">
+    <div class="record" id="recordPanel" style="display:none;"></div>
     <button id="startBtn" disabled>종을 선택하라</button>
   </div>
 </section>
@@ -353,6 +361,7 @@
     </div>
     <div class="counters">
       <div class="alive">생존 <b id="aliveN">10</b>/10</div>
+      <div class="coins" id="livesWrap" style="color:#ff6f5e;">❤️ <b id="livesN">1</b></div>
       <div class="coins">◈ <b id="coinN">0</b></div>
       <div class="coins" style="color:var(--bone-dim);font-size:11px;">크기 ×<span id="sizeN">1.0</span></div>
       <div id="mutWrap" class="mutwrap"></div>
@@ -746,11 +755,54 @@ for(const k in SPECIES){ SPECIES[k].hp = Math.round(SPECIES[k].hp * BALANCE.hpSc
    pHp=플레이어 체력배수 / eDmg=적 공격력배수 / eHp=적 체력배수
    shadow=그림자 페널티 / regen=에너지 회복배수 (값이 클수록 플레이어 유리) */
 const DIFFS = {
-  easy:   {ko:'쉬움',   pHp:3.0, eDmg:0.30, eHp:0.50, shadow:0.25, regen:2.2},
-  normal: {ko:'보통',   pHp:2.0, eDmg:0.55, eHp:0.75, shadow:0.55, regen:1.6},
-  hard:   {ko:'어려움', pHp:1.4, eDmg:0.80, eHp:1.00, shadow:0.85, regen:1.25},
+  easy:   {ko:'쉬움',   pHp:4.2, eDmg:0.22, eHp:0.45, shadow:0.18, regen:2.8, lives:3, coinBonus:1.5},
+  normal: {ko:'보통',   pHp:2.0, eDmg:0.55, eHp:0.75, shadow:0.55, regen:1.6, lives:2, coinBonus:1.0},
+  hard:   {ko:'어려움', pHp:1.4, eDmg:0.80, eHp:1.00, shadow:0.85, regen:1.25, lives:1, coinBonus:1.0},
 };
 let DIFF = DIFFS.normal;
+// 점진적 난이도 해금 — 한 난이도를 일정 스테이지까지 깨면 다음 난이도가 열린다
+const UNLOCK_STAGE=5;
+let PROGRESS={};
+(function loadProgress(){ try{ const s=localStorage.getItem('insecta_progress'); if(s) PROGRESS=JSON.parse(s)||{}; }catch(e){} })();
+function saveProgress(){ try{ localStorage.setItem('insecta_progress', JSON.stringify(PROGRESS)); }catch(e){} }
+// 누적 전적 — 총 처치 수, 최다 콤보(시작 화면 전적에 표시)
+let STATS={kills:0, maxCombo:0};
+(function loadStats(){ try{ const s=localStorage.getItem('insecta_stats'); if(s) STATS=Object.assign(STATS,JSON.parse(s)||{}); }catch(e){} })();
+function saveStats(){ try{ localStorage.setItem('insecta_stats', JSON.stringify(STATS)); }catch(e){} }
+function hasFused(){ try{ return !!localStorage.getItem('insecta_seen_fuse'); }catch(e){ return false; } }
+function diffKey(){ return Object.keys(DIFFS).find(k=>DIFFS[k]===DIFF)||'normal'; }
+function diffUnlocked(diff){
+  if(diff==='easy') return true;
+  if(diff==='normal') return (PROGRESS.easy||0)>=UNLOCK_STAGE && hasFused();   // 5스테이지 + 합성 1회
+  if(diff==='hard')   return (PROGRESS.normal||0)>=UNLOCK_STAGE;
+  return true;
+}
+// 시작 화면 누적 기록 + 새 난이도 해금 축하 연출
+function updateRecordPanel(){
+  const el=document.getElementById('recordPanel'); if(!el) return;
+  const e=PROGRESS.easy||0, n=PROGRESS.normal||0, h=PROGRESS.hard||0;
+  if(e+n+h===0 && (STATS.kills||0)===0 && (STATS.maxCombo||0)===0 && !PROGRESS._just){ el.style.display='none'; el.innerHTML=''; return; }
+  const L = LANG==='en' ? {t:'🏆 Best',e:'Easy',n:'Normal',h:'Hard'} : {t:'🏆 최고 기록',e:'쉬움',n:'보통',h:'어려움'};
+  const parts=[];
+  if(e>0) parts.push(L.e+' '+e); if(n>0) parts.push(L.n+' '+n); if(h>0) parts.push(L.h+' '+h);
+  el.style.display='block';
+  let rows = parts.length ? ('<span class="rec-t">'+L.t+'</span> '+parts.join(' · ')) : '';
+  // 전적: 총 처치 수 · 최다 콤보
+  const kills=STATS.kills||0, mc=STATS.maxCombo||0;
+  if(kills>0 || mc>0){
+    const kl = LANG==='en'?'⚔️ Kills '+kills:'⚔️ 총 처치 '+kills;
+    const cl = LANG==='en'?'🔥 Best Combo '+mc:'🔥 최다 콤보 '+mc;
+    rows += '<div class="rec-stats">'+kl+' · '+cl+'</div>';
+  }
+  el.innerHTML = rows;
+  if(PROGRESS._just){   // 직전 클리어로 새로 열린 난이도 축하
+    const nm = PROGRESS._just==='normal' ? (LANG==='en'?'Normal':'보통') : (LANG==='en'?'Hard':'어려움');
+    const c=document.createElement('div'); c.className='rec-unlock';
+    c.textContent='🔓 '+(LANG==='en'?(nm+' difficulty unlocked!'):(nm+' 난이도 해금!'));
+    el.appendChild(c);
+    PROGRESS._just=null; saveProgress();
+  }
+}
 
 /* ===== 상성: 10종 순환. 각 종은 다음 3종에게 강함 ===== */
 const CYCLE = ['scorpion','mantis','spider','rhino','centipede','stag','hornet','dragonfly','ant'];
@@ -979,11 +1031,15 @@ function setLang(lang){
   try{ if(typeof buildShop==='function' && G.state==='win') buildShop(); }catch(e){}
   try{ if(typeof renderFuse==='function' && G.state==='win') renderFuse(); }catch(e){}
   try{ if(typeof buildMetaPanel==='function' && G.state==='win') buildMetaPanel(); }catch(e){}
+  try{ if(typeof updateRecordPanel==='function') updateRecordPanel(); }catch(e){}
 }
 function applyStaticLang(){
   const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
   const setH=(id,html)=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; };
-  document.querySelectorAll('.diffbtn').forEach(b=>{ const d=b.dataset.diff; if(DIFFS[d]) b.textContent=DIFFS[d].ko; });
+  document.querySelectorAll('.diffbtn').forEach(b=>{ const d=b.dataset.diff;
+    if(DIFFS[d]){ const un=diffUnlocked(d);
+      b.textContent=(un?'':'🔒 ')+DIFFS[d].ko;
+      b.disabled=!un; b.classList.toggle('locked',!un); } });
   const dl=document.querySelector('.diff-label'); if(dl) dl.textContent=t('diff');
   set('gameTitle', t('title'));
   setH('selSub', t('subtitle'));
@@ -1510,6 +1566,7 @@ const G = {
   biome:{move:1, drain:1, regen:1},   // 현재 바이옴 전투 효과
   hybrid:null,   // 합성 곤충 {base, sub} 또는 null
   permaMuts:[],  // 메타 성장: 코인으로 영구 고정한 흡수 능력(스테이지 넘어 유지)
+  lives:1,       // 남은 목숨(난이도별, 쉬움=3)
   fx:[],
 };
 // 메타 성장: 영구 능력 저장/로드 (localStorage, 실패 시 메모리)
@@ -1711,9 +1768,15 @@ function applyHit(e,o,dmg,special){
   let final = dmg*mult;
   o.hp -= final; o.hurtFlash=1;
   if(o.isPlayer) SND.hurt(o.pos);
-  // 넉백 — 장수풍뎅이는 뿔로 들이받아 강하게 밀쳐낸다
+  // 넉백 — 장수풍뎅이는 뿔로 들이받아 멀리 던져버린다(필살기 시 공중으로 띄움)
   let kb = special?6:2.5;
-  if(e.type==='rhino'){ kb = special?20:12; o.stun=Math.max(o.stun, special?0.55:0.3); }
+  if(e.type==='rhino'){
+    kb = special?28:12; o.stun=Math.max(o.stun, special?0.9:0.3);
+    if(special){ o.air=Math.max(o.air||0, 0.55); o.airV=9;   // 위로 띄워 날아가는 연출
+      o.thrown=true; o.thrownBy=e; o.thrownDmg=dmg*mult; }   // 던지기 콤보용 정보
+  } else if(e.type==='stag'){
+    kb = special?16:5; if(special) o.stun=Math.max(o.stun,0.7);  // 집게로 메다꽂기
+  }
   tmp.copy(o.pos).sub(e.pos).normalize().multiplyScalar(kb);
   o.vel.add(tmp);
   let col = special?'#f6dd9a':'#ffffff', mark='';
@@ -1745,6 +1808,7 @@ function applyHit(e,o,dmg,special){
 
 function killEntity(o, by){
   o.dead=true;
+  if(by && by.isPlayer && !o.isPlayer){ STATS.kills=(STATS.kills||0)+1; saveStats(); }  // 누적 처치 수
   if(o.zombie){
     const c=BALANCE.coins.zombieMin+Math.floor(Math.random()*(BALANCE.coins.zombieMax-BALANCE.coins.zombieMin+1));
     if(by && by.isPlayer){
@@ -1831,17 +1895,64 @@ function spawnCastFx(e, d, big){
 function spawnSpecialFx(e, d){
   const col=(d&&d.col)||0x8fd13b;
   const fwd=dirVec(e.face);
-  spawnHitFx(e.pos, col, 1.7, 'burst');                 // 발동 대폭발
-  for(let i=1;i<=4;i++){                                 // 돌진 방향으로 뻗는 빛줄기
-    const p=e.pos.clone().addScaledVector(fwd, i*1.4);
-    spawnHitFx(p, col, 0.85-i*0.08, 'spark');
-  }
-  // 광역형은 추가로 넓은 고리
-  if(e.type==='scorpion'||e.type==='ant'){
-    spawnHitFx(e.pos.clone().addScaledVector(fwd,2.0), col, 2.2, 'burst');
+  const UP=new THREE.Vector3(0,1,0);
+  spawnHitFx(e.pos, col, 1.7, 'burst');                 // 공통 발동 폭발
+  const T=e.type;
+  if(T==='rhino'||T==='stag'){              // 뿔/집게 충격파 — 전방 큰 링 연쇄(들이받아 던진다)
+    for(let i=1;i<=3;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.7), 0xffcf6a, 2.2-i*0.4, 'ring');
+  } else if(T==='spider'){                  // 거미줄 — 부채꼴로 퍼지는 파편
+    for(let a=-2;a<=2;a++){ const dir=fwd.clone().applyAxisAngle(UP,a*0.38);
+      spawnHitFx(e.pos.clone().addScaledVector(dir,2.3), 0xdfeff0, 0.95, 'shard'); }
+  } else if(T==='scorpion'||T==='ant'){     // 독/산성 — 넓은 광역 구름
+    spawnHitFx(e.pos.clone().addScaledVector(fwd,2), col, 2.9, 'burst');
+    for(let i=0;i<5;i++){ const a=Math.random()*6.28;
+      spawnHitFx(e.pos.clone().add(new THREE.Vector3(Math.cos(a)*2.3,0,Math.sin(a)*2.3)), col, 1.0, 'spark'); }
+  } else if(T==='mantis'){                  // 낫 — 전방 빠른 베기 섬광 연쇄
+    for(let i=1;i<=4;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.3), 0xb6ff7a, 1.1, 'flash');
+  } else {                                  // 고속 관통(말벌/잠자리/지네) — 길게 뻗는 빛줄기
+    for(let i=1;i<=5;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.5), col, 0.9-i*0.07, 'spark');
   }
 }
 function spawnDashFx(e){ e._tt=0; spawnTrail(e); }
+// 던지기 콤보 — 던져진 적이 다른 적 위로 떨어지면 둘 다 추가 피해
+// 연계기: 깔린 적이 거미줄(slow)에 묶여 있으면 피해가 크게 증폭된다
+function throwCombo(thrown){
+  const by=thrown.thrownBy, baseDmg=thrown.thrownDmg||10;
+  let combo=0, webCombo=false;
+  for(const o of G.entities){
+    if(o===thrown||o.dead||o.corpse||o.isPlayer) continue;     // 깔리는 대상은 다른 적
+    if(thrown.pos.distanceTo(o.pos) < 1.7 + o.size*0.5){
+      const webbed = o.slow>0;                                  // 거미줄에 묶인 적
+      const mul = webbed?1.8:1.0;                               // 묶인 적은 콤보 피해 1.8배
+      applyHit(by||thrown, o, baseDmg*0.7*mul, true);
+      o.stun=Math.max(o.stun, webbed?0.9:0.4);
+      if(webbed){ webCombo=true; spawnHitFx(o.pos,0xdfeff0,1.8,'burst'); }
+      combo++;
+    }
+  }
+  if(combo>0){
+    spawnHitFx(thrown.pos, 0xffcf6a, 2.2, 'burst');            // 착지 충격
+    thrown.hp -= thrown.hpMax*0.10;                            // 던져진 적도 낙하 피해
+    // 독 연계: 중독된 적을 던지면 착지 지점에 독이 퍼진다
+    let poisonBurst=false;
+    if(thrown.poison>0){
+      for(const o of G.entities){
+        if(o===thrown||o.dead||o.corpse||o.isPlayer) continue;
+        if(thrown.pos.distanceTo(o.pos) < 2.8){ o.poison=Math.max(o.poison,3); poisonBurst=true; }
+      }
+      spawnHitFx(thrown.pos, 0x9bff4a, 2.9, 'burst');          // 독 구름
+    }
+    if(thrown.hp<=0 && !thrown.dead) killEntity(thrown, by||null);
+    if(by && by.isPlayer){
+      if(poisonBurst) flashBanner(LANG==='en'?('☠️ Toxic Slam x'+combo+'!'):('☠️ 독 폭발 강타 x'+combo+'!'),'kill');
+      else if(webCombo) flashBanner(LANG==='en'?('🕸️💥 Web Slam x'+combo+'!'):('🕸️💥 거미줄 강타 x'+combo+'!'),'kill');
+      else flashBanner(LANG==='en'?('💥 Throw Combo x'+combo+'!'):('💥 던지기 콤보 x'+combo+'!'),'kill');
+    }
+    if(combo>(STATS.maxCombo||0)){ STATS.maxCombo=combo; saveStats(); }   // 최다 콤보 기록
+    if(SND.synergy) SND.synergy();
+  }
+  thrown.thrownBy=null;
+}
 function spawnTrail(e){
   if(!G.fx) G.fx=[];
   const col=(SPECIES[e.type]&&SPECIES[e.type].col)||0x88ccff;
@@ -2073,8 +2184,12 @@ function applyMove(e, desired, dt, speedMul=1){
   const r=e.pos.length();
   if(r>ARENA-1){e.pos.multiplyScalar((ARENA-1)/r); e.vel.multiplyScalar(-0.3);}
   e.mesh.position.copy(e.pos);
-  // 비행종은 살짝 떠 있고 둥실거림
-  e.mesh.position.y = e.flyer ? (0.55 + Math.sin(G.t*4+e.face)*0.12) : 0.05;
+  // 비행종은 살짝 떠 있고 둥실거림 · 던져진 적은 포물선으로 떴다 떨어진다
+  let baseY = e.flyer ? (0.55 + Math.sin(G.t*4+e.face)*0.12) : 0.05;
+  if(e.air>0){ e.air-=dt; e.airY=(e.airY||0)+(e.airV||0)*dt; e.airV=(e.airV||0)-34*dt;
+    if(e.airY<=0){ e.airY=0; e.air=0; e.airV=0;
+      if(e.thrown){ e.thrown=false; throwCombo(e); } } }   // 착지 — 다른 적 위면 콤보
+  e.mesh.position.y = baseY + (e.airY||0);
   if(!e.corpse) e.mesh.rotation.y = e.face;
 
   if(e.dash){
@@ -2089,6 +2204,23 @@ function applyMove(e, desired, dt, speedMul=1){
     for(const o of G.entities){if(o===e||o.dead||e.dash.hit.has(o))continue;
       if(e.pos.distanceTo(o.pos)<hitR+o.size*0.6){e.dash.hit.add(o); applyHit(e,o,e.dash.dmg,true);}}
     if(e.dash.t<=0) e.dash=null;
+  }
+  // 곤충 겹침 방지 — 서로 너무 가까우면 밀어내 붙어버리는 현상 해소(돌진/시체 제외)
+  if(!e.dash && !e.corpse){
+    for(const o of G.entities){
+      if(o===e||o.dead||o.corpse) continue;
+      const dx=e.pos.x-o.pos.x, dz=e.pos.z-o.pos.z;
+      const minD=(e.size+o.size)*0.55+0.55;
+      let d2=dx*dx+dz*dz;
+      if(d2>0.0001 && d2<minD*minD){
+        const d=Math.sqrt(d2), push=(minD-d)/minD*0.5;
+        e.pos.x+=(dx/d)*push; e.pos.z+=(dz/d)*push;
+      } else if(d2<=0.0001){                 // 완전히 겹침 — 랜덤 방향으로 떼어냄
+        e.pos.x+=(Math.random()-0.5)*0.4; e.pos.z+=(Math.random()-0.5)*0.4;
+      }
+    }
+    const r2=e.pos.length(); if(r2>ARENA-1) e.pos.multiplyScalar((ARENA-1)/r2);
+    e.mesh.position.x=e.pos.x; e.mesh.position.z=e.pos.z;
   }
 }
 
@@ -2305,7 +2437,15 @@ function step(dt){
 }
 
 function checkWinLose(){
-  if(G.player.dead){ G.state='over'; showLose(); return; }
+  if(G.player.dead){
+    if((G.lives||1)>1){      // 목숨이 남으면 같은 스테이지에서 부활 — 코인·보유 곤충·합성 유지
+      G.lives--;
+      flashBanner(LANG==='en'?('💔 Life lost! '+G.lives+' left — retry stage'):('💔 목숨 -1! 남은 목숨 '+G.lives+'개 — 같은 판 재도전'),'hurt');
+      startStage();
+      return;
+    }
+    G.state='over'; showLose(); return;
+  }
   const realAlive=G.entities.filter(e=>!e.zombie&&!e.corpse&&!e.dead);
   const noQueue=G.spawnQueue.length===0;
   if(noQueue && realAlive.length===1 && realAlive[0]===G.player){
@@ -2332,6 +2472,7 @@ function updateHUD(){
   spBar.classList.toggle('charged',sr>=100);
   atkBtn.classList.toggle('ready',sr>=100);
   coinN.textContent=G.coins; sizeN.textContent=p.size.toFixed(1);
+  const ln=document.getElementById('livesN'); if(ln) ln.textContent=G.lives||1;
   const act = p.muts ? p.muts.filter(m=>m.t>0) : [];
   mutWrap.innerHTML = act.map(m=>{
     const d=MUT[m.type], c=hx(d.col);
@@ -2558,6 +2699,17 @@ const selectScreen=document.getElementById('select'),hud=document.getElementById
 
 document.querySelectorAll('.diffbtn').forEach(btn=>{
   btn.addEventListener('click',()=>{
+    if(!diffUnlocked(btn.dataset.diff)){   // 아직 안 열린 난이도
+      let msg;
+      if(btn.dataset.diff==='normal'){
+        const needStage=(PROGRESS.easy||0)<UNLOCK_STAGE, needFuse=!hasFused();
+        if(needStage&&needFuse) msg=LANG==='en'?('🔒 Reach stage '+UNLOCK_STAGE+' on Easy and fuse once'):('🔒 쉬움 '+UNLOCK_STAGE+'스테이지 도달 + 합성 1회 필요');
+        else if(needStage) msg=LANG==='en'?('🔒 Reach stage '+UNLOCK_STAGE+' on Easy'):('🔒 쉬움 '+UNLOCK_STAGE+'스테이지 도달 필요');
+        else msg=LANG==='en'?'🔒 Fuse a hybrid once to unlock':'🔒 합성 1회면 해금됩니다';
+      } else msg=LANG==='en'?('🔒 Clear stage '+UNLOCK_STAGE+' on the previous difficulty first'):('🔒 이전 난이도 '+UNLOCK_STAGE+'스테이지를 먼저 클리어하세요');
+      flashBanner(msg,'hurt');
+      return;
+    }
     document.querySelectorAll('.diffbtn').forEach(b=>b.classList.remove('sel'));
     btn.classList.add('sel'); DIFF=DIFFS[btn.dataset.diff];
   });
@@ -2568,16 +2720,29 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   SND.unlock(); SND.ui('start');
   selectScreen.style.display='none'; hud.style.display='block';
   G.stage=1; G.coins=0; G.owned={[chosen]:true}; G.hybrid=null;
+  G.lives=DIFF.lives||1;   // 난이도별 목숨(쉬움 3)
   startStage();
 });
 
 function showWin(){
   hud.style.display='none'; winScreen.style.display='flex';
   SND.ui('win');
+  // 진행 기록 + 다음 난이도 해금 알림
+  const dk=diffKey(), prev=PROGRESS[dk]||0;
+  if(G.stage>prev){ PROGRESS[dk]=G.stage; saveProgress();
+    if(dk==='easy' && prev<UNLOCK_STAGE && G.stage>=UNLOCK_STAGE){
+      if(hasFused()){ PROGRESS._just='normal'; saveProgress();
+        flashBanner(LANG==='en'?'🔓 Normal difficulty unlocked!':'🔓 보통 난이도 해금!','kill'); }
+      else flashBanner(LANG==='en'?'1 more step: fuse a hybrid once to unlock Normal':'한 걸음 더! 합성 1회면 보통 난이도 해금','win');
+    } else if(dk==='normal' && prev<UNLOCK_STAGE && G.stage>=UNLOCK_STAGE){
+      PROGRESS._just='hard'; saveProgress();
+      flashBanner(LANG==='en'?'🔓 Hard difficulty unlocked!':'🔓 어려움 난이도 해금!','kill');
+    }
+  }
   document.getElementById('stageNum').textContent=G.stage;
   document.getElementById('winMsg').textContent=
     t('winMsg')(SPECIES[G.playerType].ko, G.stage, G.player.size.toFixed(1));
-  const earned=BALANCE.coins.stageBase+G.stage*BALANCE.coins.stagePer; G.coins+=earned;
+  const earned=Math.round((BALANCE.coins.stageBase+G.stage*BALANCE.coins.stagePer)*(DIFF.coinBonus||1)); G.coins+=earned;
   const big=winScreen.querySelector('.big');
   if(big) big.innerHTML=`${t('coinsEarned')} ◈ <span id="winCoins">${G.coins}</span>`;
   buildShop();
@@ -2731,6 +2896,9 @@ function renderFuse(){
       G.coins-=cost; updateHUD&&updateHUD();
       G.hybrid={base:fuseA, sub:fuseB}; G.playerType='__hybrid';
       try{ localStorage.setItem('insecta_seen_fuse','1'); }catch(e){}   // 합성 경험 기억
+      if((PROGRESS.easy||0)>=UNLOCK_STAGE && PROGRESS._just!=='normal' && !PROGRESS._normalShown){
+        PROGRESS._just='normal'; PROGRESS._normalShown=1; saveProgress();
+        flashBanner(LANG==='en'?'🔓 Normal difficulty unlocked!':'🔓 보통 난이도 해금!','kill'); }
       addToDex(fuseA, fuseB);                 // 도감에 영구 기록
       buildShop();
       res.innerHTML=t('fuseReady')(SPECIES['__hybrid'].ko);
@@ -2794,6 +2962,8 @@ function showLose(){
 document.getElementById('retryBtn').addEventListener('click',()=>{
   loseScreen.style.display='none'; selectScreen.style.display='flex';
   G.state='select'; G.hybrid=null; if(chosen) G.playerType=chosen;
+  applyStaticLang();   // 클리어로 해금된 난이도 갱신
+  if(typeof updateRecordPanel==='function') updateRecordPanel();
 });
 
 /* 사운드 음소거 토글 */
@@ -2817,6 +2987,7 @@ loop(performance.now());
 // ===== 언어 토글(한국어 / English) =====
 document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{ SND.unlock&&SND.unlock(); setLang(b.dataset.lang); }));
 (function initLang(){ let l='ko'; try{ l=localStorage.getItem('insecta_lang')||'ko'; }catch(e){} setLang(l); })();
+try{ updateRecordPanel(); }catch(e){}
 </script>
 </body>
 </html>
