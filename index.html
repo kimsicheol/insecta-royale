@@ -73,11 +73,12 @@
     align-items:center;padding:4px 18px 0;flex-wrap:wrap;}
   .diff-label{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.2em;
     color:var(--bone-dim);text-transform:uppercase;margin-right:4px;}
-  .diffbtn{font-family:'Courier New',monospace;font-weight:700;font-size:12px;letter-spacing:.08em;
-    color:var(--bone-dim);background:#11160d;border:1px solid #2a3a1c;border-radius:9px;
-    padding:8px 16px;cursor:pointer;transition:all .15s;}
-  .diffbtn:hover{border-color:var(--chitin-dim);color:var(--bone);}
-  .diffbtn.sel{color:#0c1108;background:linear-gradient(180deg,#f6dd9a,var(--chitin));border-color:transparent;}
+  /* 공통 UI 규칙: 진행버튼=금색(.obtn/.startbtn), 선택토글=어두움→녹색(.diffbtn/.wtab) */
+  .diffbtn{position:relative;font-weight:800;font-size:13px;letter-spacing:.04em;
+    color:var(--bone-dim);background:#10160a;border:1px solid #2a3a1c;border-radius:11px;
+    padding:10px 20px;cursor:pointer;transition:all .15s;}
+  .diffbtn:hover{border-color:var(--chitin);color:var(--bone);}
+  .diffbtn.sel{color:#0c1108;background:var(--toxin);border-color:var(--toxin);box-shadow:0 4px 14px rgba(143,209,59,.3);}
   .carousel{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #carCanvas{width:100%;height:100%;display:block;touch-action:none;}
   .car-name{position:absolute;top:12px;left:50%;transform:translateX(-50%);
@@ -289,10 +290,14 @@
     box-shadow:none;margin-left:10px;}
   .obtn:active{transform:translateY(2px);}
   .win-tabs{display:flex;gap:6px;justify-content:center;margin:16px 0 12px;flex-wrap:wrap;}
-  .wtab{font-size:14px;font-weight:800;padding:10px 20px;border-radius:11px;border:1px solid #2a3a1c;
+  .wtab{position:relative;font-size:14px;font-weight:800;padding:10px 20px;border-radius:11px;border:1px solid #2a3a1c;
     background:#10160a;color:var(--bone-dim);cursor:pointer;transition:all .15s;}
   .wtab:hover{border-color:var(--chitin);color:var(--bone);}
   .wtab.on{background:var(--toxin);color:#0c1108;border-color:var(--toxin);box-shadow:0 4px 14px rgba(143,209,59,.3);}
+  .wtab-badge{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;
+    background:var(--blood);border:2px solid #0c1108;box-shadow:0 0 7px var(--blood);
+    animation:badgePulse 1.2s ease-in-out infinite;pointer-events:none;}
+  @keyframes badgePulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.35);opacity:.65;}}
   .wtab-pane{width:100%;display:flex;flex-direction:column;align-items:center;}
   @media (max-width:520px){
     .grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 12px 26px;}
@@ -2578,13 +2583,31 @@ function showWin(){
   buildShop();
   buildFusePanel();
   buildMetaPanel();
-  setWinTab('shop');     // 기본 탭은 상점(가장 단순)
+  updateWinBadges();           // 탭 행동 배지
+  setWinTab(defaultWinTab());  // 합성 경험자는 합성 탭이 기본
   winScreen.scrollTop=0;
 }
 // 승리 화면 탭 전환 — 한 번에 한 섹션만 표시
 function setWinTab(tab){
   document.querySelectorAll('.wtab').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
   document.querySelectorAll('.wtab-pane').forEach(p=>{ p.style.display = (p.dataset.pane===tab)?'flex':'none'; });
+}
+// 각 탭에 '지금 행동 가능' 배지(빨간 점) 표시
+function setBadge(id, on){
+  const b=document.getElementById(id); if(!b) return;
+  let dot=b.querySelector('.wtab-badge');
+  if(on){ if(!dot){ dot=document.createElement('span'); dot.className='wtab-badge'; b.appendChild(dot); } }
+  else if(dot){ dot.remove(); }
+}
+function updateWinBadges(){
+  const ownedN=ORDER.filter(k=>G.owned[k]).length;
+  setBadge('wtabShop', ORDER.some(t=>!G.owned[t]) && G.coins>=BALANCE.coins.shopCost);  // 살 수 있는 종 + 코인
+  setBadge('wtabFuse', ownedN>=2);                                                       // 합성 가능(2종 이상 보유)
+  setBadge('wtabMeta', G.permaMuts.length<PERMA_MAX && G.coins>=PERMA_COST);             // 능력 고정 가능
+}
+function defaultWinTab(){   // 합성체로 출전해 본 적 있으면 합성 탭을 기본으로
+  try{ if(localStorage.getItem('insecta_seen_fuse')) return 'fuse'; }catch(e){}
+  return 'shop';
 }
 document.querySelectorAll('.wtab').forEach(b=>b.addEventListener('click',()=>setWinTab(b.dataset.tab)));
 // ===== 메타 성장: 영구 능력 고정 슬롯 =====
@@ -2605,7 +2628,8 @@ function buildMetaPanel(){
   html+='</div>';
   el.innerHTML=html;
   el.querySelectorAll('.meta-slot[data-rm]').forEach(s=>s.addEventListener('click',()=>{
-    G.permaMuts.splice(+s.dataset.rm,1); savePerma(); buildMetaPanel(); }));
+    G.permaMuts.splice(+s.dataset.rm,1); savePerma(); buildMetaPanel();
+    if(typeof updateWinBadges==='function') updateWinBadges(); }));
   el.querySelectorAll('.meta-chip').forEach(c=>c.addEventListener('click',()=>{
     const mt=c.dataset.mt;
     if(G.permaMuts.length>=PERMA_MAX || G.coins<PERMA_COST) return;
@@ -2613,6 +2637,7 @@ function buildMetaPanel(){
     const wc=document.getElementById('winCoins'); if(wc) wc.textContent=G.coins;
     if(SND.synergy) SND.synergy();
     buildMetaPanel(); if(typeof renderFuse==='function') renderFuse();
+    if(typeof updateWinBadges==='function') updateWinBadges();
   }));
 }
 function buildShop(){
@@ -2628,6 +2653,7 @@ function buildShop(){
         document.getElementById('winCoins').textContent=G.coins; }
       else return;
       buildShop(); buildFusePanel();
+      if(typeof updateWinBadges==='function') updateWinBadges();
     });
     shop.appendChild(card);
   });
@@ -2704,10 +2730,12 @@ function renderFuse(){
       SND.unlock(); SND.synergy();
       G.coins-=cost; updateHUD&&updateHUD();
       G.hybrid={base:fuseA, sub:fuseB}; G.playerType='__hybrid';
+      try{ localStorage.setItem('insecta_seen_fuse','1'); }catch(e){}   // 합성 경험 기억
       addToDex(fuseA, fuseB);                 // 도감에 영구 기록
       buildShop();
       res.innerHTML=t('fuseReady')(SPECIES['__hybrid'].ko);
       renderDex();
+      if(typeof updateWinBadges==='function') updateWinBadges();
     });
   } else if(owned.length<2){
     res.textContent=t('fuseNeed');
