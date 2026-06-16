@@ -198,8 +198,11 @@
   #soundBtn:active{transform:scale(.92);}
   #soundBtn.off{color:var(--bone-dim);}
   .overlay{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
-    align-items:center;justify-content:center;text-align:center;padding:30px 24px;
+    align-items:center;justify-content:flex-start;text-align:center;padding:30px 24px 12px;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
     background:radial-gradient(120% 90% at 50% 30%,rgba(20,30,14,.92),rgba(6,8,5,.97));}
+  .overlay::before{content:'';flex:1 0 auto;}
+  .overlay::after{content:'';flex:1 0 auto;min-height:6px;}
   .overlay h2{font-size:clamp(34px,11vw,72px);font-weight:900;letter-spacing:-.01em;line-height:.9;}
   .win h2{background:linear-gradient(180deg,#f6dd9a,var(--chitin));-webkit-background-clip:text;
     background-clip:text;color:transparent;}
@@ -272,13 +275,17 @@
   .shopcard:hover{border-color:var(--chitin);transform:translateY(-3px);}
   .shopcard.owned{border-color:var(--toxin);}
   .shopcard.locked{opacity:.55;}
+  .shopcard .se{display:block;font-size:30px;line-height:1;margin-bottom:4px;}
   .shopcard .sn{font-weight:800;font-size:14px;}
   .shopcard .sc{font-family:'Courier New',monospace;font-size:11px;color:var(--chitin);margin-top:4px;}
   .shopcard.owned .sc{color:var(--toxin);}
-  .obtn{margin-top:22px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.16em;
-    font-size:14px;color:#0c1108;background:linear-gradient(180deg,#f6dd9a,var(--chitin));
-    border:none;border-radius:11px;padding:14px 36px;cursor:pointer;text-transform:uppercase;
-    box-shadow:0 8px 24px rgba(212,160,60,.35);}
+  .obtn{position:sticky;bottom:6px;z-index:10;margin-top:20px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.12em;
+    font-size:17px;color:#0c1108;background:linear-gradient(180deg,#ffe9a8,var(--chitin));
+    border:2px solid #fff2c8;border-radius:14px;padding:16px 48px;cursor:pointer;
+    box-shadow:0 8px 28px rgba(212,160,60,.5),0 0 0 4px rgba(212,160,60,.15);
+    animation:obtnPulse 1.8s ease-in-out infinite;}
+  @keyframes obtnPulse{0%,100%{box-shadow:0 8px 28px rgba(212,160,60,.5),0 0 0 4px rgba(212,160,60,.12);}50%{box-shadow:0 8px 34px rgba(212,160,60,.7),0 0 0 7px rgba(212,160,60,.22);}}
+  .obtn:active{transform:translateY(2px);}
   .obtn.ghost{background:transparent;color:var(--bone-dim);border:1px solid #2a3a1c;
     box-shadow:none;margin-left:10px;}
   .obtn:active{transform:translateY(2px);}
@@ -706,6 +713,9 @@ const SPECIES = {
               desc:'끈질긴 <b>일개미</b>. 강한 턱과 개미산으로 끈질기게 물고 늘어진다.'},
 };
 const ORDER = ['mantis','stag','rhino','spider','centipede','scorpion','hornet','dragonfly','ant'];
+// 누구나 한눈에 알아보도록 종마다 그림(이모지) 부여
+const EMOJI = { mantis:'🦗', stag:'🪲', rhino:'🦏', spider:'🕷️', centipede:'🐛', scorpion:'🦂', hornet:'🐝', dragonfly:'🪰', ant:'🐜', __hybrid:'🧬' };
+function emo(type){ return EMOJI[type] || '🐛'; }
 const NAMES = ['글라디우스','크림슨','오닉스','베놈','스칼렛','타이탄','옵시디언','네뷸라','코발트','세이버','엠버','드레드','바이퍼','레이븐'];
 
 /* [난이도 완화 1] 모든 종 기본 체력 배수 1.8 → 2.2 (전반적 생존력 상향) */
@@ -2463,7 +2473,7 @@ function updateCarUI(doJump){
   carColTarget.set(d.col);                          // 무대 테마색 목표 갱신
   carFogTarget.copy(_carCol.copy(carColTarget)).multiplyScalar(0.18);
   if(doJump && carMobs[carIndex]) carMobs[carIndex].jump=0.5;   // 중앙 곤충 점프
-  const nm=document.getElementById('carName'); if(nm) nm.textContent=d.ko;
+  const nm=document.getElementById('carName'); if(nm) nm.textContent=emo(chosen)+' '+d.ko;
   const b=document.getElementById('startBtn'); if(b){ b.disabled=false; b.textContent=t('deployAs')(d.ko); }
   const info=document.getElementById('carInfo');
   if(info) info.innerHTML=
@@ -2557,13 +2567,13 @@ function buildMetaPanel(){
   html+='<div class="meta-slots">';
   for(let i=0;i<PERMA_MAX;i++){
     const mt=G.permaMuts[i];
-    if(mt && MUT[mt]) html+='<div class="meta-slot filled" data-rm="'+i+'" title="'+MUT[mt].tag+'">🔒 '+MUT[mt].ko+' <span class="meta-x">✕</span></div>';
+    if(mt && MUT[mt]) html+='<div class="meta-slot filled" data-rm="'+i+'" title="'+MUT[mt].tag+'">'+emo(mt)+' '+MUT[mt].ko+' <span class="meta-x">✕</span></div>';
     else html+='<div class="meta-slot empty">'+t('metaEmpty')+'</div>';
   }
   html+='</div><div class="meta-pool">';
   ORDER.forEach(mt=>{ if(!MUT[mt] || G.permaMuts.includes(mt)) return;
     const can = G.permaMuts.length<PERMA_MAX && G.coins>=PERMA_COST;
-    html+='<div class="meta-chip'+(can?'':' off')+'" data-mt="'+mt+'" title="'+MUT[mt].tag+'">'+MUT[mt].ko+' <b>◈'+PERMA_COST+'</b></div>';
+    html+='<div class="meta-chip'+(can?'':' off')+'" data-mt="'+mt+'" title="'+MUT[mt].tag+'">'+emo(mt)+' '+MUT[mt].ko+' <b>◈'+PERMA_COST+'</b></div>';
   });
   html+='</div>';
   el.innerHTML=html;
@@ -2584,7 +2594,7 @@ function buildShop(){
     const d=SPECIES[type]; const owned=!!G.owned[type]; const cost=BALANCE.coins.shopCost;
     const card=document.createElement('div');
     card.className='shopcard'+(owned?' owned':(G.coins<cost?' locked':''));
-    card.innerHTML=`<div class="sn">${d.ko}</div><div class="sc">${owned?(type===G.playerType?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
+    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div><div class="sc">${owned?(type===G.playerType?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
     card.addEventListener('click',()=>{
       if(owned){ G.playerType=type; G.hybrid=null; }
       else if(G.coins>=cost){ G.coins-=cost; G.owned[type]=true; G.playerType=type; G.hybrid=null;
@@ -2634,14 +2644,14 @@ function buildFusePanel(){ fuseA=null; fuseB=null; renderFuse(); }
 function renderFuse(){
   const slotA=document.getElementById('fuseA'), slotB=document.getElementById('fuseB');
   if(!slotA||!slotB) return;
-  slotA.className='fuse-slot'+(fuseA?' filled':''); slotA.innerHTML = fuseA? SPECIES[fuseA].ko : t('fuseMain');
-  slotB.className='fuse-slot'+(fuseB?' filled':''); slotB.innerHTML = fuseB? SPECIES[fuseB].ko : t('fuseSub');
+  slotA.className='fuse-slot'+(fuseA?' filled':''); slotA.innerHTML = fuseA? (emo(fuseA)+' '+SPECIES[fuseA].ko) : t('fuseMain');
+  slotB.className='fuse-slot'+(fuseB?' filled':''); slotB.innerHTML = fuseB? (emo(fuseB)+' '+SPECIES[fuseB].ko) : t('fuseSub');
   const pool=document.getElementById('fusePool'); pool.innerHTML='';
   const owned=Object.keys(G.owned).filter(k=>k!=='__hybrid');
   owned.forEach(type=>{
     const chip=document.createElement('div');
     let cls='fuse-chip'; if(type===fuseA)cls+=' usedA'; else if(type===fuseB)cls+=' usedB';
-    chip.className=cls; chip.textContent=SPECIES[type].ko;
+    chip.className=cls; chip.textContent=emo(type)+' '+SPECIES[type].ko;
     chip.addEventListener('click',()=>{
       if(type===fuseA) fuseA=null;
       else if(type===fuseB) fuseB=null;
@@ -2707,7 +2717,7 @@ function renderDexList(){
   list.forEach(o=>{ const h=o.h, cost=fuseCost(h.base,h.sub);
     html+=`<div class="dex-chip${h.fav?' fav':''}" data-i="${o.i}">`+
       `<span class="dex-star" data-fav="${o.i}">${h.fav?'★':'☆'}</span>`+
-      `<span class="dex-name">${SPECIES[h.base].ko}×${SPECIES[h.sub].ko}</span>`+
+      `<span class="dex-name">${emo(h.base)}${SPECIES[h.base].ko}×${emo(h.sub)}${SPECIES[h.sub].ko}</span>`+
       `<span class="dx">◈${cost}</span>`+
       `<span class="dex-del" data-del="${o.i}">✕</span></div>`; });
   wrap.innerHTML=html;
