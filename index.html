@@ -111,6 +111,9 @@
     background:rgba(8,11,7,.5);color:var(--bone-dim);cursor:pointer;transition:all .15s;}
   .lang-btn:hover{border-color:var(--chitin);}
   .lang-btn.on{background:var(--toxin);color:#0c1108;border-color:var(--toxin);font-weight:700;}
+  .hud-lang{position:absolute;top:8px;right:50px;z-index:7;gap:3px;}
+  .hud-lang .lang-btn{font-size:10px;padding:2px 7px;}
+  .ov-lang{position:absolute;top:12px;right:12px;z-index:7;}
   .startbar{position:sticky;bottom:0;z-index:5;display:flex;gap:12px;justify-content:center;
     align-items:center;padding:14px 18px calc(16px + env(safe-area-inset-bottom));
     background:linear-gradient(0deg,var(--void) 30%,transparent);}
@@ -251,6 +254,19 @@
   .dex-tab:hover{border-color:#6a90c0;}
   .dex-tab.on{background:#1c3a5c;border-color:#8fd1ff;color:#dff0ff;}
   .dex-empty{font-size:11px;color:var(--bone-dim);text-align:center;padding:8px;}
+  .meta{margin-top:10px;border-top:1px dashed #3a2a4c;padding-top:9px;}
+  .meta-title{font-size:11px;color:#c9a0ff;text-align:center;margin-bottom:7px;letter-spacing:.03em;}
+  .meta-slots{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+  .meta-slot{font-size:12px;padding:7px 14px;border-radius:9px;min-width:88px;text-align:center;}
+  .meta-slot.filled{background:#1e1430;border:1px solid #8a5fd0;color:#dcc8ff;cursor:pointer;}
+  .meta-slot.filled:hover{border-color:#c1432e;}
+  .meta-slot.empty{background:#0e0a16;border:1px dashed #3a2a4c;color:#6a5a7a;}
+  .meta-x{color:#c1432e;font-weight:700;margin-left:4px;}
+  .meta-pool{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+  .meta-chip{font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #5a3a8a;background:#160e22;color:#cbb0ff;cursor:pointer;transition:all .15s;}
+  .meta-chip:hover{border-color:#a070ff;transform:translateY(-2px);}
+  .meta-chip b{color:#ffb347;}
+  .meta-chip.off{opacity:.4;cursor:not-allowed;}
   .shopcard{background:#141a0d;border:1px solid #2a3a1c;border-radius:11px;padding:11px 13px;
     min-width:120px;cursor:pointer;transition:border-color .15s,transform .15s;}
   .shopcard:hover{border-color:var(--chitin);transform:translateY(-3px);}
@@ -327,6 +343,7 @@
     </div>
   </div>
   <div id="banner"></div>
+  <div class="lang-toggle hud-lang"><button class="lang-btn" data-lang="ko">한</button><button class="lang-btn" data-lang="en">EN</button></div>
   <button id="soundBtn" title="소리 켜기/끄기">🔊</button>
   <div id="bossBar" class="bossbar"><div class="bn" id="bossName"></div><div class="bhp"><i id="bossFill"></i></div></div>
   <div id="stick"><div id="knob"></div></div>
@@ -335,6 +352,7 @@
 </div>
 
 <div class="overlay win" id="winScreen">
+  <div class="lang-toggle ov-lang"><button class="lang-btn" data-lang="ko">한국어</button><button class="lang-btn" data-lang="en">EN</button></div>
   <div class="eyebrow">Sole Survivor · Stage <span id="stageNum">1</span></div>
   <h2 id="winTitle">승리</h2>
   <p id="winMsg"></p>
@@ -350,6 +368,7 @@
     <div class="fuse-result" id="fuseResult"></div>
     <div class="fuse-dex" id="fuseDex"></div>
   </div>
+  <div class="meta" id="metaPanel"></div>
   <p id="deploySingleEl" style="font-size:12px;color:var(--bone-dim);margin-top:2px;">또는 아래에서 단일 종을 선택·구매</p>
   <p id="shopHintEl" style="font-size:12px;color:var(--bone-dim);margin-top:2px;">다음 스테이지에서 사용할 종을 구매·선택하라</p>
   <div class="shop" id="shop"></div>
@@ -357,6 +376,7 @@
 </div>
 
 <div class="overlay lose" id="loseScreen">
+  <div class="lang-toggle ov-lang"><button class="lang-btn" data-lang="ko">한국어</button><button class="lang-btn" data-lang="en">EN</button></div>
   <div class="eyebrow">Eliminated</div>
   <h2 id="loseTitle">전 멸</h2>
   <p id="loseMsg"></p>
@@ -635,6 +655,26 @@ const SND = (()=>{
           hurt,dew,dewSpawn,spawn,ui,setMuted,isMuted, get ctx(){return ctx;}};
 })();
 
+/* =========================================================================
+   BALANCE — 게임 밸런스 튜닝 테이블 (모든 수치를 한곳에서 조정)
+   여기 값만 바꾸면 종 강화/난이도/경제/합성/보스/페널티가 일괄 반영된다.
+   신규 곤충 추가 시: SPECIES + I18N_SP + BUILDERS + ORDER + CYCLE + SP_DASH(+MUT)에
+   같은 키로 항목을 넣으면 상점·캐러셀·합성·도감이 자동 확장된다.
+   ========================================================================= */
+const BALANCE = {
+  hpScale: 2.2,            // 전 종 기본 체력 배수
+  specialDmgMult: 2.4,     // 필살기 데미지 배수(일반 공격 대비)
+  counterStrong: 1.5,      // 상성 우위 시 데미지 배수
+  counterWeak: 0.7,        // 상성 열위 시 데미지 배수
+  eat:    { healFrac:0.45, sizeGain:0.18, energyGain:45 },   // 포식 회복/성장
+  dew:    { healFrac:0.25 },                                  // 이슬방울 회복
+  chimera:{ healPenalty:0.55, weakAmp:1.35 },                 // 키메라 약점(회복↓·약점피해↑)
+  coins:  { stageBase:10, stagePer:6, zombieMin:1, zombieMax:3, shopCost:15 },  // 경제
+  fuse:   { base:12, exp:2.1, span:83 },                      // 합성 비용 공식: base + norm^exp * span
+  boss:   { hpBase:6, hpPer:0.5, atkMult:1.5, speedMult:0.7, rangeMult:1.3, patternMin:4.5, patternRand:2.0 },
+  absorbTime: 13,          // 흡수 능력 지속 시간(초)
+};
+
 /* ===== SPECIES (10종) ===== */
 const SPECIES = {
   mantis:    {ko:'사마귀',   lat:'Tenodera sinensis', hp:90,  speed:5.0, atk:22, range:3.0, rate:0.55,
@@ -669,7 +709,7 @@ const ORDER = ['mantis','stag','rhino','spider','centipede','scorpion','hornet',
 const NAMES = ['글라디우스','크림슨','오닉스','베놈','스칼렛','타이탄','옵시디언','네뷸라','코발트','세이버','엠버','드레드','바이퍼','레이븐'];
 
 /* [난이도 완화 1] 모든 종 기본 체력 배수 1.8 → 2.2 (전반적 생존력 상향) */
-for(const k in SPECIES){ SPECIES[k].hp = Math.round(SPECIES[k].hp * 2.2); }
+for(const k in SPECIES){ SPECIES[k].hp = Math.round(SPECIES[k].hp * BALANCE.hpScale); }
 
 /* [난이도 완화 2] 난이도 테이블 전면 재조정
    pHp=플레이어 체력배수 / eDmg=적 공격력배수 / eHp=적 체력배수
@@ -689,12 +729,12 @@ CYCLE.forEach((a,i)=>{ STRONG[a]=[CYCLE[(i+1)%_NC], CYCLE[(i+2)%_NC], CYCLE[(i+3
 function counterMult(atkType, defType){
   if(atkType==='__hybrid') atkType = G.hybrid ? G.hybrid.base : 'mantis';   // 합성체는 주 곤충 상성 사용
   if(defType==='__hybrid') defType = G.hybrid ? G.hybrid.base : 'mantis';
-  if(STRONG[atkType] && STRONG[atkType].includes(defType)) return 1.5;
-  if(STRONG[defType] && STRONG[defType].includes(atkType)) return 0.7;
+  if(STRONG[atkType] && STRONG[atkType].includes(defType)) return BALANCE.counterStrong;
+  if(STRONG[defType] && STRONG[defType].includes(atkType)) return BALANCE.counterWeak;
   return 1.0;
 }
 
-const ABSORB_TIME = 13;
+const ABSORB_TIME = BALANCE.absorbTime;
 const MUT = {
   mantis:   {ko:'사마귀 신경', tag:'공속·사거리↑', col:0x6fae3a},
   stag:     {ko:'사슴벌레 악력', tag:'타격 시 기절·넉백', col:0xc09030},
@@ -851,6 +891,7 @@ const TXT = {
     dexTitle:'📖 합성 도감 — ★우선·최근순 · 이름 누르면 출전 준비 · ✕ 삭제', dexSearch:'🔍 종 이름으로 검색',
     dexAll:'전체', dexEmpty:'조건에 맞는 합성체가 없습니다',
     statHp:'체력', statSpd:'속도', statAtk:'공격', statRange:'사거리', sp:'필살기', mut:'특수능력',
+    metaTitle:'🔒 능력 고정 (메타 성장) — 코인으로 흡수 능력을 영구 장착', metaEmpty:'빈 슬롯',
     title:'곤충 배틀로얄',
     subtitle:'10마리의 절지류가 한 투기장에 떨어진다. <b>최후의 1마리</b>만 살아남는다. 종마다 <b>상성</b>이 있고, 좀비를 처치하면 그 종의 <b>능력을 흡수</b>해 일시 진화한다. 상대를 쓰러뜨려 <b>잡아먹으면 체력을 크게 회복</b>한다. 🔊 풀숲의 밤벌레 합창과 정교한 타격음으로 몰입을 더했다.',
     victory:'승리', defeat:'전 멸', coinsEarned:'획득 코인', finalReach:'최종 도달 스테이지', coinWord:'코인',
@@ -871,6 +912,7 @@ const TXT = {
     dexTitle:'📖 Hybrid Codex — ★first·recent · tap name to prep · ✕ delete', dexSearch:'🔍 Search by species name',
     dexAll:'All', dexEmpty:'No hybrids match',
     statHp:'HP', statSpd:'SPD', statAtk:'ATK', statRange:'Range', sp:'Special', mut:'Ability',
+    metaTitle:'🔒 Permanent Abilities — lock an absorbed ability with coins', metaEmpty:'Empty slot',
     title:'INSECTA ROYALE',
     subtitle:'10 arthropods are dropped into one arena. Only the <b>last one standing</b> survives. Each species has <b>matchups</b>; kill a zombie to <b>absorb its ability</b> and evolve temporarily. Defeat and <b>devour foes to heal greatly</b>. 🔊 Night-insect ambience and crisp impact SFX deepen the immersion.',
     victory:'VICTORY', defeat:'WIPED OUT', coinsEarned:'Coins earned', finalReach:'Final stage reached', coinWord:'Coins',
@@ -903,6 +945,7 @@ function setLang(lang){
   try{ if(typeof updateCarUI==='function') updateCarUI(); }catch(e){}
   try{ if(typeof buildShop==='function' && G.state==='win') buildShop(); }catch(e){}
   try{ if(typeof renderFuse==='function' && G.state==='win') renderFuse(); }catch(e){}
+  try{ if(typeof buildMetaPanel==='function' && G.state==='win') buildMetaPanel(); }catch(e){}
 }
 function applyStaticLang(){
   const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
@@ -1311,12 +1354,16 @@ const BUILDERS={mantis:buildMantis,stag:buildStag,rhino:buildRhino,spider:buildS
 function blendHex(x,y,k=0.5){ return new THREE.Color(x).lerp(new THREE.Color(y),k).getHex(); }
 // 보조 곤충의 시그니처 신체 부위 — 주 곤충 몸에 실제로 붙여 키메라로 만든다
 // baseCol을 주면 보조색을 주 곤충 색조로 물들여 한 몸처럼 자연스럽게 보이게 한다
-function chimeraPart(subT, baseCol){
+function chimeraPart(subT, baseCol, tier){
+  tier = (tier==null?0.5:tier);
   const d=SPECIES[subT]||{col:0x88ccaa};
-  const tint = (baseCol!=null) ? blendHex(d.col, baseCol, 0.5) : d.col;            // 보조색 50% + 주색 50%
-  const darkT= (baseCol!=null) ? blendHex(0x180f04, baseCol, 0.3) : 0x180f04;
-  const M=mat(tint,.5,.25), MB=mat(darkT,.5,.05);
+  // 합성 부위가 '확실히 눈에 띄게' — 보조 곤충 고유색을 살리고 주색은 살짝만 섞는다
+  const tint = (baseCol!=null) ? blendHex(d.col, baseCol, 0.15) : d.col;
+  const darkT= blendHex(d.col, 0x000000, 0.45);
+  const M=mat(tint,.35,.35), MB=mat(darkT,.5,.1);
   const p=new THREE.Group();
+  p.userData.chimera=true;
+  const subCol=d.col;
   if(subT==='rhino'){                       // 장수풍뎅이: 큰 뿔
     const horn=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.95,8),M);
     horn.position.set(0,1.0,0.7); horn.rotation.x=-0.55; horn.castShadow=true; p.add(horn);
@@ -1356,6 +1403,18 @@ function chimeraPart(subT, baseCol){
     for(const s of[1,-1]){ const w=new THREE.Mesh(new THREE.CircleGeometry(0.85,16,0,Math.PI),wm);
       w.scale.set(1,0.3,1); w.position.set(s*0.62,0.95,0); w.rotation.set(-1.25,0,s*0.3); p.add(w); }
   }
+  // 합성 부위 강조(등급 차등): 보조색 발광 + 등급 높을수록 더 크고 밝게 돌출
+  const glowCol=new THREE.Color(subCol);
+  const emI = 0.45 + tier*0.4;
+  p.traverse(o=>{ if(o.isMesh && o.material && o.material.emissive){
+    o.material=o.material.clone();
+    o.material.emissive.copy(glowCol); o.material.emissiveIntensity=emI;
+  }});
+  p.scale.setScalar(1.15 + tier*0.32);   // 약 1.15 ~ 1.47배
+  // 부위 둘레 글로우 링(등급 높을수록 두껍게)
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.04+tier*0.04,8,20),
+    new THREE.MeshBasicMaterial({color:subCol,transparent:true,opacity:0.85}));
+  ring.position.set(0,0.5,0.2); ring.rotation.x=Math.PI/2; p.add(ring);
   return p;
 }
 function makeHybridSpecies(baseT, subT){
@@ -1372,10 +1431,28 @@ function makeHybridSpecies(baseT, subT){
     desc:'두 종을 합성한 하이브리드',
     base:baseT, sub:subT,
   };
+  // 합성 등급(0~1) — 강한(비싼) 조합일수록 위압감을 키운다
+  try{
+    const avg=(speciesPower(baseT)+speciesPower(subT))/2;
+    h.tier=Math.max(0,Math.min(1,(avg-POW_MIN)/(POW_MAX-POW_MIN)));
+  }catch(e){ h.tier=0.5; }
   SPECIES['__hybrid']=h;
-  BUILDERS['__hybrid']=(c,c2,eye)=>{      // 주 곤충 외형 + 보조 곤충 특징 부위(주 곤충 색조로 물듦)
+  const TIER=h.tier;
+  BUILDERS['__hybrid']=(c,c2,eye)=>{      // 주 곤충 외형 + 보조 부위(등급별 강조) + 합성 표식 오라
     const g=BUILDERS[baseT](c,c2,eye);
-    try{ g.add(chimeraPart(subT, c)); }catch(e){}
+    try{ g.add(chimeraPart(subT, c, TIER)); }catch(e){}
+    try{   // 합성체 표식 — 발밑 보조색 에너지 오라(등급 높을수록 두껍고 이중 링)
+      const auraCol=SPECIES[subT].col;
+      const aura=new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.05+TIER*0.07, 8, 36),
+        new THREE.MeshBasicMaterial({color:auraCol,transparent:true,opacity:0.7}));
+      aura.rotation.x=Math.PI/2; aura.position.y=0.08; aura.name='__hybridAura'; g.add(aura);
+      g.userData.hybridAura=aura;
+      if(TIER>0.55){   // 고급 합성체: 외곽에 한 겹 더
+        const aura2=new THREE.Mesh(new THREE.TorusGeometry(1.25,0.04,8,40),
+          new THREE.MeshBasicMaterial({color:blendHex(auraCol,0xffffff,0.4),transparent:true,opacity:0.5}));
+        aura2.rotation.x=Math.PI/2; aura2.position.y=0.1; g.add(aura2); g.userData.hybridAura2=aura2;
+      }
+    }catch(e){}
     return g;
   };
   return h;
@@ -1398,7 +1475,13 @@ const G = {
   pickups:[], pickupTimer:5,   // 이슬방울 회복 아이템 관리
   biome:{move:1, drain:1, regen:1},   // 현재 바이옴 전투 효과
   hybrid:null,   // 합성 곤충 {base, sub} 또는 null
+  permaMuts:[],  // 메타 성장: 코인으로 영구 고정한 흡수 능력(스테이지 넘어 유지)
+  fx:[],
 };
+// 메타 성장: 영구 능력 저장/로드 (localStorage, 실패 시 메모리)
+(function loadPerma(){ try{ const s=localStorage.getItem('insecta_perma'); if(s) G.permaMuts=JSON.parse(s)||[]; }catch(e){} })();
+function savePerma(){ try{ localStorage.setItem('insecta_perma', JSON.stringify(G.permaMuts)); }catch(e){} }
+const PERMA_MAX=2, PERMA_COST=55;   // 영구 슬롯 최대 수 / 고정 비용
 const tmp = new THREE.Vector3();
 const FLYERS = {hornet:1, dragonfly:1};
 
@@ -1535,33 +1618,48 @@ function matchupSprite(enemyType, boss){
 /* ===== 전투 ===== */
 function dirVec(face){return new THREE.Vector3(Math.sin(face),0,Math.cos(face));}
 
+// 종별 필살기 돌진 파라미터(t=지속, spd=돌진속도, r=타격반경) — 이동을 크고 화려하게
+const SP_DASH = {
+  dragonfly:{t:0.72, spd:38, r:1.5},   // 초고속 장거리 활공
+  centipede:{t:0.58, spd:30, r:1.5},   // 관통 질주
+  rhino:    {t:0.52, spd:28, r:1.8},   // 뿔 돌진(넉백)
+  hornet:   {t:0.50, spd:28, r:1.5},   // 독침 돌진
+  mantis:   {t:0.46, spd:26, r:1.9},   // 도약 베기
+  stag:     {t:0.44, spd:22, r:2.1},   // 도약 분쇄
+  scorpion: {t:0.42, spd:18, r:2.7},   // 도약 후 꼬리 광역
+  ant:      {t:0.42, spd:18, r:2.7},   // 도약 후 산성 광역
+  spider:   {t:0.36, spd:16, r:1.7},   // 거미줄 + 짧은 도약
+};
 function doAttack(e, special=false){
   const d=e.d;
   if(special){ e.special=1; e.spCd=0; }
   else { e.atkAnim=1; }
   SND.attack(e.type, e.pos, special);
-  const reach = special ? d.range*1.7 : d.range;
   const fwd = dirVec(e.face);
-  const dmg = (special? d.atk*2.4 : d.atk) * (0.7+e.size*0.5);
+  const dmg = (special? d.atk*BALANCE.specialDmgMult : d.atk) * (0.7+e.size*0.5);
 
   if(e.type==='spider'){ spawnWeb(e, special); }
-  if(special && (e.type==='rhino'||e.type==='centipede'||e.type==='dragonfly')){
-    e.dash = {dir:fwd.clone(), t:e.type==='dragonfly'?0.55:0.45, dmg, hit:new Set()};
-    spawnDashFx(e);                       // 돌진 시작 잔상/오라
+
+  if(special){
+    const c = SP_DASH[e.type] || {t:0.46, spd:24, r:1.7};
+    e.dash = {dir:fwd.clone(), t:c.t, dmg, hit:new Set(), spd:c.spd, r:c.r};
+    spawnCastFx(e, d, true);     // 대형 발동 링
+    spawnSpecialFx(e, d);        // 종별 화려한 연출
+    spawnDashFx(e);              // 돌진 잔상 시작
+    if(e.type==='__hybrid' && e.mesh.userData.hybridAura){   // 합성체 각성 — 오라 폭발
+      e._auraPulse=1.0;
+      spawnHitFx(e.pos, (SPECIES['__hybrid'].col)||d.col, 2.4, 'burst');
+    }
+    return;                      // 타격은 돌진 중 충돌로 처리
   }
-  const aoe = special && (e.type==='scorpion'||e.type==='ant');
-
-  // 필살기 발동 시각 효과(돌진형 제외 — 돌진은 충돌 때 터진다)
-  if(special && !e.dash) spawnCastFx(e, d);
-
+  // 일반 공격(전방 근접)
+  const reach = d.range;
   for(const o of G.entities){
     if(o===e||o.dead) continue;
     tmp.copy(o.pos).sub(e.pos); const dist=tmp.length();
     if(dist>reach+o.size*0.8) continue;
-    if(aoe){ }
-    else { tmp.normalize(); if(tmp.dot(fwd) < (special?0.1:0.35)) continue; }
-    if(e.dash) continue;
-    applyHit(e,o,dmg,special);
+    tmp.normalize(); if(tmp.dot(fwd) < 0.35) continue;
+    applyHit(e,o,dmg,false);
   }
 }
 
@@ -1574,7 +1672,7 @@ function applyHit(e,o,dmg,special){
   if(syn) mult *= syn.bonus;
   if(hasMut(o,'rhino')) mult *= 0.65;
   // 키메라 페널티: 불안정한 합성체는 상성상 불리할 때(mult>1, 상대가 우위) 약점이 크게 벌어진다
-  if(o.type==='__hybrid' && mult>1.05) mult *= 1.35;
+  if(o.type==='__hybrid' && mult>1.05) mult *= BALANCE.chimera.weakAmp;
 
   let final = dmg*mult;
   o.hp -= final; o.hurtFlash=1;
@@ -1614,7 +1712,7 @@ function applyHit(e,o,dmg,special){
 function killEntity(o, by){
   o.dead=true;
   if(o.zombie){
-    const c=1+Math.floor(Math.random()*3);   // 좀비 처치 보상 1~3(전투 적극성 보상)
+    const c=BALANCE.coins.zombieMin+Math.floor(Math.random()*(BALANCE.coins.zombieMax-BALANCE.coins.zombieMin+1));
     if(by && by.isPlayer){
       G.coins+=c; floatText(o.pos,'◈+'+c,'#d4a03c');
       absorb(by, o.type);
@@ -1638,7 +1736,11 @@ function absorb(e, type){
   let ex = e.muts.find(x=>x.type===type);
   if(ex){ ex.t = ABSORB_TIME; }
   else {
-    if(e.muts.length >= MAX_MUTS){ const old=e.muts.shift(); if(old.ring)e.mesh.remove(old.ring); }
+    if(e.muts.length >= MAX_MUTS){
+      let idx=e.muts.findIndex(x=>x.t<1e8);   // 휘발성을 우선 교체(영구 능력은 보호)
+      if(idx<0) idx=0;
+      const old=e.muts.splice(idx,1)[0]; if(old.ring)e.mesh.remove(old.ring);
+    }
     const slot = e.muts.length;
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.9+slot*0.28, 1.15+slot*0.28, 30),
       new THREE.MeshBasicMaterial({color:m.col,transparent:true,opacity:0.6,side:THREE.DoubleSide,depthWrite:false}));
@@ -1677,14 +1779,33 @@ function spawnHitFx(pos, color, scale, kind){
     G.fx.push({mesh:sh,t:0,life:0.3,kind:'shard',mat:sh.material,vx:Math.cos(a)*sp,vz:Math.sin(a)*sp,vy:2+Math.random()*2.2});
   }
 }
-function spawnCastFx(e, d){
+function spawnCastFx(e, d, big){
   if(!G.fx) G.fx=[];
   const col=(d&&d.col)||0x8fd13b;
-  const ringMat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.85,side:THREE.DoubleSide,depthWrite:false});
+  const ringMat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.9,side:THREE.DoubleSide,depthWrite:false});
   const ring=new THREE.Mesh(_ringGeo, ringMat);
   ring.rotation.x=-Math.PI/2; ring.position.set(e.pos.x,0.12,e.pos.z); ring.scale.setScalar(0.5);
   scene.add(ring);
-  G.fx.push({mesh:ring,t:0,life:0.5,kind:'ring',s0:0.5,s1:3.6,mat:ringMat});
+  G.fx.push({mesh:ring,t:0,life:big?0.6:0.5,kind:'ring',s0:0.5,s1:big?6.2:3.6,mat:ringMat});
+  if(big){   // 두 번째 역방향 링으로 임팩트 강조
+    const m2=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7,side:THREE.DoubleSide,depthWrite:false});
+    const r2=new THREE.Mesh(_ringGeo,m2); r2.rotation.x=-Math.PI/2; r2.position.set(e.pos.x,0.18,e.pos.z); r2.scale.setScalar(3.2);
+    scene.add(r2); G.fx.push({mesh:r2,t:0,life:0.42,kind:'ring',s0:3.2,s1:0.3,mat:m2});
+  }
+}
+// 종별 화려한 필살기 연출 — 발동 폭발 + 돌진 경로를 따라 빛 파편
+function spawnSpecialFx(e, d){
+  const col=(d&&d.col)||0x8fd13b;
+  const fwd=dirVec(e.face);
+  spawnHitFx(e.pos, col, 1.7, 'burst');                 // 발동 대폭발
+  for(let i=1;i<=4;i++){                                 // 돌진 방향으로 뻗는 빛줄기
+    const p=e.pos.clone().addScaledVector(fwd, i*1.4);
+    spawnHitFx(p, col, 0.85-i*0.08, 'spark');
+  }
+  // 광역형은 추가로 넓은 고리
+  if(e.type==='scorpion'||e.type==='ant'){
+    spawnHitFx(e.pos.clone().addScaledVector(fwd,2.0), col, 2.2, 'burst');
+  }
 }
 function spawnDashFx(e){ e._tt=0; spawnTrail(e); }
 function spawnTrail(e){
@@ -1742,6 +1863,11 @@ function startStage(){
 
   if(G.hybrid){ makeHybridSpecies(G.hybrid.base, G.hybrid.sub); G.playerType='__hybrid'; }
   G.player=makeEntity(G.playerType,true);
+  // 메타 성장: 영구 고정 능력 부여(스테이지 넘어 유지)
+  if(G.permaMuts && G.permaMuts.length){
+    for(const mt of G.permaMuts){ if(MUT[mt]){ absorb(G.player, mt);
+      const lm=G.player.muts[G.player.muts.length-1]; if(lm) lm.t=1e9; } }
+  }
   if(G.hybrid){   // 보조 곤충의 특수능력을 영구 부여
     absorb(G.player, G.hybrid.sub);
     const lm=G.player.muts[G.player.muts.length-1]; if(lm) lm.t=1e9;
@@ -1793,9 +1919,9 @@ function maybeSpawn(dt){
       e.hpMax*=buff; e.hp=e.hpMax; e.d=Object.assign({},e.d); e.d.atk*=(1+(G.stage-1)*0.12);
       if(q.boss){
         e.boss=true;
-        const bhp=6+G.stage*0.5;
+        const bhp=BALANCE.boss.hpBase+G.stage*BALANCE.boss.hpPer;
         e.hpMax*=bhp; e.hp=e.hpMax; e.size=2.4; e.mesh.scale.setScalar(0.95*e.size);
-        e.d.atk*=1.5; e.d.speed*=0.7; e.d.range*=1.3;
+        e.d.atk*=BALANCE.boss.atkMult; e.d.speed*=BALANCE.boss.speedMult; e.d.range*=BALANCE.boss.rangeMult;
         G.bossEnt=e;
         const bb=document.getElementById('bossBar'); bb.classList.add('on');
         document.getElementById('bossName').textContent='⚠ '+q.name;
@@ -1816,9 +1942,35 @@ function maybeSpawn(dt){
   }
 }
 
+/* ===== 보스 전용 패턴 (일반 AI와 분리) ===== */
+function bossThink(e, dt){
+  if(G.state!=='play') return;
+  e.bossTimer = (e.bossTimer==null ? 3.0 : e.bossTimer) - dt;
+  if(e.bossTimer<=0){ e.bossTimer = BALANCE.boss.patternMin + Math.random()*BALANCE.boss.patternRand; bossPattern(e); }
+}
+function bossPattern(e){
+  const p=G.player; const base=e.face;
+  const aim=()=>{ if(p) e.face=Math.atan2(p.pos.x-e.pos.x, p.pos.z-e.pos.z); };
+  const say=(ko,en)=>flashBanner(LANG==='en'?en:ko,'hurt');
+  if(e.type==='spider'){                                   // 맵에 거미줄 장판 다발
+    for(let i=0;i<5;i++){ e.face = base + i*(Math.PI*2/5); spawnWeb(e, true); }
+    e.face=base; say('거미 보스 — 거미줄 장판!','Spider Boss — Web Field!');
+  } else if(e.type==='rhino' || e.type==='stag'){          // 플레이어를 겨눈 광역 돌진
+    aim(); doAttack(e, true); say('돌진 보스 — 광역 차지!','Charge Boss — Power Dash!');
+  } else if(e.type==='scorpion' || e.type==='ant'){        // 제자리 광역 독/산성 폭발
+    aim(); doAttack(e, true);
+    spawnHitFx(e.pos, (e.d&&e.d.col)||0x8fd13b, 4.5, 'burst');
+    for(const o of G.entities){ if(o.isPlayer && !o.dead && e.pos.distanceTo(o.pos)<6.5) applyHit(e,o,e.d.atk*1.3,true); }
+    say('독 보스 — 광역 맹독!','Venom Boss — Toxic Burst!');
+  } else {                                                 // 비행/고속종: 연속 강습
+    aim(); doAttack(e, true); say('비행 보스 — 연속 강습!','Aerial Boss — Aerial Strike!');
+  }
+}
+
 /* ===== AI ===== */
 function updateAI(e, dt){
   if(e.corpse||e.dead) return;
+  if(e.boss) bossThink(e, dt);                             // 보스는 고유 패턴 추가
   if(!e.zombie) e.spReady=Math.min(100,(e.spReady||0)+dt*6);
   let best=null, bd=1e9;
   for(const o of G.entities){
@@ -1827,9 +1979,11 @@ function updateAI(e, dt){
     let score=d;
     if(o.corpse) score=d*0.5;
     if(o.zombie) score=d*0.9;
-    /* [난이도 완화 6] 적이 플레이어만 집중 공격하지 않도록, 플레이어 타겟 우선도 낮춤
-       (다른 적/좀비/시체를 더 자주 노리게 해 협공 빈도를 분산) */
-    if(o.isPlayer && !e.zombie) score=d*1.6;
+    /* [난이도 완화 6] 일반 플레이어는 타겟 우선도를 낮춰 협공을 분산.
+       단, 합성체(키메라)는 위협으로 인식해 경계 대상으로 우선 표적 → 협공 유발 */
+    if(o.isPlayer && !e.zombie){
+      score = (o.type==='__hybrid') ? d*0.82 : d*1.6;
+    }
     if(score<bd){bd=score;best=o;}
   }
   e.target=best;
@@ -1891,9 +2045,15 @@ function applyMove(e, desired, dt, speedMul=1){
 
   if(e.dash){
     e.dash.t-=dt;
-    if((e._tt=(e._tt||0)+dt)>=0.045){ e._tt=0; spawnTrail(e); }   // 돌진 잔상
+    const spd=e.dash.spd||22;
+    e.pos.addScaledVector(e.dash.dir, spd*dt);            // 필살기 돌진 — 크게 전진
+    const rr=e.pos.length();
+    if(rr>ARENA-1){ e.pos.multiplyScalar((ARENA-1)/rr); e.dash.t=Math.min(e.dash.t,0.04); }
+    e.mesh.position.copy(e.pos);
+    if((e._tt=(e._tt||0)+dt)>=0.03){ e._tt=0; spawnTrail(e); }   // 촘촘한 잔상
+    const hitR=e.dash.r||1.2;
     for(const o of G.entities){if(o===e||o.dead||e.dash.hit.has(o))continue;
-      if(e.pos.distanceTo(o.pos)<1.2+o.size*0.6){e.dash.hit.add(o); applyHit(e,o,e.dash.dmg,true);}}
+      if(e.pos.distanceTo(o.pos)<hitR+o.size*0.6){e.dash.hit.add(o); applyHit(e,o,e.dash.dmg,true);}}
     if(e.dash.t<=0) e.dash=null;
   }
 }
@@ -1902,14 +2062,14 @@ function applyMove(e, desired, dt, speedMul=1){
 function eat(e,o){
   o.eaten=true; o.removing=true;
   SND.eat(e.pos);
-  e.energy=Math.min(100,e.energy+45);
-  e.size=Math.min(2.6, e.size+0.18);
+  e.energy=Math.min(100,e.energy+BALANCE.eat.energyGain);
+  e.size=Math.min(2.6, e.size+BALANCE.eat.sizeGain);
   // 포식 회복 대폭 강화: 최대체력의 45% (꿀벌 페로몬 흡수 시 65%)
   const hpCap = e.hpMax*(1+(e.size-1)*0.6);
-  let healFrac = 0.45;
+  let healFrac = BALANCE.eat.healFrac;
   // 잡아먹힌 상대의 덩치가 클수록 더 많이 회복
   healFrac *= (0.85 + o.size*0.25);
-  if(e.type==='__hybrid') healFrac *= 0.55;   // 키메라 페널티: 불안정한 몸 — 포식 회복 -45%
+  if(e.type==='__hybrid') healFrac *= BALANCE.chimera.healPenalty;   // 키메라 페널티: 포식 회복↓
   const heal = hpCap*healFrac;
   e.hp=Math.min(hpCap, e.hp+heal);
   e.spReady=Math.min(100,(e.spReady||0)+40);
@@ -2056,6 +2216,17 @@ function step(dt){
     f.life-=dt; f.sp.position.y+=dt*1.5; f.sp.material.opacity=Math.max(0,f.life);
     if(f.life<=0){scene.remove(f.sp);G.floaters.splice(i,1);}}
   updateFx(dt);   // 타격·필살기 시각효과 갱신
+  // 합성체 표식 오라 — 평소엔 회전·맥동, 필살기 발동 시 폭발적으로 각성
+  if(G.player && !G.player.dead && G.player.type==='__hybrid' && G.player.mesh.userData.hybridAura){
+    const a=G.player.mesh.userData.hybridAura, a2=G.player.mesh.userData.hybridAura2;
+    let pulse=G.player._auraPulse||0;
+    if(pulse>0){ G.player._auraPulse=Math.max(0,pulse-dt*1.6); pulse=G.player._auraPulse; }
+    a.scale.setScalar(1 + pulse*2.0);                       // 각성 시 크게 확장
+    a.rotation.z += dt*(2.2 + pulse*10);                    // 각성 시 급회전
+    a.material.opacity = 0.4 + Math.sin(G.t*4)*0.2 + pulse*0.55;
+    if(a2){ a2.scale.setScalar(1 + pulse*1.7); a2.rotation.z -= dt*(1.5 + pulse*8);
+      a2.material.opacity = 0.38 + pulse*0.5; }
+  }
 
   // ===== 이슬방울 회복 아이템 =====
   G.pickupTimer-=dt;
@@ -2077,8 +2248,8 @@ function step(dt){
     if(G.player && !G.player.dead && !G.player.corpse){
       if(G.player.pos.distanceTo(pk.pos) < 1.1 + G.player.size*0.5){
         const cap=G.player.hpMax*(1+(G.player.size-1)*0.6);
-        let heal=cap*0.25;   // 최대 체력의 25% 회복
-        if(G.player.type==='__hybrid') heal*=0.55;   // 키메라 페널티: 이슬방울 회복도 감소
+        let heal=cap*BALANCE.dew.healFrac;   // 이슬방울 회복
+        if(G.player.type==='__hybrid') heal*=BALANCE.chimera.healPenalty;   // 키메라 페널티
         G.player.hp=Math.min(cap, G.player.hp+heal);
         G.player.energy=Math.min(100, G.player.energy+35);  // 에너지도 일부 채움
         SND.dew(G.player.pos);
@@ -2372,16 +2543,45 @@ function showWin(){
   document.getElementById('stageNum').textContent=G.stage;
   document.getElementById('winMsg').textContent=
     t('winMsg')(SPECIES[G.playerType].ko, G.stage, G.player.size.toFixed(1));
-  const earned=10+G.stage*6; G.coins+=earned;   // 후반 수급을 합성 비용 곡선에 맞춰 상향
+  const earned=BALANCE.coins.stageBase+G.stage*BALANCE.coins.stagePer; G.coins+=earned;
   const big=winScreen.querySelector('.big');
   if(big) big.innerHTML=`${t('coinsEarned')} ◈ <span id="winCoins">${G.coins}</span>`;
   buildShop();
   buildFusePanel();
+  buildMetaPanel();
+}
+// ===== 메타 성장: 영구 능력 고정 슬롯 =====
+function buildMetaPanel(){
+  const el=document.getElementById('metaPanel'); if(!el) return;
+  let html='<div class="meta-title">'+t('metaTitle')+'</div>';
+  html+='<div class="meta-slots">';
+  for(let i=0;i<PERMA_MAX;i++){
+    const mt=G.permaMuts[i];
+    if(mt && MUT[mt]) html+='<div class="meta-slot filled" data-rm="'+i+'" title="'+MUT[mt].tag+'">🔒 '+MUT[mt].ko+' <span class="meta-x">✕</span></div>';
+    else html+='<div class="meta-slot empty">'+t('metaEmpty')+'</div>';
+  }
+  html+='</div><div class="meta-pool">';
+  ORDER.forEach(mt=>{ if(!MUT[mt] || G.permaMuts.includes(mt)) return;
+    const can = G.permaMuts.length<PERMA_MAX && G.coins>=PERMA_COST;
+    html+='<div class="meta-chip'+(can?'':' off')+'" data-mt="'+mt+'" title="'+MUT[mt].tag+'">'+MUT[mt].ko+' <b>◈'+PERMA_COST+'</b></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+  el.querySelectorAll('.meta-slot[data-rm]').forEach(s=>s.addEventListener('click',()=>{
+    G.permaMuts.splice(+s.dataset.rm,1); savePerma(); buildMetaPanel(); }));
+  el.querySelectorAll('.meta-chip').forEach(c=>c.addEventListener('click',()=>{
+    const mt=c.dataset.mt;
+    if(G.permaMuts.length>=PERMA_MAX || G.coins<PERMA_COST) return;
+    G.coins-=PERMA_COST; G.permaMuts.push(mt); savePerma();
+    const wc=document.getElementById('winCoins'); if(wc) wc.textContent=G.coins;
+    if(SND.synergy) SND.synergy();
+    buildMetaPanel(); if(typeof renderFuse==='function') renderFuse();
+  }));
 }
 function buildShop(){
   const shop=document.getElementById('shop'); shop.innerHTML='';
   ORDER.forEach(type=>{
-    const d=SPECIES[type]; const owned=!!G.owned[type]; const cost=15;
+    const d=SPECIES[type]; const owned=!!G.owned[type]; const cost=BALANCE.coins.shopCost;
     const card=document.createElement('div');
     card.className='shopcard'+(owned?' owned':(G.coins<cost?' locked':''));
     card.innerHTML=`<div class="sn">${d.ko}</div><div class="sc">${owned?(type===G.playerType?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
@@ -2410,7 +2610,7 @@ function fuseCost(a,b){
   const avg=(speciesPower(a)+speciesPower(b))/2;
   const norm=Math.max(0,Math.min(1,(avg-POW_MIN)/(POW_MAX-POW_MIN)));
   // 약한 조합 ≈ ◈12, 중간 ≈ ◈30, 강한 조합 ≈ ◈95 — 거듭제곱(2.1)으로 강할수록 급격히 비싸진다
-  return Math.round(12 + Math.pow(norm,2.1)*83);
+  return Math.round(BALANCE.fuse.base + Math.pow(norm,BALANCE.fuse.exp)*BALANCE.fuse.span);
 }
 // ===== 합성 도감(저장) =====  localStorage 사용, 실패 시 메모리 유지
 const DEX_KEY='insecta_hybrid_dex_v1';
