@@ -222,7 +222,7 @@
   .lose h2{color:var(--blood);text-shadow:0 0 30px rgba(193,67,46,.4);}
   .overlay p{color:var(--bone-dim);margin:14px 0 4px;max-width:440px;line-height:1.55;font-size:14px;}
   .overlay .big{font-family:'Courier New',monospace;color:var(--chitin);font-size:18px;margin:18px 0 6px;}
-  .shop{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0 6px;max-width:560px;}
+  .shop{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px auto 6px;max-width:380px;}
   .fuse{margin:16px 0 6px;padding:12px 14px;border:1px dashed var(--toxin);border-radius:12px;
     background:rgba(143,209,59,.06);max-width:540px;width:100%;}
   .fuse-title{font-family:'Courier New',monospace;font-size:12px;color:var(--toxin);
@@ -283,11 +283,16 @@
   .meta-chip:hover{border-color:#a070ff;transform:translateY(-2px);}
   .meta-chip b{color:#ffb347;}
   .meta-chip.off{opacity:.4;cursor:not-allowed;}
-  .shopcard{background:#141a0d;border:1px solid #2a3a1c;border-radius:11px;padding:11px 13px;
-    min-width:120px;cursor:pointer;transition:border-color .15s,transform .15s;}
+  .shopcard{background:#141a0d;border:1px solid #2a3a1c;border-radius:11px;padding:10px 8px;
+    cursor:pointer;transition:border-color .15s,transform .15s;text-align:center;}
   .shopcard:hover{border-color:var(--chitin);transform:translateY(-3px);}
   .shopcard.owned{border-color:var(--toxin);}
   .shopcard.locked{opacity:.55;}
+  .shopcard .card-bars{display:flex;flex-direction:column;gap:2px;margin:5px 0;}
+  .shopcard .card-bars i{display:block;height:3px;border-radius:2px;min-width:2px;}
+  .shopcard.owned{background:#12200c;}
+  .shopcard:not(.owned){background:#1a1410;filter:saturate(.6);}
+  .shopcard:not(.owned) .se{filter:grayscale(.5) brightness(.8);}
   .shopcard .se{display:block;font-size:30px;line-height:1;margin-bottom:4px;}
   .shopcard .sn{font-weight:800;font-size:14px;}
   .shopcard .sc{font-family:'Courier New',monospace;font-size:11px;color:var(--chitin);margin-top:4px;}
@@ -805,9 +810,9 @@ const SPECIES = {
   dragonfly: {ko:'잠자리',   lat:'Anax parthenope', hp:84, speed:6.0, atk:20, range:3.0, rate:0.5,
               col:0x2a9d8f, col2:0x176b60, eye:0x88ccff, sp:'스카이 대시', spDesc:'초고속 관통 활공',
               desc:'<b>최고 속도</b>의 공중 포식자. 빠르게 치고 빠지는 제공권의 지배자.'},
-  ant:       {ko:'개미',     lat:'Camponotus japonicus', hp:120, speed:4.6, atk:19, range:2.3, rate:0.55,
-              col:0x201510, col2:0x4a3020, eye:0x000000, sp:'산성 분사', spDesc:'개미산 광역 부식',
-              desc:'끈질긴 <b>일개미</b>. 강한 턱과 개미산으로 끈질기게 물고 늘어진다.'},
+  ant:       {ko:'불개미',   lat:'Solenopsis (Fire Ant)', hp:120, speed:4.8, atk:27, range:2.3, rate:0.5,
+              col:0xc0392b, col2:0x141414, eye:0xffcf3a, sp:'독침 폭발', spDesc:'독침 강타 + 화상 광역',
+              desc:'사납고 공격적인 <b>불개미</b>. 강한 턱으로 물고 <b>독침</b>으로 찔러 불타는 듯한 통증을 준다.'},
 };
 const ORDER = ['mantis','stag','rhino','spider','centipede','scorpion','hornet','dragonfly','ant'];
 // 누구나 한눈에 알아보도록 종마다 그림(이모지) 부여
@@ -894,7 +899,7 @@ const MUT = {
   scorpion: {ko:'전갈 독낭', tag:'타격 시 강한 중독', col:0x6a5226},
   hornet:   {ko:'말벌 독침', tag:'타격 시 중독·공속↑', col:0xc9a21e},
   dragonfly:{ko:'잠자리 날개', tag:'이동속도 대폭↑', col:0x2a9d8f},
-  ant:      {ko:'개미산', tag:'타격 시 부식 둔화', col:0x4a3020},
+  ant:      {ko:'독침 화상', tag:'타격 시 화상 둔화', col:0xc0392b},
 };
 const MAX_MUTS = 3;
 const SYNERGY = [
@@ -999,7 +1004,7 @@ const I18N_SP = {
   scorpion: {en:'Scorpion',    sp:'Tail Sting',      spDesc:'Area venom tail strike',      desc:'Grabs with pincers, finishes with its <b>venom stinger</b>. Balanced all-rounder.'},
   hornet:   {en:'Hornet',      sp:'Stinger Barrage', spDesc:'Rapid triple sting + poison', desc:'A flying <b>bomber</b> that dives in and unloads venom stings.'},
   dragonfly:{en:'Dragonfly',   sp:'Sky Dash',        spDesc:'Ultra-fast piercing glide',   desc:'The <b>fastest</b> aerial predator. Strikes and retreats, ruler of the skies.'},
-  ant:      {en:'Ant',         sp:'Acid Spray',      spDesc:'Area formic-acid corrosion',  desc:'A relentless <b>worker ant</b> that clamps on with strong jaws and acid.'},
+  ant:      {en:'Fire Ant',    sp:'Venom Sting',     spDesc:'Sting strike + area burn',     desc:'An aggressive <b>fire ant</b> that bites with strong jaws and stings with burning <b>venom</b>.'},
 };
 const I18N_DIFF = { easy:'Easy', normal:'Normal', hard:'Hard' };
 const I18N_THEME = [
@@ -1019,7 +1024,7 @@ const I18N_MUT = {
   scorpion: {en:'Scorpion Sac',   tagEn:'Strong poison on hit'},
   hornet:   {en:'Hornet Sting',   tagEn:'Poison·atk speed↑'},
   dragonfly:{en:'Dragonfly Wings',tagEn:'Move speed↑↑'},
-  ant:      {en:'Formic Acid',    tagEn:'Corrosive slow on hit'},
+  ant:      {en:'Venom Burn',     tagEn:'Burning slow on hit'},
 };
 const I18N_SYN = {
   '부식 포박':{en:'Corrosive Snare', desc:'Accelerated venom on slowed targets'},
@@ -1042,7 +1047,7 @@ const TXT = {
     dexAll:'전체', dexEmpty:'조건에 맞는 합성체가 없습니다',
     statHp:'체력', statSpd:'속도', statAtk:'공격', statRange:'사거리', sp:'필살기', mut:'특수능력',
     metaTitle:'🔒 능력 고정 (메타 성장) — 코인으로 흡수 능력을 영구 장착', metaEmpty:'빈 슬롯',
-    tabShop:'🛒 상점', tabFuse:'🧬 합성', tabMeta:'🔒 능력', deployNow:'🎯 다음 출전',
+    tabRoster:'🎒 보유', tabShop:'🛒 상점', tabFuse:'🧬 합성', tabMeta:'🔒 능력', deployNow:'🎯 다음 출전',
     title:'곤충 배틀로얄',
     subtitle:'10마리의 절지류가 한 투기장에 떨어진다. <b>최후의 1마리</b>만 살아남는다. 종마다 <b>상성</b>이 있고, 좀비를 처치하면 그 종의 <b>능력을 흡수</b>해 일시 진화한다. 상대를 쓰러뜨려 <b>잡아먹으면 체력을 크게 회복</b>한다. 🔊 풀숲의 밤벌레 합창과 정교한 타격음으로 몰입을 더했다.',
     victory:'승리', defeat:'전 멸', coinsEarned:'획득 코인', finalReach:'최종 도달 스테이지', coinWord:'코인',
@@ -1064,7 +1069,7 @@ const TXT = {
     dexAll:'All', dexEmpty:'No hybrids match',
     statHp:'HP', statSpd:'SPD', statAtk:'ATK', statRange:'Range', sp:'Special', mut:'Ability',
     metaTitle:'🔒 Permanent Abilities — lock an absorbed ability with coins', metaEmpty:'Empty slot',
-    tabShop:'🛒 Shop', tabFuse:'🧬 Fuse', tabMeta:'🔒 Abilities', deployNow:'🎯 Deploying',
+    tabRoster:'🎒 Roster', tabShop:'🛒 Shop', tabFuse:'🧬 Fuse', tabMeta:'🔒 Abilities', deployNow:'🎯 Deploying',
     title:'INSECTA ROYALE',
     subtitle:'10 arthropods are dropped into one arena. Only the <b>last one standing</b> survives. Each species has <b>matchups</b>; kill a zombie to <b>absorb its ability</b> and evolve temporarily. Defeat and <b>devour foes to heal greatly</b>. 🔊 Night-insect ambience and crisp impact SFX deepen the immersion.',
     victory:'VICTORY', defeat:'WIPED OUT', coinsEarned:'Coins earned', finalReach:'Final stage reached', coinWord:'Coins',
@@ -1117,7 +1122,9 @@ function applyStaticLang(){
   setH('deploySingleEl', t('deploySingle'));
   setH('shopHintEl', t('shopHint'));
   set('nextBtn', t('nextStage'));
-  set('wtabShop', t('tabShop')); set('wtabFuse', t('tabFuse')); set('wtabMeta', t('tabMeta'));
+  set('wtabRoster', t('tabRoster')); set('wtabShop', t('tabShop')); set('wtabFuse', t('tabFuse')); set('wtabMeta', t('tabMeta'));
+  if(typeof updateNextBtn==='function' && G.state==='win') updateNextBtn(winTab);   // 다음 버튼 언어 갱신
+  if(typeof setWinTab==='function' && G.state==='win'){ const sh=document.getElementById('shopHintEl'); if(sh && (winTab==='roster'||winTab==='shop')) sh.textContent=(winTab==='roster')?(LANG==='en'?'Pick the species to deploy next stage':'다음 스테이지에 출전할 곤충을 고르세요'):(LANG==='en'?'Buy new species here':'새 곤충을 구매하세요'); }
   set('retryBtn', t('retry'));
   set('winTitle', t('victory'));
   set('loseTitle', t('defeat'));
@@ -1486,21 +1493,25 @@ function buildDragonfly(c,c2,eye){
 function buildAnt(c,c2,eye){
   const g=new THREE.Group(); g.userData={legs:[]}; const M=mat(c,.5,.2),M2=mat(c2,.5,.2);
   const gaster=new THREE.Mesh(new THREE.SphereGeometry(0.5,12,10),M);
-  gaster.scale.set(1,0.9,1.2); gaster.position.set(0,0.45,-0.75); gaster.castShadow=true; g.add(gaster);
-  const node=new THREE.Mesh(new THREE.SphereGeometry(0.16,8,8),M2);
+  gaster.scale.set(1,0.9,1.3); gaster.position.set(0,0.45,-0.8); gaster.castShadow=true; g.add(gaster);
+  for(let i=0;i<2;i++){ const band=new THREE.Mesh(new THREE.TorusGeometry(0.46-i*0.07,0.08,6,18),M2);  // 불개미 검정 줄무늬
+    band.rotation.x=Math.PI/2; band.position.set(0,0.45,-0.62-i*0.34); g.add(band); }
+  const sting=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.5,6),M2);   // 독침
+  sting.position.set(0,0.36,-1.4); sting.rotation.x=2.5; g.add(sting); g.userData.weapon=sting;
+  const node=new THREE.Mesh(new THREE.SphereGeometry(0.16,8,8),M);
   node.position.set(0,0.4,-0.25); g.add(node);
   const thx=new THREE.Mesh(new THREE.SphereGeometry(0.32,12,10),M);
   thx.scale.set(1,0.9,1.2); thx.position.set(0,0.45,0.2); thx.castShadow=true; g.add(thx);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.36,10,8),M2);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.36,10,8),M);
   head.scale.set(1.1,0.95,1); head.position.set(0,0.45,0.7); head.castShadow=true; g.add(head);
-  const jaws=new THREE.Group(); jaws.position.set(0,0.42,1.0); g.add(jaws); g.userData.weapon=jaws;
-  for(const s of[1,-1]){const j=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.4,5),M);
+  const jaws=new THREE.Group(); jaws.position.set(0,0.42,1.0); g.add(jaws);
+  for(const s of[1,-1]){const j=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.42,5),M2);
     j.position.set(s*0.14,0,0.1); j.rotation.set(-Math.PI/2,0,s*0.5); jaws.add(j);}
   for(const s of[1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,8),mat(eye,.2));
     e.position.set(s*0.2,0.52,0.85); g.add(e);
     const an=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.5,4),M2);
     an.position.set(s*0.14,0.62,1.0); an.rotation.set(-0.6,0,s*0.5); g.add(an);}
-  legPair(g,M,0.4,0.4,0.7,1.05); legPair(g,M,0.42,0.1,0.72,1.1); legPair(g,M,0.4,-0.25,0.7,1.05);
+  legPair(g,M2,0.4,0.4,0.7,1.05); legPair(g,M2,0.42,0.1,0.72,1.1); legPair(g,M2,0.4,-0.25,0.7,1.05);
   return g;
 }
 const BUILDERS={mantis:buildMantis,stag:buildStag,rhino:buildRhino,spider:buildSpider,
@@ -1846,7 +1857,7 @@ const SP_DASH = {
   mantis:   {t:0.46, spd:26, r:1.9},   // 도약 베기
   stag:     {t:0.44, spd:22, r:2.1},   // 도약 분쇄
   scorpion: {t:0.42, spd:18, r:2.7},   // 도약 후 꼬리 광역
-  ant:      {t:0.42, spd:18, r:2.7},   // 도약 후 산성 광역
+  ant:      {t:0.44, spd:20, r:3.1},   // 도약 후 독침 강타 + 화상 광역
   spider:   {t:0.36, spd:16, r:1.7},   // 거미줄 + 짧은 도약
 };
 function doAttack(e, special=false){
@@ -1942,6 +1953,7 @@ function applyHit(e,o,dmg,special){
   SND.hit(o.pos, {special, mult, syn:!!syn, fatal:(o.hp<=0)});
   if(special && e.isPlayer){ G.shake=Math.max(G.shake||0, 0.45); G.hitStop=Math.max(G.hitStop||0, 0.07); }   // 필살기 적중 타격감
   if(e.type==='spider'||e.type==='ant'){ o.slow=Math.max(o.slow,special?2.5:1.2); }
+  if(e.type==='ant' && special){ o.burn=Math.max(o.burn||0, 3.5); o.lastBurn=e; }   // 🔥 불개미 독침 — 화상(지속 피해)
   if(e.type==='centipede'||e.type==='scorpion'||e.type==='hornet'){ o.poison=Math.max(o.poison,special?4:2); }
   if((e.type==='stag'||e.type==='rhino')&&special){ o.stun=Math.max(o.stun,0.8); }
   if(am.includes('spider')){ o.slow=Math.max(o.slow,1.5); }
@@ -2455,6 +2467,9 @@ function updateEntity(e, dt){
     }
   }
   if(e.poison>0 && !e.corpse){e.poisonT-=dt; if(e.poisonT<=0){e.poisonT=0.5; e.hp-=e.hpMax*0.008; if(e.hp<=0&&!e.dead)killEntity(e,e.lastPoison||null);}}
+  if(e.burn>0 && !e.corpse){ e.burn-=dt; e.burnT=(e.burnT||0)-dt;   // 불개미 화상 — poison보다 강한 지속 피해 + 불꽃
+    if(e.burnT<=0){ e.burnT=0.4; e.hp-=e.hpMax*0.016; spawnHitFx(e.pos, 0xff5a2a, 0.6, 'flash');
+      if(e.hp<=0&&!e.dead) killEntity(e, e.lastBurn||null); } }
 
   if(e.corpse){ e.mesh.position.y=0.1; return; }
 
@@ -3328,13 +3343,21 @@ function buildShop(){
     const selected = owned && !G.hybrid && type===G.playerType;   // 합성체 출전 중이면 단일은 선택 아님
     const card=document.createElement('div');
     card.className='shopcard'+(selected?' selected':'')+(owned?' owned':(G.coins<cost?' locked':''));
-    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div><div class="sc">${owned?(selected?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
+    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div>`+
+      `<div class="card-bars">`+
+        `<i style="width:${Math.min(100,d.hp/660*100)}%;background:#8fd13b"></i>`+
+        `<i style="width:${Math.min(100,d.speed/6*100)}%;background:#d4a03c"></i>`+
+        `<i style="width:${Math.min(100,d.atk/30*100)}%;background:#c1432e"></i>`+
+      `</div>`+
+      `<div class="sc">${owned?(selected?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
     card.addEventListener('click',()=>{
       // 단일 종 선택 — 출전만 단일로 바꾸고, 보유 합성체(G.hybrids)는 그대로 유지(안 풀림)
       if(owned){ G.playerType=type; G.hybrid=null; }
       else if(G.coins>=cost){ G.coins-=cost; G.owned[type]=true; G.playerType=type; G.hybrid=null; setCoins(-cost); }
       else { flashBanner(LANG==='en'?('🪙 Not enough coins (◈'+cost+' needed)'):('🪙 코인 부족 (◈'+cost+' 필요)'),'hurt'); return; }
       buildShop(); buildFusePanel();
+      if(carMode==='shop'){ const list=shopChoices(); const idx=list.findIndex(it=>it.type===type);
+        if(idx>=0){ shopSel=idx; setShopPreviewMesh(list[idx],0); renderShopInfo(list[idx]); } }   // 카드 → 3D 무대 동기화
       if(typeof updateWinBadges==='function') updateWinBadges();
       if(typeof updateDeployNow==='function') updateDeployNow();
     });
