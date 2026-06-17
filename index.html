@@ -231,6 +231,10 @@
   .fuse-slot{flex:1;max-width:150px;min-height:50px;border:1px solid #2a3a1c;border-radius:10px;
     display:flex;align-items:center;justify-content:center;text-align:center;font-size:11.5px;
     color:var(--bone-dim);background:#11160d;padding:6px;line-height:1.35;cursor:pointer;}
+  .fuse-slot.pulse{animation:slotPulse 1s ease-in-out infinite;border-color:var(--chitin)!important;}
+  @keyframes slotPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,160,60,.5);}50%{box-shadow:0 0 0 6px rgba(212,160,60,0);transform:scale(1.04);}}
+  .fuse-pre{font-size:12px;font-weight:800;color:var(--chitin);margin-bottom:4px;}
+  .coin-hint{font-size:11px;color:#caa86a;background:rgba(212,160,60,.1);border-radius:7px;padding:5px 9px;margin:5px 0;}
   .fuse-slot.filled{border-color:var(--chitin);color:var(--bone);font-weight:800;font-size:14px;}
   .fuse-plus{color:var(--chitin);font-size:20px;}
   .fuse-pool{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px;}
@@ -293,6 +297,12 @@
   .shopcard.owned{background:#12200c;}
   .shopcard:not(.owned){background:#1a1410;filter:saturate(.6);}
   .shopcard:not(.owned) .se{filter:grayscale(.5) brightness(.8);}
+  .shopcard{position:relative;}
+  .card-corner{position:absolute;top:5px;right:6px;font-size:10px;font-weight:800;padding:1px 5px;border-radius:7px;line-height:1.5;}
+  .card-corner.own{background:#2f8a3a;color:#eafff0;}
+  .card-corner.buy.ok{background:#2f8a3a;color:#eafff0;}
+  .card-corner.buy.no{background:#a83232;color:#ffecec;}
+  .sc.lock{color:#caa86a;font-size:10px;}
   .shopcard .se{display:block;font-size:30px;line-height:1;margin-bottom:4px;}
   .shopcard .sn{font-weight:800;font-size:14px;}
   .shopcard .sc{font-family:'Courier New',monospace;font-size:11px;color:var(--chitin);margin-top:4px;}
@@ -1061,8 +1071,8 @@ const TXT = {
   ko:{ diff:'난이도', selectSpecies:'종을 선택하라', deployAs:t=>t+' (으)로 출전 ▸',
     carHint:'◀ 좌우로 돌려 곤충을 고르세요 ▶', special:'필살',
     nextStage:'다음 스테이지 ▸', retry:'다시 도전 ▸',
-    deploySingle:'또는 아래에서 단일 종을 선택·구매', shopHint:'다음 스테이지에서 사용할 종을 구매·선택하라',
-    fuseTitle:'🧬 합성 연구소 — 보유한 두 곤충을 합쳐 출전', fuseMain:'주 곤충<br>외형·필살기·상성', fuseSub:'보조 곤충<br>특수능력',
+    deploySingle:'🧬 아래 곤충을 차례로 2마리 누르면 합쳐집니다! (① 주 곤충 → ② 보조 곤충)', shopHint:'다음 스테이지에서 사용할 종을 구매·선택하라',
+    fuseTitle:'① 주 곤충 ＋ ② 보조 곤충 = 합성체', fuseMain:'① 주 곤충<br><small>여기를 채우려면<br>아래에서 탭</small>', fuseSub:'② 보조 곤충<br><small>주 곤충 다음<br>아래에서 탭</small>',
     fuseNeed:'합성하려면 곤충을 2종 이상 보유해야 합니다 — 아래 상점에서 한 종을 더 구매하세요. (도감의 합성체는 보유 없이도 사용 가능)',
     fusePick:'주 곤충과 보조 곤충을 각각 하나씩 고르세요.', fuseResult:'결과', fuseCost:'합성 비용', fuseOwn:'보유',
     fuseWeak:'⚠ 키메라 약점: 회복 -45% · 불리 상성 피해 +35%', fuseGo:'🧬 이 합성체로 출전', fuseNoCoin:'— 코인 부족',
@@ -1083,8 +1093,8 @@ const TXT = {
   en:{ diff:'Difficulty', selectSpecies:'Select your species', deployAs:t=>'Deploy as '+t+' ▸',
     carHint:'◀ Swipe to choose your insect ▶', special:'Special',
     nextStage:'Next Stage ▸', retry:'Try Again ▸',
-    deploySingle:'Or pick / buy a single species below', shopHint:'Buy or select a species for the next stage',
-    fuseTitle:'🧬 Fusion Lab — combine two owned insects', fuseMain:'Main<br>body·special·matchup', fuseSub:'Sub<br>special ability',
+    deploySingle:'🧬 Tap two insects below in order to fuse them! (① Main → ② Sub)', shopHint:'Buy or select a species for the next stage',
+    fuseTitle:'① Main ＋ ② Sub = Hybrid', fuseMain:'① Main<br><small>tap below<br>to fill</small>', fuseSub:'② Sub<br><small>tap below<br>after Main</small>',
     fuseNeed:'You need at least 2 species to fuse — buy one more in the shop below. (Codex hybrids work without owning them)',
     fusePick:'Pick one main and one sub insect.', fuseResult:'Result', fuseCost:'Fusion cost', fuseOwn:'Coins',
     fuseWeak:'⚠ Chimera weakness: healing -45% · weak-matchup damage +35%', fuseGo:'🧬 Deploy this chimera', fuseNoCoin:'— not enough coins',
@@ -2874,8 +2884,8 @@ const carCanvasParent = carCanvas ? carCanvas.parentNode : null;
 let shopSel=0;
 let winTab='roster';        // 현재 승리 화면 탭
 function shopChoices(){
-  if(winTab==='shop'){      // 상점 탭 = 아직 보유하지 않은 곤충(구매 대상)
-    return ORDER.filter(t=>!G.owned[t]).map(t=>({type:t}));
+  if(winTab==='shop'){      // 상점 탭 = 전체 종 한눈에(미보유=구매, 보유=선택)
+    return ORDER.map(t=>({type:t}));
   }
   // 보유 탭 = 보유한 합성체 + 단일 곤충(출전 선택 대상)
   const list=(G.hybrids||[]).map(h=>({hyb:h}));
@@ -2939,7 +2949,7 @@ function pickShopChoice(it){
   } else {
     const owned=!!G.owned[it.type], cost=BALANCE.coins.shopCost;
     if(!owned){
-      if(G.coins<cost){ flashBanner(LANG==='en'?('🪙 Not enough coins (◈'+cost+' needed)'):('🪙 코인 부족 (◈'+cost+' 필요)'),'hurt'); return; }
+      if(G.coins<cost){ flashBanner(LANG==='en'?('🪙 Not enough coins (◈'+cost+' needed) — beat more stages to earn coins'):('🪙 코인 부족 (◈'+cost+' 필요) — 스테이지를 더 깨면 코인을 얻어요'),'hurt'); return; }
       G.coins-=cost; G.owned[it.type]=true; setCoins(-cost);
       if(typeof buildCollection==='function') buildCollection();
       checkDexComplete();
@@ -3324,6 +3334,12 @@ function updateDeployNow(){
 function setWinTab(tab){
   winTab=tab;
   document.querySelectorAll('.wtab').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
+  // 🛒🧬 상점·합성 탭에서는 승리 헤더(타이틀·출전 배지·팁)를 숨기고 본 작업에 집중
+  const hideHead=(tab==='shop'||tab==='fuse'); const isShop=(tab==='shop');
+  const heads=[winScreen&&winScreen.querySelector('.eyebrow'), document.getElementById('winTitle'),
+               document.getElementById('winMsg'), document.getElementById('deployNow'), document.getElementById('stageHint')];
+  heads.forEach(h=>{ if(h) h.style.display=hideHead?'none':''; });
+  const shEl=document.getElementById('shopHintEl'); if(shEl) shEl.style.display=isShop?'none':'';
   const paneFor=(tab==='roster')?'shop':tab;   // 보유 탭은 상점 무대 DOM을 공유(목록만 다름)
   document.querySelectorAll('.wtab-pane').forEach(p=>{ p.style.display=(p.dataset.pane===paneFor)?'flex':'none'; });
   if(tab==='roster' || tab==='shop'){
@@ -3424,23 +3440,25 @@ function buildShop(){
   });
   ORDER.forEach(type=>{
     const d=SPECIES[type]; const owned=!!G.owned[type]; const cost=BALANCE.coins.shopCost;
-    if(winTab==='shop' && owned) return;       // 상점 탭은 구매할(미보유) 곤충만
-    if(winTab!=='shop' && !owned) return;      // 보유 탭은 보유한 곤충만
+    if(winTab!=='shop' && !owned) return;      // 보유 탭은 보유한 곤충만 / 상점 탭은 전체 종 나열
     const selected = owned && !G.hybrid && type===G.playerType;   // 합성체 출전 중이면 단일은 선택 아님
     const card=document.createElement('div');
     card.className='shopcard'+(selected?' selected':'')+(owned?' owned':(G.coins<cost?' locked':''));
-    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div>`+
+    const corner = owned ? '<span class="card-corner own">✓</span>'
+                         : '<span class="card-corner buy'+(G.coins>=cost?' ok':' no')+'">◈'+cost+'</span>';
+    card.innerHTML=corner+`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div>`+
       `<div class="card-bars">`+
         `<i style="width:${Math.min(100,d.hp/660*100)}%;background:#8fd13b"></i>`+
         `<i style="width:${Math.min(100,d.speed/6*100)}%;background:#d4a03c"></i>`+
         `<i style="width:${Math.min(100,d.atk/30*100)}%;background:#c1432e"></i>`+
       `</div>`+
-      `<div class="sc">${owned?(selected?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
+      (owned ? `<div class="sc">${selected?t('shopSelected'):t('shopOwned')}</div>`
+             : `<div class="sc lock">🔒 ${LANG==='en'?'Unlock by buying':'구매 시 해금'}</div>`);
     card.addEventListener('click',()=>{
       // 단일 종 선택 — 출전만 단일로 바꾸고, 보유 합성체(G.hybrids)는 그대로 유지(안 풀림)
       if(owned){ G.playerType=type; G.hybrid=null; }
       else if(G.coins>=cost){ G.coins-=cost; G.owned[type]=true; G.playerType=type; G.hybrid=null; setCoins(-cost); }
-      else { flashBanner(LANG==='en'?('🪙 Not enough coins (◈'+cost+' needed)'):('🪙 코인 부족 (◈'+cost+' 필요)'),'hurt'); return; }
+      else { flashBanner(LANG==='en'?('🪙 Not enough coins (◈'+cost+' needed) — beat more stages to earn coins'):('🪙 코인 부족 (◈'+cost+' 필요) — 스테이지를 더 깨면 코인을 얻어요'),'hurt'); return; }
       buildShop(); buildFusePanel();
       if(carMode==='shop'){ const list=shopChoices(); const idx=list.findIndex(it=>it.type===type);
         if(idx>=0){ shopSel=idx; setShopPreviewMesh(list[idx],0); renderShopInfo(list[idx]); } }   // 카드 → 3D 무대 동기화
@@ -3491,8 +3509,8 @@ function buildFusePanel(){ fuseA=null; fuseB=null; renderFuse(); }
 function renderFuse(){
   const slotA=document.getElementById('fuseA'), slotB=document.getElementById('fuseB');
   if(!slotA||!slotB) return;
-  slotA.className='fuse-slot'+(fuseA?' filled':''); slotA.innerHTML = fuseA? (emo(fuseA)+' '+SPECIES[fuseA].ko) : t('fuseMain');
-  slotB.className='fuse-slot'+(fuseB?' filled':''); slotB.innerHTML = fuseB? (emo(fuseB)+' '+SPECIES[fuseB].ko) : t('fuseSub');
+  slotA.className='fuse-slot'+(fuseA?' filled':'')+((!fuseA)?' pulse':''); slotA.innerHTML = fuseA? (emo(fuseA)+' '+SPECIES[fuseA].ko) : t('fuseMain');
+  slotB.className='fuse-slot'+(fuseB?' filled':'')+((fuseA&&!fuseB)?' pulse':''); slotB.innerHTML = fuseB? (emo(fuseB)+' '+SPECIES[fuseB].ko) : ((fuseA&&!fuseB)? ('👉<br>'+(LANG==='en'?'tap here next':'다음은 여기!')) : t('fuseSub'));
   const pool=document.getElementById('fusePool'); pool.innerHTML='';
   const owned=Object.keys(G.owned).filter(k=>k!=='__hybrid');
   owned.forEach(type=>{
@@ -3513,11 +3531,16 @@ function renderFuse(){
     const h=makeHybridSpecies(fuseA,fuseB);
     const cost=fuseCost(fuseA,fuseB);
     const afford=G.coins>=cost;
-    res.innerHTML=`${t('fuseResult')}: <b>${h.ko}</b><br>`+
-      `${t('statHp')} ${h.hp} · ${t('statSpd')} ${h.speed} · ${t('statAtk')} ${h.atk} · ${t('statRange')} ${h.range}<br>`+
+    res.innerHTML=`<div class="fuse-pre">${LANG==='en'?'Preview':'합성 미리보기'}</div>`+
+      `${t('fuseResult')}: <b>${h.ko}</b><br>`+
+      (typeof statBarsHTML==='function'?statBarsHTML(h):'')+
+      (()=>{ const a=SPECIES[fuseA];   // 주 곤충 대비 증감(⬆초록/⬇빨강)
+        const arr=(v,b)=> v>b?' <span style="color:#8fd13b">⬆</span>':(v<b?' <span style="color:#e8804a">⬇</span>':'');
+        return `${t('statHp')} ${h.hp}${arr(h.hp,a.hp)} · ${t('statSpd')} ${h.speed}${arr(h.speed,a.speed)} · ${t('statAtk')} ${h.atk}${arr(h.atk,a.atk)} · ${t('statRange')} ${h.range}${arr(h.range,a.range)}<br>`; })()+
       `${t('sp')} <b>${h.sp}</b> · ${t('mut')} <b>${MUT[fuseB].ko}</b>(${MUT[fuseB].tag})<br>`+
       `<span style="color:#e98a6a">${t('fuseWeak')}</span><br>`+
       `${t('fuseCost')} <span class="fuse-cost">◈ ${cost}</span> · ${t('fuseOwn')} ◈ ${G.coins}`+
+      (afford?'':'<div class="coin-hint">💡 '+(LANG==='en'?'Beat more stages to earn coins':'스테이지를 더 깨면 코인을 얻어요')+'</div>')+
       `<br><button class="fuse-go" id="fuseGo" ${afford?'':'disabled'}>${t('fuseGo')} ${afford?'(◈'+cost+')':t('fuseNoCoin')}</button>`;
     document.getElementById('fuseGo').addEventListener('click',()=>{
       if(G.coins<cost) return;
@@ -3545,8 +3568,16 @@ function renderFuse(){
     });
   } else if(owned.length<2){
     res.textContent=t('fuseNeed');
+  } else if(fuseA && !fuseB){
+    res.innerHTML='<div class="fuse-pre">👉 '+(LANG==='en'?'Now tap a 2nd insect to preview the result':'이제 ② 보조 곤충을 고르면 합성 결과가 미리 보여요')+'</div>';
   } else {
-    res.textContent=t('fusePick');
+    let demoSeen=false; try{ demoSeen=!!localStorage.getItem('insecta_fuse_demo'); }catch(e){}
+    if(owned.length>=2 && !demoSeen){   // 처음 한 번 — 예시로 자동 합성 보여주기
+      res.innerHTML=t('fusePick')+'<br><button class="fuse-go" id="fuseDemo" style="margin-top:8px">✨ '+(LANG==='en'?'Show me an example':'예시로 합쳐보기')+'</button>';
+      const db=document.getElementById('fuseDemo');
+      if(db) db.addEventListener('click',()=>{ try{ localStorage.setItem('insecta_fuse_demo','1'); }catch(e){}
+        fuseA=owned[0]; fuseB=owned[1]; renderFuse(); });
+    } else { res.textContent=t('fusePick'); }
   }
   renderDex();
   if(typeof updateFusePreview==='function') updateFusePreview();   // 슬롯 변경 시 3D 프리뷰 갱신
