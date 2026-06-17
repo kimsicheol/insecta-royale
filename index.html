@@ -180,6 +180,11 @@
     transform:translate(-50%,-50%);
     background:radial-gradient(circle at 38% 32%,#f6dd9a,var(--chitin) 60%,#6f5118);
     border:1px solid #3a2c10;box-shadow:0 4px 14px rgba(0,0,0,.5);}
+  #swapBtn{position:absolute;left:24px;bottom:160px;z-index:8;display:flex;align-items:center;gap:4px;
+    font-size:15px;font-weight:800;color:var(--bone);background:rgba(20,26,13,.85);border:1.5px solid var(--toxin);
+    border-radius:22px;padding:9px 15px;cursor:pointer;backdrop-filter:blur(4px);}
+  #swapBtn i{font-style:normal;font-size:11px;color:var(--toxin);background:rgba(143,209,59,.2);border-radius:8px;padding:1px 6px;}
+  #swapBtn.cooling{border-color:#555;color:var(--bone-dim);opacity:.7;}
   #atk{position:absolute;right:max(24px,env(safe-area-inset-right));
     bottom:calc(40px + env(safe-area-inset-bottom));width:108px;height:108px;border-radius:50%;
     pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;
@@ -306,6 +311,32 @@
     animation:badgePulse 1.2s ease-in-out infinite;pointer-events:none;}
   @keyframes badgePulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.35);opacity:.65;}}
   .wtab-pane{width:100%;display:flex;flex-direction:column;align-items:center;}
+  .deploy-now{display:flex;align-items:center;justify-content:center;gap:9px;margin:14px auto 4px;
+    padding:11px 22px;border-radius:14px;background:rgba(143,209,59,.12);border:1.5px solid var(--toxin);max-width:90%;}
+  .deploy-now.hy{background:rgba(180,120,255,.14);border-color:#b478ff;}
+  .deploy-now .dn-label{font-size:11px;letter-spacing:.1em;color:var(--bone-dim);font-weight:700;}
+  .deploy-now .dn-emo{font-size:24px;line-height:1;}
+  .deploy-now .dn-name{font-size:16px;color:var(--bone);font-weight:800;}
+  .deploy-now.hy .dn-name{color:#dcc4ff;}
+  .shopcard.selected{border-color:var(--toxin);box-shadow:0 0 0 2px var(--toxin),0 4px 16px rgba(143,209,59,.3);background:rgba(143,209,59,.1);}
+  .shopcard.hybridcard{border-color:#7a5fd0;background:rgba(150,110,220,.1);}
+  .shopcard.hybridcard.selected{border-color:#b478ff;box-shadow:0 0 0 2px #b478ff,0 4px 16px rgba(180,120,255,.35);}
+  .shopcard.hybridcard .sn{font-size:12px;color:#dcc4ff;}
+  .shop-stage{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:2px 0 6px;}
+  .shop-preview{width:200px;height:170px;border-radius:14px;background:radial-gradient(70% 70% at 50% 40%,rgba(143,209,59,.08),rgba(8,10,6,.4));border:1px solid #2a3a1c;overflow:hidden;}
+  .shop-arrow{font-size:30px;font-weight:800;color:var(--bone);background:rgba(20,26,13,.7);border:1px solid #2a3a1c;border-radius:50%;width:42px;height:42px;cursor:pointer;line-height:1;flex-shrink:0;}
+  .shop-arrow:hover{border-color:var(--toxin);color:var(--toxin);}
+  .shop-info{text-align:center;margin-bottom:8px;}
+  .shop-info .si-name{font-size:16px;font-weight:800;color:var(--bone);}
+  .shop-info .si-sub{font-size:11px;color:var(--bone-dim);margin:2px 0 6px;}
+  .shop-info .si-btn{font-size:13px;font-weight:800;color:#0c1108;background:var(--toxin);border:none;border-radius:10px;padding:8px 22px;cursor:pointer;}
+  .shop-info .si-btn:active{transform:translateY(1px);}
+  .shopcard.hybridcard{position:relative;}
+  .shopcard .dismantle{position:absolute;top:3px;right:5px;font-size:13px;color:#c1432e;font-weight:800;
+    cursor:pointer;line-height:1;padding:2px 4px;border-radius:5px;z-index:3;}
+  .shopcard .dismantle:hover{background:rgba(193,67,46,.25);}
+  .stage-hint{font-size:11px;color:var(--bone-dim);margin:0 auto 10px;text-align:center;max-width:92%;line-height:1.5;}
+  .stage-hint.boss{color:#ff9f6e;font-weight:700;}
   @media (max-width:520px){
     .grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 12px 26px;}
     .card .cv{height:96px;}
@@ -373,6 +404,7 @@
   <button id="soundBtn" title="소리 켜기/끄기">🔊</button>
   <div id="bossBar" class="bossbar"><div class="bn" id="bossName"></div><div class="bhp"><i id="bossFill"></i></div></div>
   <div id="stick"><div id="knob"></div></div>
+  <button id="swapBtn" style="display:none;">🔄</button>
   <div id="atk"><span class="ring"></span><span id="atkLabel">공격</span></div>
   <div class="hint" id="hintEl">스틱/WASD 이동 · 공격버튼·스페이스 탭=공격 · <b style="color:var(--chitin)">꾹 누르면 필살기</b></div>
 </div>
@@ -383,6 +415,8 @@
   <h2 id="winTitle">승리</h2>
   <p id="winMsg"></p>
   <div class="big">획득 코인 ◈ <span id="winCoins">0</span></div>
+  <div class="deploy-now" id="deployNow"></div>
+  <div class="stage-hint" id="stageHint"></div>
   <div class="win-tabs" id="winTabs">
     <button class="wtab on" data-tab="shop" id="wtabShop">🛒 상점</button>
     <button class="wtab" data-tab="fuse" id="wtabFuse">🧬 합성</button>
@@ -390,10 +424,17 @@
   </div>
   <div class="wtab-pane" data-pane="shop">
     <p id="shopHintEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">다음 스테이지에서 사용할 종을 구매·선택하라</p>
+    <div class="shop-stage" id="shopStage">
+      <button class="shop-arrow" id="shopPrev">‹</button>
+      <div class="shop-preview" id="shopPreview"></div>
+      <button class="shop-arrow" id="shopNext">›</button>
+    </div>
+    <div class="shop-info" id="shopInfo"></div>
     <div class="shop" id="shop"></div>
   </div>
   <div class="wtab-pane" data-pane="fuse" style="display:none;">
     <p id="deploySingleEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">보유한 두 곤충을 합쳐 더 강한 합성체로 출전</p>
+    <div class="shop-stage"><div class="shop-preview" id="fusePreview"></div></div>
     <div class="fuse" id="fusePanel">
       <div class="fuse-title" id="fuseTitleEl">🧬 합성 연구소 — 보유한 두 곤충을 합쳐 출전</div>
       <div class="fuse-slots">
@@ -975,7 +1016,7 @@ const TXT = {
     dexAll:'전체', dexEmpty:'조건에 맞는 합성체가 없습니다',
     statHp:'체력', statSpd:'속도', statAtk:'공격', statRange:'사거리', sp:'필살기', mut:'특수능력',
     metaTitle:'🔒 능력 고정 (메타 성장) — 코인으로 흡수 능력을 영구 장착', metaEmpty:'빈 슬롯',
-    tabShop:'🛒 상점', tabFuse:'🧬 합성', tabMeta:'🔒 능력',
+    tabShop:'🛒 상점', tabFuse:'🧬 합성', tabMeta:'🔒 능력', deployNow:'🎯 다음 출전',
     title:'곤충 배틀로얄',
     subtitle:'10마리의 절지류가 한 투기장에 떨어진다. <b>최후의 1마리</b>만 살아남는다. 종마다 <b>상성</b>이 있고, 좀비를 처치하면 그 종의 <b>능력을 흡수</b>해 일시 진화한다. 상대를 쓰러뜨려 <b>잡아먹으면 체력을 크게 회복</b>한다. 🔊 풀숲의 밤벌레 합창과 정교한 타격음으로 몰입을 더했다.',
     victory:'승리', defeat:'전 멸', coinsEarned:'획득 코인', finalReach:'최종 도달 스테이지', coinWord:'코인',
@@ -997,7 +1038,7 @@ const TXT = {
     dexAll:'All', dexEmpty:'No hybrids match',
     statHp:'HP', statSpd:'SPD', statAtk:'ATK', statRange:'Range', sp:'Special', mut:'Ability',
     metaTitle:'🔒 Permanent Abilities — lock an absorbed ability with coins', metaEmpty:'Empty slot',
-    tabShop:'🛒 Shop', tabFuse:'🧬 Fuse', tabMeta:'🔒 Abilities',
+    tabShop:'🛒 Shop', tabFuse:'🧬 Fuse', tabMeta:'🔒 Abilities', deployNow:'🎯 Deploying',
     title:'INSECTA ROYALE',
     subtitle:'10 arthropods are dropped into one arena. Only the <b>last one standing</b> survives. Each species has <b>matchups</b>; kill a zombie to <b>absorb its ability</b> and evolve temporarily. Defeat and <b>devour foes to heal greatly</b>. 🔊 Night-insect ambience and crisp impact SFX deepen the immersion.',
     victory:'VICTORY', defeat:'WIPED OUT', coinsEarned:'Coins earned', finalReach:'Final stage reached', coinWord:'Coins',
@@ -1032,6 +1073,8 @@ function setLang(lang){
   try{ if(typeof renderFuse==='function' && G.state==='win') renderFuse(); }catch(e){}
   try{ if(typeof buildMetaPanel==='function' && G.state==='win') buildMetaPanel(); }catch(e){}
   try{ if(typeof updateRecordPanel==='function') updateRecordPanel(); }catch(e){}
+  try{ if(typeof updateDeployNow==='function' && G.state==='win') updateDeployNow(); }catch(e){}
+  try{ if(typeof updateStageHint==='function' && G.state==='win') updateStageHint(); }catch(e){}
 }
 function applyStaticLang(){
   const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
@@ -1564,7 +1607,8 @@ const G = {
   spawnQueue:[], spawnTimer:0, t:0,
   pickups:[], pickupTimer:5,   // 이슬방울 회복 아이템 관리
   biome:{move:1, drain:1, regen:1},   // 현재 바이옴 전투 효과
-  hybrid:null,   // 합성 곤충 {base, sub} 또는 null
+  hybrid:null,   // 현재 출전 선택이 합성체면 {base, sub}
+  hybrids:[],    // 이번 게임에서 만든 합성체 보유 목록(생명 있는 동안 유지)
   permaMuts:[],  // 메타 성장: 코인으로 영구 고정한 흡수 능력(스테이지 넘어 유지)
   lives:1,       // 남은 목숨(난이도별, 쉬움=3)
   fx:[],
@@ -1573,6 +1617,8 @@ const G = {
 (function loadPerma(){ try{ const s=localStorage.getItem('insecta_perma'); if(s) G.permaMuts=JSON.parse(s)||[]; }catch(e){} })();
 function savePerma(){ try{ localStorage.setItem('insecta_perma', JSON.stringify(G.permaMuts)); }catch(e){} }
 const PERMA_MAX=2, PERMA_COST=55;   // 영구 슬롯 최대 수 / 고정 비용
+const HYBRID_MAX=3;                 // 합성체 보유 상한(초과 시 분해 필요)
+const HYBRID_REFUND=0.4;            // 분해 시 합성 비용 환급 비율
 const tmp = new THREE.Vector3();
 const FLYERS = {hornet:1, dragonfly:1};
 
@@ -1709,6 +1755,61 @@ function matchupSprite(enemyType, boss){
 /* ===== 전투 ===== */
 function dirVec(face){return new THREE.Vector3(Math.sin(face),0,Math.cos(face));}
 
+// 게임 중 보유한 곤충/합성체로 즉시 교체 (위치·체력비율·흡수능력 유지, 쿨다운 있음)
+const SWAP_CD=8;
+function swapList(){
+  const list=ORDER.filter(t=>G.owned[t]).map(t=>({type:t}));
+  (G.hybrids||[]).forEach(h=>list.push({hyb:h}));
+  return list;
+}
+function swapPlayer(newType, hyb){
+  const p=G.player; if(!p||p.dead||G.state!=='play') return false;
+  if((p.swapCd||0)>0){ flashBanner(LANG==='en'?('🔄 Swap cooldown '+Math.ceil(p.swapCd)+'s'):('🔄 교체 대기 '+Math.ceil(p.swapCd)+'초'),'hurt'); return false; }
+  if(hyb){
+    if(p.type==='__hybrid' && G.hybrid && G.hybrid.base===hyb.base && G.hybrid.sub===hyb.sub) return false;
+    makeHybridSpecies(hyb.base,hyb.sub); newType='__hybrid'; G.hybrid={base:hyb.base,sub:hyb.sub};
+  } else {
+    if(p.type===newType && !G.hybrid) return false; G.hybrid=null;
+  }
+  G.playerType=newType;
+  const ratio=p.hp/p.hpMax;
+  scene.remove(p.mesh);
+  const d=SPECIES[newType];
+  p.type=newType; p.d=d; p.flyer=!!FLYERS[newType];
+  p.hpMax=d.hp*DIFF.pHp; p.hp=Math.max(1,p.hpMax*ratio);
+  p.mesh=makeInsect(newType,false);
+  p.mesh.scale.setScalar(0.95*(p.size||1));
+  p.mesh.position.copy(p.pos);
+  scene.add(p.mesh);
+  if(p.muts && p.muts.length){   // 흡수 능력 시각 링 재부착
+    p.muts.forEach((m,slot)=>{ const mm=MUT[m.type]; if(!mm) return;
+      const ring=new THREE.Mesh(new THREE.RingGeometry(0.9+slot*0.28,1.15+slot*0.28,30),
+        new THREE.MeshBasicMaterial({color:mm.col,transparent:true,opacity:0.6,side:THREE.DoubleSide,depthWrite:false}));
+      ring.rotation.x=-Math.PI/2; ring.position.y=0.06+slot*0.01; p.mesh.add(ring); m.ring=ring; });
+  }
+  p.swapCd=SWAP_CD;
+  spawnHitFx(p.pos, d.col||0x8fd13b, 1.8, 'burst');
+  flashBanner(LANG==='en'?('🔄 Swapped → '+(hyb?'Hybrid':SPECIES[newType].ko)):('🔄 교체 → '+(hyb?'합성체':SPECIES[newType].ko)),'kill');
+  if(SND.synergy) SND.synergy();
+  updateSwapUI();
+  return true;
+}
+function cycleSwap(){
+  const list=swapList(); if(list.length<2) return;
+  let idx=list.findIndex(it=> G.hybrid ? (it.hyb&&it.hyb.base===G.hybrid.base&&it.hyb.sub===G.hybrid.sub) : (it.type===G.playerType && !G.hybrid));
+  idx=(idx+1)%list.length;
+  const nx=list[idx];
+  if(nx.hyb) swapPlayer(null,nx.hyb); else swapPlayer(nx.type);
+}
+function updateSwapUI(){
+  const btn=document.getElementById('swapBtn'); if(!btn) return;
+  const list=swapList();
+  btn.style.display = list.length>1 ? 'flex' : 'none';
+  const p=G.player, cd=p?(p.swapCd||0):0;
+  const cur = G.hybrid ? '🧬' : (p?emo(p.type):'🐛');
+  btn.innerHTML = cd>0 ? ('🔄 '+Math.ceil(cd)) : ('🔄 '+cur+' <i>'+list.length+'</i>');
+  btn.classList.toggle('cooling', cd>0);
+}
 // 종별 필살기 돌진 파라미터(t=지속, spd=돌진속도, r=타격반경) — 이동을 크고 화려하게
 const SP_DASH = {
   dragonfly:{t:0.72, spd:38, r:1.5},   // 초고속 장거리 활공
@@ -2432,6 +2533,8 @@ function step(dt){
     camera.position.lerp(tp,0.08);
     camera.lookAt(G.player.pos.x, 0.5, G.player.pos.z);
   }
+  if(G.player && G.player.swapCd>0){ G.player.swapCd=Math.max(0,G.player.swapCd-dt); }
+  updateSwapUI();
   updateHUD();
   checkWinLose();
 }
@@ -2565,7 +2668,7 @@ try{
   carRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
 }catch(e){ console.error('캐러셀 초기화:',e); }
 const carCam=new THREE.PerspectiveCamera(45,1,0.1,100);
-carCam.position.set(0,3.0,11); carCam.lookAt(0,1.1,0);
+carCam.position.set(0,3.6,13.2); carCam.lookAt(0,1.0,0);
 carScene.add(new THREE.HemisphereLight(0x8fb0d0,0x0a1018,0.5));   // 전체광 약하게(양옆 어둑)
 const carDl=new THREE.DirectionalLight(0xffffff,0.55); carDl.position.set(4,10,8); carScene.add(carDl);
 const carDl2=new THREE.DirectionalLight(0x6a90c0,0.3); carDl2.position.set(-5,4,3); carScene.add(carDl2);
@@ -2575,7 +2678,7 @@ carSpot.position.set(0,8,7.5); carScene.add(carSpot);
 carSpot.target.position.set(0,0.6,4.6); carScene.add(carSpot.target);
 // 원형 무대
 const carStage=new THREE.Mesh(new THREE.CylinderGeometry(6.6,7.2,0.5,52),
-  new THREE.MeshStandardMaterial({color:0x2f74b8,roughness:0.55,metalness:0.12,emissive:0x123a66,emissiveIntensity:0.4}));
+  new THREE.MeshStandardMaterial({color:0x2f74b8,roughness:0.25,metalness:0.45,emissive:0x123a66,emissiveIntensity:0.4}));
 carStage.position.y=-0.25; carScene.add(carStage);
 const carRing=new THREE.Mesh(new THREE.TorusGeometry(5.0,0.13,8,64),
   new THREE.MeshStandardMaterial({color:0x9fe0ff,emissive:0x3a9fd1,emissiveIntensity:0.7,roughness:0.35}));
@@ -2593,10 +2696,192 @@ const carMobs=ORDER.map((type,i)=>{
 });
 let chosen=ORDER[0];
 let carIndex=0, carRot=0, carTarget=0, carDragging=false;
+let carMode='select';                       // 'select'(시작화면) | 'shop'(상점 3D 프리뷰) | 'idle'
+let shopPreviewMob=null;                    // 상점 프리뷰에 띄운 곤충 mesh
+const carCanvasParent = carCanvas ? carCanvas.parentNode : null;
+// 상점에 3D로 띄울 곤충/합성체 목록 + 현재 인덱스
+let shopSel=0;
+function shopChoices(){
+  const list=(G.hybrids||[]).map(h=>({hyb:h}));
+  ORDER.forEach(t=>list.push({type:t}));
+  return list;
+}
+function setShopPreviewMesh(it, dir){
+  if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
+  carMobs.forEach(o=>o.m.visible=false);    // 시작 캐러셀 곤충 숨김
+  let mesh, col;
+  if(it.hyb){ makeHybridSpecies(it.hyb.base,it.hyb.sub); mesh=makeInsect('__hybrid'); col=SPECIES['__hybrid'].col; }
+  else { mesh=makeInsect(it.type); col=SPECIES[it.type].col; }
+  mesh.position.set((dir||0)*5, 0.2, 0);    // 넘긴 방향 반대편에서 슬라이드 인
+  mesh._slideTo=0; mesh._intro=0; mesh._style=it.hyb?'__hybrid':it.type; mesh.scale.setScalar(2.0);
+  carGroup.add(mesh); carGroup.rotation.y=0; shopPreviewMob=mesh;
+  carColTarget.set(col); carFogTarget.set(col).multiplyScalar(0.25);
+}
+function renderShopInfo(it){
+  const el=document.getElementById('shopInfo'); if(!el) return;
+  let name, sub, act;
+  if(it.hyb){ name='🧬 '+emo(it.hyb.base)+SPECIES[it.hyb.base].ko+'×'+emo(it.hyb.sub)+SPECIES[it.hyb.sub].ko;
+    const on=G.hybrid&&G.hybrid.base===it.hyb.base&&G.hybrid.sub===it.hyb.sub;
+    sub=LANG==='en'?'Hybrid':'합성체'; act=on?t('shopSelected'):t('shopOwned'); }
+  else { const d=SPECIES[it.type], owned=!!G.owned[it.type], sel=owned&&!G.hybrid&&it.type===G.playerType;
+    name=emo(it.type)+' '+d.ko; sub=d.sp||'';
+    act = owned ? (sel?t('shopSelected'):t('shopOwned')) : ('◈ '+BALANCE.coins.shopCost+' '+t('shopBuy')); }
+  el.innerHTML='<div class="si-name">'+name+'</div><div class="si-sub">'+sub+'</div>'+
+    '<button class="si-btn" id="shopPickBtn">'+act+'</button>';
+  const btn=document.getElementById('shopPickBtn');
+  if(btn) btn.addEventListener('click',()=>pickShopChoice(it));
+}
+function pickShopChoice(it){
+  if(it.hyb){
+    makeHybridSpecies(it.hyb.base,it.hyb.sub); G.hybrid={base:it.hyb.base,sub:it.hyb.sub}; G.playerType='__hybrid';
+  } else {
+    const owned=!!G.owned[it.type], cost=BALANCE.coins.shopCost;
+    if(!owned){ if(G.coins<cost) return; G.coins-=cost; G.owned[it.type]=true;
+      const wc=document.getElementById('winCoins'); if(wc) wc.textContent=G.coins;
+      if(typeof buildCollection==='function') buildCollection();
+      checkDexComplete(); }
+    G.playerType=it.type; G.hybrid=null;
+  }
+  buildShop(); buildFusePanel(); renderShopInfo(it);
+  if(typeof updateWinBadges==='function') updateWinBadges();
+  if(typeof updateDeployNow==='function') updateDeployNow();
+}
+function shopStep(dir){
+  const list=shopChoices(); if(!list.length) return;
+  shopSel=(shopSel+dir+list.length)%list.length;
+  const it=list[shopSel];
+  setShopPreviewMesh(it, -dir); renderShopInfo(it);   // 넘긴 반대 방향에서 슬라이드 인
+}
+function openShopPreview(){
+  if(!carCanvas) return;
+  const host=document.getElementById('shopPreview');
+  if(host && carCanvas.parentNode!==host) host.appendChild(carCanvas);
+  carMode='shop';
+  buildCollection();
+  const list=shopChoices();
+  // 현재 출전 곤충을 기본 선택으로
+  shopSel=Math.max(0, list.findIndex(it=> G.hybrid? (it.hyb&&it.hyb.base===G.hybrid.base&&it.hyb.sub===G.hybrid.sub) : (it.type===G.playerType&&!G.hybrid)));
+  if(shopSel<0) shopSel=0;
+  const it=list[shopSel]; if(it){ setShopPreviewMesh(it); renderShopInfo(it); }
+}
+function closeShopPreview(){
+  carMode='idle';
+  if(typeof clearFuseMats==='function') clearFuseMats();
+  if(typeof clearCollection==='function') clearCollection();
+  if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
+}
+let collectionMobs=[];
+function checkDexComplete(){      // 9종 전부 보유 시 1회성 도감 완성 보상
+  if(!ORDER.every(t=>G.owned[t])) return false;
+  let done=false; try{ done=localStorage.getItem('insecta_dex_done')==='1'; }catch(e){}
+  if(done) return true;
+  try{ localStorage.setItem('insecta_dex_done','1'); }catch(e){}
+  G.coins+=50; const wc=document.getElementById('winCoins'); if(wc) wc.textContent=G.coins;
+  flashBanner(LANG==='en'?'🏆 Codex Complete! All 9 species · +◈50':'🏆 도감 완성! 9종 수집 · +◈50','kill');
+  return true;
+}
+function clearCollection(){ collectionMobs.forEach(m=>carGroup.remove(m)); collectionMobs=[]; }
+function buildCollection(){            // 무대 뒤편에 보유 곤충을 작게 줄 세워 '내 컬렉션'
+  clearCollection();
+  const owned=ORDER.filter(t=>G.owned[t]);
+  const n=owned.length; if(n===0) return;
+  owned.forEach((t,i)=>{
+    const m=makeInsect(t);
+    const spread=(i-(n-1)/2)*1.7;
+    m.position.set(spread, 0, -5.8);
+    m.scale.setScalar(0.45);
+    m.rotation.y=0.2;
+    m.userData.species=t;             // 탭 선택용 종 식별
+    carGroup.add(m); collectionMobs.push(m);
+  });
+  const sh=document.getElementById('shopHintEl');
+  if(sh && ORDER.every(t=>G.owned[t])) sh.innerHTML='🏆 '+(LANG==='en'?'Codex Complete — all 9 species collected!':'도감 완성 — 9종 전부 수집!');
+}
+function restoreCarousel(){
+  if(carCanvas && carCanvasParent && carCanvas.parentNode!==carCanvasParent) carCanvasParent.appendChild(carCanvas);
+  if(typeof clearFuseMats==='function') clearFuseMats();
+  clearCollection();
+  if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
+  carMobs.forEach(o=>o.m.visible=true);
+  carMode='select';
+}
+// 합성 탭 3D 프리뷰 — 두 곤충을 고르면 가운데서 합성체가 등장
+function openFusePreview(){
+  if(!carCanvas) return;
+  const host=document.getElementById('fusePreview');
+  if(host && carCanvas.parentNode!==host) host.appendChild(carCanvas);
+  carMode='fuse';
+  buildCollection();
+  updateFusePreview();
+}
+let fuseMats=[];   // 합성 재료 곤충 mesh(양옆)
+function clearFuseMats(){ fuseMats.forEach(m=>carGroup.remove(m)); fuseMats=[]; }
+function updateFusePreview(){
+  if(carMode!=='fuse') return;
+  clearFuseMats();
+  if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
+  carMobs.forEach(o=>o.m.visible=false);
+  carGroup.rotation.y=0;
+  if(fuseA && fuseB){          // 두 재료가 양옆에서 등장 → 가운데로 합쳐짐
+    const a=makeInsect(fuseA), b=makeInsect(fuseB);
+    a.position.set(-3.6,0.2,0); a.scale.setScalar(1.5);
+    b.position.set(3.6,0.2,0);  b.scale.setScalar(1.5);
+    carGroup.add(a,b); fuseMats=[a,b];
+    makeHybridSpecies(fuseA,fuseB);
+    const hy=makeInsect('__hybrid'); hy.position.set(0,0.2,0); hy.scale.setScalar(0.01);
+    carGroup.add(hy); shopPreviewMob=hy; shopPreviewMob._fuseAnim=0;
+    carColTarget.set(SPECIES['__hybrid'].col); carFogTarget.set(SPECIES['__hybrid'].col).multiplyScalar(0.25);
+  } else {
+    const tp=fuseA||fuseB; if(!tp){ carColTarget.set(0x8a5fd0); return; }
+    const mesh=makeInsect(tp); mesh.position.set(0,0.2,0); mesh.scale.setScalar(2.0); mesh._slideTo=0; mesh._intro=0; mesh._style=tp;
+    carGroup.add(mesh); shopPreviewMob=mesh;
+    carColTarget.set(SPECIES[tp].col); carFogTarget.set(SPECIES[tp].col).multiplyScalar(0.25);
+  }
+}
 const _carCol=new THREE.Color(), carColTarget=new THREE.Color(SPECIES[ORDER[0]].col);
 const carFogTarget=new THREE.Color(0x0a1424);
 
 function carUpdate(dt){
+  if(carMode==='shop' || carMode==='fuse'){   // 상점/합성 3D 프리뷰
+    if(shopPreviewMob){
+      if(shopPreviewMob._fuseAnim!=null){      // 합성 합체 연출
+        shopPreviewMob._fuseAnim+=dt; const ft=shopPreviewMob._fuseAnim;
+        if(ft<0.85){                            // 1) 재료가 빙글빙글 돌며 가운데로 빨려듦
+          fuseMats.forEach(m=>{ m.position.x*=(1-Math.min(1,dt*4)); m.position.z*=(1-Math.min(1,dt*4));
+            m.rotation.y+=dt*5; m.scale.multiplyScalar(1-dt*0.55); });
+        } else {                                // 2) 재료 사라지고 합성체가 솟아오름
+          fuseMats.forEach(m=>{ m.visible=false; });
+          const g=Math.min(1,(ft-0.85)/0.5); shopPreviewMob.scale.setScalar(2.0*g); shopPreviewMob.rotation.y+=dt*1.5;
+        }
+        shopPreviewMob.position.y=0.2+Math.sin(performance.now()*0.002)*0.1;
+        return;
+      }
+      if(!carDragging) shopPreviewMob.rotation.y += dt*0.9;
+      const tx=shopPreviewMob._slideTo||0;
+      shopPreviewMob.position.x += (tx-shopPreviewMob.position.x)*Math.min(1,dt*9);
+      if(shopPreviewMob._grow!=null){
+        shopPreviewMob._grow=Math.min(1,shopPreviewMob._grow+dt*2.2);
+        const k=shopPreviewMob._grow; shopPreviewMob.scale.setScalar(2.0*(0.3+0.7*k));
+      }
+      if(shopPreviewMob._intro!=null && shopPreviewMob._intro<1){
+        shopPreviewMob._intro+=dt*1.6;
+        const ip=shopPreviewMob._intro, st=shopPreviewMob._style;   // 종별 고유 소개 모션
+        const wp=shopPreviewMob.userData && shopPreviewMob.userData.weapon;
+        if(st==='mantis' && wp){ wp.rotation.x = -Math.abs(Math.sin(ip*Math.PI*4))*1.0; }    // 낫 부위만 휘두르기(부위 태깅 시범)
+        else if(st==='mantis'||st==='scorpion') shopPreviewMob.rotation.z=Math.sin(ip*Math.PI*4)*0.38; // 낫·꼬리 휘두르기
+        else if(st==='rhino'||st==='stag') shopPreviewMob.position.z=-Math.abs(Math.sin(ip*Math.PI*2))*1.1; // 뿔·집게 들이받기
+        else if(st==='hornet'||st==='dragonfly') shopPreviewMob.rotation.y+=dt*7;                       // 날갯짓 급선회
+        else shopPreviewMob.rotation.z=Math.sin(ip*Math.PI*6)*0.22;                                      // 거미·지네·개미 흔들기
+      } else if(shopPreviewMob._style){
+        shopPreviewMob.rotation.z*=0.85; shopPreviewMob.position.z*=0.85;
+        const wp=shopPreviewMob.userData && shopPreviewMob.userData.weapon;
+        if(wp) wp.rotation.x*=0.85;     // 낫 원위치 복원
+      }
+      const intro=(shopPreviewMob._intro!=null && shopPreviewMob._intro<1)?Math.sin(shopPreviewMob._intro*Math.PI)*0.55:0;
+      shopPreviewMob.position.y = 0.2 + Math.sin(performance.now()*0.002)*0.12 + intro;
+    }
+    return;
+  }
   if(!carDragging){
     let diff=carTarget-carRot;
     while(diff>Math.PI) diff-=Math.PI*2; while(diff<-Math.PI) diff+=Math.PI*2;
@@ -2607,12 +2892,12 @@ function carUpdate(dt){
     o.m.rotation.y=-carRot;                       // 항상 카메라(정면) 향하게
     const face=Math.cos(o.ang+carRot);            // 1=정면, -1=뒤
     const f=Math.max(0,(face+1)/2);
-    o.m.scale.setScalar(0.95+1.15*f*f);           // 정면일수록 크게
+    o.m.scale.setScalar(0.7+1.35*f*f);            // 정면일수록 크게(옆 곤충도 적당히 보임)
     let baseY=Math.max(0,face)*0.35 + Math.sin(performance.now()*0.003+o.ang)*0.05;
     if(o.jump>0){ o.jump-=dt; const k=1-Math.max(0,o.jump)/0.5; baseY+=Math.sin(k*Math.PI)*0.9; // 선택 점프
       o.m.rotation.x=-Math.sin(k*Math.PI)*0.25; } else { o.m.rotation.x=0; }
     o.m.position.y=baseY;
-    o.m.visible = face>-0.4;                       // 뒤쪽만 숨김(양옆은 어둑하게 보임)
+    o.m.visible = face>-0.75;                      // 뒤쪽 일부까지 보이게(줄지어 늘어선 느낌)
   });
   carRing.material.emissiveIntensity=0.55+Math.sin(performance.now()*0.004)*0.2;
   // 무대·링·안개 색을 선택 곤충의 고유색으로 부드럽게 전환
@@ -2656,18 +2941,37 @@ function updateCarUI(doJump){
 const cL=document.getElementById('carLeft'), cR=document.getElementById('carRight');
 if(cL) cL.addEventListener('click',()=>carGo(-1));
 if(cR) cR.addEventListener('click',()=>carGo(1));
-// 스와이프(드래그)로 돌리기
-let cdX=0, cdRot0=0;
-function cStart(x){ carDragging=true; cdX=x; cdRot0=carRot; SND.unlock(); }
-function cMove(x){ if(!carDragging) return; carRot=cdRot0+(x-cdX)*0.007; carGroup.rotation.y=carRot; }
-function cEnd(){ if(!carDragging) return; carDragging=false; carSnap(); }
+// 스와이프(드래그)로 돌리기 + 탭으로 컬렉션 선택
+let cdX=0, cdY=0, cdRot0=0, cdMoved=false;
+const carRay=new THREE.Raycaster(), carNDC=new THREE.Vector2();
+function pickCollection(cx,cy){       // 무대 뒤 컬렉션 곤충을 탭하면 앞으로 불러와 선택
+  if(!carCanvas || !collectionMobs.length) return;
+  const r=carCanvas.getBoundingClientRect();
+  carNDC.x=((cx-r.left)/r.width)*2-1; carNDC.y=-((cy-r.top)/r.height)*2+1;
+  carRay.setFromCamera(carNDC, carCam);
+  const hits=carRay.intersectObjects(collectionMobs, true);
+  if(!hits.length) return;
+  let o=hits[0].object; while(o && o.userData.species===undefined && o.parent) o=o.parent;
+  const sp=o && o.userData.species; if(!sp) return;
+  const list=shopChoices(); const idx=list.findIndex(it=>it.type===sp);
+  if(idx>=0){ shopSel=idx; const it=list[idx]; setShopPreviewMesh(it,0); renderShopInfo(it); if(SND.ui) SND.ui('select'); }
+}
+function cStart(x,y){ carDragging=true; cdX=x; cdY=y||0; cdMoved=false;
+  cdRot0=((carMode==='shop'||carMode==='fuse')&&shopPreviewMob)?shopPreviewMob.rotation.y:carRot; SND.unlock(); }
+function cMove(x,y){ if(!carDragging) return;
+  if(Math.abs(x-cdX)>7 || Math.abs((y||0)-cdY)>7) cdMoved=true;
+  if(carMode==='shop'||carMode==='fuse'){ if(shopPreviewMob) shopPreviewMob.rotation.y=cdRot0+(x-cdX)*0.012; return; }
+  carRot=cdRot0+(x-cdX)*0.007; carGroup.rotation.y=carRot; }
+function cEnd(){ if(!carDragging) return; carDragging=false;
+  if(!cdMoved && (carMode==='shop'||carMode==='fuse')) pickCollection(cdX,cdY);   // 탭 → 컬렉션 선택
+  else if(carMode!=='shop' && carMode!=='fuse') carSnap(); }
 if(carCanvas){
-  carCanvas.addEventListener('touchstart',e=>{cStart(e.touches[0].clientX);},{passive:true});
-  carCanvas.addEventListener('touchmove',e=>{ if(carDragging) e.preventDefault(); cMove(e.touches[0].clientX); },{passive:false});
+  carCanvas.addEventListener('touchstart',e=>{cStart(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  carCanvas.addEventListener('touchmove',e=>{ if(carDragging) e.preventDefault(); cMove(e.touches[0].clientX,e.touches[0].clientY); },{passive:false});
   carCanvas.addEventListener('touchend',cEnd,{passive:true});
   carCanvas.addEventListener('touchcancel',cEnd,{passive:true});
-  carCanvas.addEventListener('mousedown',e=>{e.preventDefault(); cStart(e.clientX);});
-  window.addEventListener('mousemove',e=>{ if(carDragging) cMove(e.clientX); });
+  carCanvas.addEventListener('mousedown',e=>{e.preventDefault(); cStart(e.clientX,e.clientY);});
+  window.addEventListener('mousemove',e=>{ if(carDragging) cMove(e.clientX,e.clientY); });
   window.addEventListener('mouseup',cEnd);
 }
 // 키보드 좌우
@@ -2685,7 +2989,8 @@ function carResize(){
 let _carLast=performance.now();
 function carLoop(){
   requestAnimationFrame(carLoop);
-  if(G.state!=='select' || !carRenderer) return;
+  if(!carRenderer) return;
+  if(G.state!=='select' && carMode!=='shop' && carMode!=='fuse') return;   // 시작화면·상점·합성 프리뷰
   const now=performance.now(); const dt=Math.min(0.05,(now-_carLast)/1000); _carLast=now;
   carResize(); carUpdate(dt);
   try{ carRenderer.render(carScene,carCam); }catch(e){}
@@ -2719,7 +3024,8 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   if(!chosen)return;
   SND.unlock(); SND.ui('start');
   selectScreen.style.display='none'; hud.style.display='block';
-  G.stage=1; G.coins=0; G.owned={[chosen]:true}; G.hybrid=null;
+  if(typeof restoreCarousel==='function') restoreCarousel();
+  G.stage=1; G.coins=0; G.owned={[chosen]:true}; G.hybrid=null; G.hybrids=[];
   G.lives=DIFF.lives||1;   // 난이도별 목숨(쉬움 3)
   startStage();
 });
@@ -2749,13 +3055,43 @@ function showWin(){
   buildFusePanel();
   buildMetaPanel();
   updateWinBadges();           // 탭 행동 배지
+  updateDeployNow();           // 출전 곤충 표시
+  updateStageHint();           // 다음 스테이지 추천 힌트
   setWinTab(defaultWinTab());  // 합성 경험자는 합성 탭이 기본
   winScreen.scrollTop=0;
+}
+// 다음 스테이지 특성에 맞는 추천 힌트(보스전이면 강한 곤충 권장)
+function updateStageHint(){
+  const el=document.getElementById('stageHint'); if(!el) return;
+  const nextStage=G.stage+1;
+  if(nextStage%3===0){
+    el.className='stage-hint boss';
+    el.innerHTML = LANG==='en'
+      ? ('⚠️ Stage '+nextStage+' is a BOSS — bring a strong hybrid 🧬 or a high-attack species (🦏 Rhino, 🦂 Scorpion)')
+      : ('⚠️ '+nextStage+'스테이지는 보스전! 강한 합성체 🧬 또는 공격형(🦏 장수풍뎅이, 🦂 전갈)을 추천');
+  } else {
+    el.className='stage-hint';
+    el.innerHTML = LANG==='en'
+      ? '💡 Tip: a species with type advantage deals +50% damage'
+      : '💡 팁: 상성이 유리한 종은 피해 +50%';
+  }
+}
+// 다음 스테이지에 출전할 곤충을 한눈에 — 합성체면 🧬조합, 아니면 단일 종
+function updateDeployNow(){
+  const el=document.getElementById('deployNow'); if(!el) return;
+  let emoji, name, cls='';
+  if(G.hybrid){ emoji='🧬'; name=emo(G.hybrid.base)+SPECIES[G.hybrid.base].ko+' × '+emo(G.hybrid.sub)+SPECIES[G.hybrid.sub].ko; cls=' hy'; }
+  else { emoji=emo(G.playerType); name=SPECIES[G.playerType].ko; }
+  el.className='deploy-now'+cls;
+  el.innerHTML='<span class="dn-label">'+t('deployNow')+'</span><span class="dn-emo">'+emoji+'</span><b class="dn-name">'+name+'</b>';
 }
 // 승리 화면 탭 전환 — 한 번에 한 섹션만 표시
 function setWinTab(tab){
   document.querySelectorAll('.wtab').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
   document.querySelectorAll('.wtab-pane').forEach(p=>{ p.style.display = (p.dataset.pane===tab)?'flex':'none'; });
+  if(tab==='shop'){ if(typeof openShopPreview==='function') openShopPreview(); }
+  else if(tab==='fuse'){ if(typeof openFusePreview==='function') openFusePreview(); }
+  else { if(typeof closeShopPreview==='function') closeShopPreview(); }
 }
 // 각 탭에 '지금 행동 가능' 배지(빨간 점) 표시
 function setBadge(id, on){
@@ -2807,24 +3143,58 @@ function buildMetaPanel(){
 }
 function buildShop(){
   const shop=document.getElementById('shop'); shop.innerHTML='';
+  // 보유한 합성체를 맨 앞에 '출전 가능 캐릭터'로 표시 (생명 있는 동안 유지)
+  (G.hybrids||[]).forEach(h=>{
+    const on = G.hybrid && G.hybrid.base===h.base && G.hybrid.sub===h.sub;
+    const refund=Math.round(fuseCost(h.base,h.sub)*HYBRID_REFUND);
+    const card=document.createElement('div');
+    card.className='shopcard hybridcard'+(on?' selected':'');
+    card.innerHTML=`<span class="dismantle" title="${LANG==='en'?'Dismantle +◈'+refund:'분해 +◈'+refund}">✕</span>`+
+      `<span class="se">🧬</span><div class="sn">${emo(h.base)}${SPECIES[h.base].ko}×${emo(h.sub)}${SPECIES[h.sub].ko}</div>`+
+      `<div class="sc">${on?t('shopSelected'):t('shopOwned')}</div>`;
+    card.addEventListener('click',()=>{
+      makeHybridSpecies(h.base, h.sub); G.hybrid={base:h.base, sub:h.sub}; G.playerType='__hybrid';
+      buildShop(); buildFusePanel();
+      if(typeof updateWinBadges==='function') updateWinBadges();
+      if(typeof updateDeployNow==='function') updateDeployNow();
+    });
+    card.querySelector('.dismantle').addEventListener('click',(ev)=>{
+      ev.stopPropagation();
+      G.coins+=refund;
+      G.hybrids=G.hybrids.filter(x=>!(x.base===h.base&&x.sub===h.sub));
+      if(G.hybrid && G.hybrid.base===h.base && G.hybrid.sub===h.sub){   // 출전 중이던 합성체 분해 시 단일로
+        G.hybrid=null; G.playerType=ORDER.find(k=>G.owned[k])||'mantis';
+      }
+      const wc=document.getElementById('winCoins'); if(wc) wc.textContent=G.coins;
+      flashBanner(LANG==='en'?('🔨 Dismantled +◈'+refund):('🔨 분해 +◈'+refund),'kill');
+      buildShop(); buildFusePanel();
+      if(typeof updateWinBadges==='function') updateWinBadges();
+      if(typeof updateDeployNow==='function') updateDeployNow();
+    });
+    shop.appendChild(card);
+  });
   ORDER.forEach(type=>{
     const d=SPECIES[type]; const owned=!!G.owned[type]; const cost=BALANCE.coins.shopCost;
+    const selected = owned && !G.hybrid && type===G.playerType;   // 합성체 출전 중이면 단일은 선택 아님
     const card=document.createElement('div');
-    card.className='shopcard'+(owned?' owned':(G.coins<cost?' locked':''));
-    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div><div class="sc">${owned?(type===G.playerType?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
+    card.className='shopcard'+(selected?' selected':'')+(owned?' owned':(G.coins<cost?' locked':''));
+    card.innerHTML=`<span class="se">${emo(type)}</span><div class="sn">${d.ko}</div><div class="sc">${owned?(selected?t('shopSelected'):t('shopOwned')):'◈ '+cost+' '+t('shopBuy')}</div>`;
     card.addEventListener('click',()=>{
+      // 단일 종 선택 — 출전만 단일로 바꾸고, 보유 합성체(G.hybrids)는 그대로 유지(안 풀림)
       if(owned){ G.playerType=type; G.hybrid=null; }
       else if(G.coins>=cost){ G.coins-=cost; G.owned[type]=true; G.playerType=type; G.hybrid=null;
         document.getElementById('winCoins').textContent=G.coins; }
       else return;
       buildShop(); buildFusePanel();
       if(typeof updateWinBadges==='function') updateWinBadges();
+      if(typeof updateDeployNow==='function') updateDeployNow();
     });
     shop.appendChild(card);
   });
 }
 document.getElementById('nextBtn').addEventListener('click',()=>{
   winScreen.style.display='none'; hud.style.display='block';
+  if(typeof closeShopPreview==='function') closeShopPreview();
   G.stage++; startStage();
 });
 
@@ -2892,9 +3262,17 @@ function renderFuse(){
       `<br><button class="fuse-go" id="fuseGo" ${afford?'':'disabled'}>${t('fuseGo')} ${afford?'(◈'+cost+')':t('fuseNoCoin')}</button>`;
     document.getElementById('fuseGo').addEventListener('click',()=>{
       if(G.coins<cost) return;
+      const isNew = !(G.hybrids||[]).some(h=>h.base===fuseA && h.sub===fuseB);
+      if(isNew && (G.hybrids||[]).length>=HYBRID_MAX){   // 보유 가득 — 분해 안내
+        flashBanner(LANG==='en'?('🧬 Hybrid storage full ('+HYBRID_MAX+') — dismantle one in Shop'):('🧬 합성체 보유 가득('+HYBRID_MAX+') — 상점에서 하나 분해하세요'),'hurt');
+        return;
+      }
       SND.unlock(); SND.synergy();
       G.coins-=cost; updateHUD&&updateHUD();
       G.hybrid={base:fuseA, sub:fuseB}; G.playerType='__hybrid';
+      // 합성체를 이번 게임 보유 목록에 추가(중복 제외) — 생명 있는 동안 유지, 단일 선택해도 안 풀림
+      if(!G.hybrids) G.hybrids=[];
+      if(!G.hybrids.some(h=>h.base===fuseA && h.sub===fuseB)) G.hybrids.push({base:fuseA, sub:fuseB});
       try{ localStorage.setItem('insecta_seen_fuse','1'); }catch(e){}   // 합성 경험 기억
       if((PROGRESS.easy||0)>=UNLOCK_STAGE && PROGRESS._just!=='normal' && !PROGRESS._normalShown){
         PROGRESS._just='normal'; PROGRESS._normalShown=1; saveProgress();
@@ -2904,6 +3282,7 @@ function renderFuse(){
       res.innerHTML=t('fuseReady')(SPECIES['__hybrid'].ko);
       renderDex();
       if(typeof updateWinBadges==='function') updateWinBadges();
+      if(typeof updateDeployNow==='function') updateDeployNow();
     });
   } else if(owned.length<2){
     res.textContent=t('fuseNeed');
@@ -2911,6 +3290,7 @@ function renderFuse(){
     res.textContent=t('fusePick');
   }
   renderDex();
+  if(typeof updateFusePreview==='function') updateFusePreview();   // 슬롯 변경 시 3D 프리뷰 갱신
 }
 let dexSearch='', dexFilter='all';
 function renderDex(){
@@ -2962,6 +3342,7 @@ function showLose(){
 document.getElementById('retryBtn').addEventListener('click',()=>{
   loseScreen.style.display='none'; selectScreen.style.display='flex';
   G.state='select'; G.hybrid=null; if(chosen) G.playerType=chosen;
+  if(typeof restoreCarousel==='function') restoreCarousel();
   applyStaticLang();   // 클리어로 해금된 난이도 갱신
   if(typeof updateRecordPanel==='function') updateRecordPanel();
 });
@@ -2987,6 +3368,16 @@ loop(performance.now());
 // ===== 언어 토글(한국어 / English) =====
 document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{ SND.unlock&&SND.unlock(); setLang(b.dataset.lang); }));
 (function initLang(){ let l='ko'; try{ l=localStorage.getItem('insecta_lang')||'ko'; }catch(e){} setLang(l); })();
+// 상점 3D 프리뷰 좌우 넘기기
+(function(){ const sp=document.getElementById('shopPrev'), sn=document.getElementById('shopNext');
+  if(sp) sp.addEventListener('click',()=>shopStep(-1));
+  if(sn) sn.addEventListener('click',()=>shopStep(1));
+})();
+// 게임 중 교체 — 버튼 탭 + Q키
+(function(){ const sb=document.getElementById('swapBtn');
+  if(sb) sb.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); cycleSwap(); });
+  window.addEventListener('keydown',(e)=>{ if((e.key==='q'||e.key==='Q') && G.state==='play'){ cycleSwap(); } });
+})();
 try{ updateRecordPanel(); }catch(e){}
 </script>
 </body>
