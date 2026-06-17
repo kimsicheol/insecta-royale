@@ -352,6 +352,8 @@
   .fuse-delta.dn{color:#e8804a;}
   .deploy-badge{display:inline-block;font-size:12px;font-weight:800;color:#0c1108;background:var(--toxin);border-radius:10px;padding:3px 12px;margin-bottom:5px;}
   .shop-info .si-sub{font-size:11px;color:var(--bone-dim);margin:2px 0 6px;}
+  .si-lat{font-style:italic;font-size:11px;color:#8a8f7a;margin-top:7px;text-align:center;}
+  .si-trivia{font-size:12px;line-height:1.4;color:#cfe0b8;background:rgba(120,180,90,.1);border-radius:8px;padding:7px 10px;margin:6px 0 2px;text-align:center;}
   .shop-info .si-btn{font-size:13px;font-weight:800;color:#0c1108;background:var(--toxin);border:none;border-radius:10px;padding:8px 22px;cursor:pointer;}
   .shop-info .si-btn:active{transform:translateY(1px);}
   .shop-info .si-btn.buy{font-size:15px;padding:10px 28px;background:linear-gradient(180deg,#f4cf6a,#d4a03c);color:#241a08;box-shadow:0 3px 12px rgba(212,160,60,.4);}
@@ -786,35 +788,57 @@ const BALANCE = {
 
 /* ===== SPECIES (10종) ===== */
 const SPECIES = {
-  mantis:    {ko:'사마귀',   lat:'Tenodera sinensis', hp:90,  speed:5.0, atk:22, range:3.0, rate:0.55,
-              col:0x6fae3a, col2:0x4d7d24, eye:0x111111, sp:'트리플 슬래시', spDesc:'낫다리 3연속 베기',
-              desc:'낫 모양 앞다리로 <b>빠르게 베어내는</b> 근접 암살자. 사거리 길고 공속 빠름.'},
-  stag:      {ko:'사슴벌레', lat:'Lucanus maculifemoratus', hp:135, speed:3.4, atk:30, range:2.4, rate:0.85,
-              col:0x4a3320, col2:0x2a1c0f, eye:0x000000, sp:'집게 분쇄', spDesc:'대악으로 물어 띄우기',
-              desc:'거대한 <b>대악(큰턱)</b>으로 집어던지는 파워형. 한 방이 묵직하다.'},
-  rhino:     {ko:'장수풍뎅이', lat:'Allomyrina dichotoma', hp:165, speed:3.2, atk:26, range:2.6, rate:0.9,
-              col:0x33271a, col2:0x1a120a, eye:0x000000, sp:'헤드 차지', spDesc:'뿔 돌진 + 밀쳐내기',
-              desc:'<b>뿔</b>로 들이받는 최고 체력의 탱커. 돌진 필살기로 적을 날려버린다.'},
-  spider:    {ko:'거미',     lat:'Argiope bruennichi', hp:80, speed:4.4, atk:18, range:7.5, rate:0.7,
-              col:0x2c2622, col2:0xb6953f, eye:0x551111, sp:'거미줄 함정', spDesc:'광역 점착 + 둔화',
-              desc:'<b>거미줄</b>을 쏘는 원거리 종. 적을 묶고 천천히 갉아먹는다.'},
-  centipede: {ko:'지네',     lat:'Scolopendra subspinipes', hp:95, speed:5.4, atk:21, range:2.6, rate:0.5,
-              col:0x8a3520, col2:0xc25a32, eye:0x000000, sp:'맹독 질주', spDesc:'관통 돌진 + 중독',
-              desc:'다절체의 <b>최고 기동력</b>. 독니로 물고 빠지는 히트앤런 사냥꾼.'},
-  scorpion:  {ko:'전갈',     lat:'Heterometrus', hp:115, speed:3.8, atk:25, range:3.4, rate:0.75,
-              col:0x3a2c14, col2:0x6a5226, eye:0x110000, sp:'테일 스팅', spDesc:'꼬리침 광역 독격',
-              desc:'집게로 잡고 <b>꼬리 독침</b>으로 마무리. 균형 잡힌 만능형.'},
-  hornet:    {ko:'말벌',     lat:'Vespa mandarinia', hp:88, speed:5.6, atk:24, range:3.2, rate:0.5,
-              col:0xc9a21e, col2:0x2a210a, eye:0xff2a00, sp:'독침 연사', spDesc:'고속 침 3연타 + 중독',
-              desc:'<b>비행형 폭격기</b>. 빠른 속도로 파고들어 독침을 퍼붓는 공격수.'},
-  dragonfly: {ko:'잠자리',   lat:'Anax parthenope', hp:84, speed:6.0, atk:20, range:3.0, rate:0.5,
-              col:0x2a9d8f, col2:0x176b60, eye:0x88ccff, sp:'스카이 대시', spDesc:'초고속 관통 활공',
-              desc:'<b>최고 속도</b>의 공중 포식자. 빠르게 치고 빠지는 제공권의 지배자.'},
+  mantis:    {ko:'난초사마귀', lat:'Hymenopus coronatus', hp:90, speed:5.1, atk:23, range:3.0, rate:0.55,
+              col:0xf3d2e2, col2:0xe487b3, eye:0x6a2a44, sp:'꽃잎 베기', spDesc:'화려한 낫다리 3연속 베기',
+              desc:'꽃처럼 화려한 <b>난초사마귀</b>. 분홍 꽃잎 같은 몸으로 위장했다가 <b>낫다리</b>로 순식간에 벤다.'},
+  stag:      {ko:'왕사슴벌레', lat:'Dorcus hopei', hp:140, speed:3.4, atk:32, range:2.5, rate:0.85,
+              col:0x1c1c22, col2:0x0a0a0e, eye:0x882200, sp:'대악 분쇄', spDesc:'넓은 큰턱으로 집어 메다꽂기',
+              desc:'광택 나는 검은 <b>왕사슴벌레</b>. 넓고 강한 <b>큰턱</b>으로 적을 집어 으스러뜨린다.'},
+  rhino:     {ko:'헤라클레스장수풍뎅이', lat:'Dynastes hercules', hp:175, speed:3.3, atk:30, range:2.9, rate:0.9,
+              col:0xd9a838, col2:0x14110c, eye:0x000000, sp:'헤라클레스 집게 던지기', spDesc:'거대 뿔로 집어 띄워 메다꽂기',
+              desc:'세계 최대 <b>헤라클레스장수풍뎅이</b>. 황금 등딱지와 거대한 집게 <b>뿔</b>로 적을 집어 던진다.'},
+  spider:    {ko:'블루 타란툴라', lat:'Birupes simoroxigorum', hp:90, speed:4.2, atk:25, range:7.5, rate:0.65,
+              col:0x5a6675, col2:0x1a4fd0, eye:0x7fd0ff, sp:'독니 강타', spDesc:'거미줄 함정 + 독니 맹독',
+              desc:'코발트블루 다리를 가진 <b>블루 타란툴라</b>. 거미줄로 묶고 강한 <b>독니</b>로 덮쳐 문다.'},
+  centipede: {ko:'왕지네',   lat:'Scolopendra subspinipes', hp:98, speed:5.5, atk:23, range:2.6, rate:0.48,
+              col:0x6e1f12, col2:0xe0a020, eye:0x000000, sp:'맹독 질주', spDesc:'관통 돌진 + 강한 중독',
+              desc:'검붉은 몸에 노란 다리를 가진 <b>왕지네</b>. 강한 <b>독니</b>로 물고 빠지는 히트앤런 사냥꾼.'},
+  scorpion:  {ko:'황제전갈',  lat:'Pandinus imperator', hp:120, speed:3.8, atk:27, range:3.4, rate:0.72,
+              col:0x16201c, col2:0x24332b, eye:0x223028, sp:'독침 강타', spDesc:'꼬리 독침 광역 맹독',
+              desc:'거대한 검은 <b>황제전갈</b>. 큰 집게로 잡고 <b>꼬리 독침</b>으로 강한 독을 찌른다.'},
+  hornet:    {ko:'장수말벌',   lat:'Vespa mandarinia', hp:90, speed:5.7, atk:28, range:3.2, rate:0.48,
+              col:0xe8b01a, col2:0x14100a, eye:0x1a1208, sp:'독침 연사', spDesc:'고속 침 3연타 + 강한 중독',
+              desc:'세계 최대 말벌인 <b>장수말벌</b>. 주황 머리와 노랑·검정 줄무늬, 빠른 비행으로 <b>독침</b>을 퍼붓는다.'},
+  dragonfly: {ko:'된장잠자리', lat:'Pantala flavescens', hp:84, speed:6.1, atk:21, range:3.0, rate:0.5,
+              col:0xd98a2a, col2:0xa85e16, eye:0xff9a3a, sp:'스카이 대시', spDesc:'초고속 관통 활공',
+              desc:'황갈색 몸의 <b>된장잠자리</b>. 바다를 건너 이동하는 <b>최고 속도</b>의 공중 포식자.'},
   ant:       {ko:'불개미',   lat:'Solenopsis (Fire Ant)', hp:120, speed:4.8, atk:27, range:2.3, rate:0.5,
               col:0xc0392b, col2:0x141414, eye:0xffcf3a, sp:'독침 폭발', spDesc:'독침 강타 + 화상 광역',
               desc:'사납고 공격적인 <b>불개미</b>. 강한 턱으로 물고 <b>독침</b>으로 찔러 불타는 듯한 통증을 준다.'},
 };
 const ORDER = ['mantis','stag','rhino','spider','centipede','scorpion','hornet','dragonfly','ant'];
+const TRIVIA = {   // 실제 곤충 상식 한 줄(아이가 보며 배우는 도감)
+  mantis:'꽃을 꼭 닮게 위장해 다가온 곤충을 낚아채 잡아먹어요.',
+  stag:'수컷의 큰 턱은 다른 수컷과 힘겨루기를 할 때 써요.',
+  rhino:'몸길이가 17cm가 넘어 세계에서 가장 긴 딱정벌레예요.',
+  spider:'보르네오섬에서 발견된 아주 희귀한 파란 타란툴라예요.',
+  centipede:'한국에서 가장 큰 지네로, 강한 독니로 먹이를 사냥해요.',
+  scorpion:'자외선(블랙라이트)을 비추면 몸이 파랗게 빛나요.',
+  hornet:'세계에서 가장 큰 말벌로, 꿀벌 집을 통째로 습격해요.',
+  dragonfly:'바다를 건너 수천 km를 이동하는 놀라운 잠자리예요.',
+  ant:'쏘이면 불에 덴 듯 따가워서 "불"개미라고 불러요.',
+};
+const TRIVIA_EN = {
+  mantis:'Disguises as a flower to ambush visiting insects.',
+  stag:'Males use their big jaws to wrestle rival males.',
+  rhino:'Over 17cm long — the longest beetle in the world.',
+  spider:'A rare blue tarantula found only on Borneo.',
+  centipede:'Korea\'s largest centipede, hunting with venomous fangs.',
+  scorpion:'Glows blue under ultraviolet (black) light.',
+  hornet:'The largest hornet on Earth — it raids honeybee nests.',
+  dragonfly:'Crosses oceans, migrating thousands of kilometers.',
+  ant:'Its sting burns like fire — that is why it is a "fire" ant.',
+};
 // 누구나 한눈에 알아보도록 종마다 그림(이모지) 부여
 const EMOJI = { mantis:'🦗', stag:'🪲', rhino:'🦏', spider:'🕷️', centipede:'🐛', scorpion:'🦂', hornet:'🐝', dragonfly:'🪰', ant:'🐜', __hybrid:'🧬' };
 function emo(type){ return EMOJI[type] || '🐛'; }
@@ -891,14 +915,14 @@ function counterMult(atkType, defType){
 
 const ABSORB_TIME = BALANCE.absorbTime;
 const MUT = {
-  mantis:   {ko:'사마귀 신경', tag:'공속·사거리↑', col:0x6fae3a},
-  stag:     {ko:'사슴벌레 악력', tag:'타격 시 기절·넉백', col:0xc09030},
-  rhino:    {ko:'장수풍뎅이 갑각', tag:'받는 피해 35%↓', col:0x9a8a6a},
-  spider:   {ko:'거미 점액', tag:'타격 시 둔화', col:0xb6953f},
-  centipede:{ko:'지네 독선', tag:'이동속도↑·맹독', col:0xc25a32},
-  scorpion: {ko:'전갈 독낭', tag:'타격 시 강한 중독', col:0x6a5226},
-  hornet:   {ko:'말벌 독침', tag:'타격 시 중독·공속↑', col:0xc9a21e},
-  dragonfly:{ko:'잠자리 날개', tag:'이동속도 대폭↑', col:0x2a9d8f},
+  mantis:   {ko:'난초사마귀 신경', tag:'공속·사거리↑', col:0xe487b3},
+  stag:     {ko:'왕사슴벌레 악력', tag:'타격 시 기절·넉백', col:0x4a4a55},
+  rhino:    {ko:'헤라클레스 갑각', tag:'받는 피해 35%↓', col:0xd9a838},
+  spider:   {ko:'타란툴라 독', tag:'타격 시 둔화', col:0x1a4fd0},
+  centipede:{ko:'왕지네 독선', tag:'이동속도↑·맹독', col:0xe0a020},
+  scorpion: {ko:'황제전갈 독낭', tag:'타격 시 강한 중독', col:0x24332b},
+  hornet:   {ko:'장수말벌 독침', tag:'타격 시 중독·공속↑', col:0xe8b01a},
+  dragonfly:{ko:'된장잠자리 날개', tag:'이동속도 대폭↑', col:0xd98a2a},
   ant:      {ko:'독침 화상', tag:'타격 시 화상 둔화', col:0xc0392b},
 };
 const MAX_MUTS = 3;
@@ -996,14 +1020,14 @@ const THEMES = [
 /* ===== 다국어(한국어 / English) ===== */
 let LANG='ko';
 const I18N_SP = {
-  mantis:   {en:'Mantis',      sp:'Triple Slash',    spDesc:'Triple scythe-blade combo',  desc:'A <b>glass-cannon</b> assassin with scythe forelegs. Long reach, fast attacks.'},
-  stag:     {en:'Stag Beetle', sp:'Mandible Crush',  spDesc:'Grab & toss with great jaws', desc:'A power bruiser that hurls foes with its <b>huge mandibles</b>. Heavy hits.'},
-  rhino:    {en:'Rhino Beetle', sp:'Head Charge',    spDesc:'Horn dash + knockback',       desc:'The toughest <b>tank</b>, ramming with its <b>horn</b>. Dash sends foes flying.'},
-  spider:   {en:'Spider',      sp:'Web Trap',        spDesc:'Area snare + slow',           desc:'A ranged spinner. Binds foes with <b>webbing</b> and whittles them down.'},
-  centipede:{en:'Centipede',   sp:'Venom Dash',      spDesc:'Piercing dash + poison',      desc:'The most <b>mobile</b> hunter. A hit-and-run striker with venom fangs.'},
-  scorpion: {en:'Scorpion',    sp:'Tail Sting',      spDesc:'Area venom tail strike',      desc:'Grabs with pincers, finishes with its <b>venom stinger</b>. Balanced all-rounder.'},
-  hornet:   {en:'Hornet',      sp:'Stinger Barrage', spDesc:'Rapid triple sting + poison', desc:'A flying <b>bomber</b> that dives in and unloads venom stings.'},
-  dragonfly:{en:'Dragonfly',   sp:'Sky Dash',        spDesc:'Ultra-fast piercing glide',   desc:'The <b>fastest</b> aerial predator. Strikes and retreats, ruler of the skies.'},
+  mantis:   {en:'Orchid Mantis', sp:'Petal Slash',   spDesc:'Showy triple scythe combo',  desc:'A flower-like <b>orchid mantis</b> in pink petals that camouflages, then strikes with <b>scythes</b>.'},
+  stag:     {en:'Stag Beetle', sp:'Mandible Crush', spDesc:'Grab with wide jaws and slam', desc:'A glossy black <b>stag beetle</b> with wide, powerful <b>jaws</b> that grab and crush.'},
+  rhino:    {en:'Hercules Beetle', sp:'Hercules Toss',  spDesc:'Grab with horns and slam down',  desc:'The mighty <b>Hercules beetle</b> with a golden shell and huge pincer <b>horns</b> that grab and throw foes.'},
+  spider:   {en:'Blue Tarantula', sp:'Fang Strike',  spDesc:'Web trap + venomous fangs', desc:'A <b>blue tarantula</b> with cobalt legs. Snares with webs, then lunges with strong <b>fangs</b>.'},
+  centipede:{en:'Giant Centipede', sp:'Venom Dash',  spDesc:'Piercing dash + strong poison', desc:'A dark-red <b>giant centipede</b> with yellow legs. A hit-and-run striker with venom fangs.'},
+  scorpion: {en:'Emperor Scorpion', sp:'Venom Sting', spDesc:'Tail sting area venom', desc:'A huge black <b>emperor scorpion</b> that grabs with claws and stings with venomous <b>tail</b>.'},
+  hornet:   {en:'Giant Hornet', sp:'Sting Barrage', spDesc:'Triple fast sting + strong venom', desc:'The huge <b>Asian giant hornet</b> with an orange head and yellow-black stripes that dives fast to <b>sting</b>.'},
+  dragonfly:{en:'Wandering Glider', sp:'Sky Dash',   spDesc:'Ultra-fast piercing glide',   desc:'An amber <b>wandering glider</b> dragonfly that crosses oceans — the fastest aerial predator.'},
   ant:      {en:'Fire Ant',    sp:'Venom Sting',     spDesc:'Sting strike + area burn',     desc:'An aggressive <b>fire ant</b> that bites with strong jaws and stings with burning <b>venom</b>.'},
 };
 const I18N_DIFF = { easy:'Easy', normal:'Normal', hard:'Hard' };
@@ -1016,13 +1040,13 @@ const I18N_THEME = [
   {name:'Moonlit Forest', fxLabel:'Calm night · regen↑'},
 ];
 const I18N_MUT = {
-  mantis:   {en:'Mantis Nerve',   tagEn:'Atk speed·reach↑'},
+  mantis:   {en:'Orchid Nerve',   tagEn:'Atk speed·reach↑'},
   stag:     {en:'Stag Grip',      tagEn:'Stun·knockback on hit'},
   rhino:    {en:'Rhino Carapace', tagEn:'Damage taken −35%'},
-  spider:   {en:'Spider Silk',    tagEn:'Slow on hit'},
-  centipede:{en:'Centipede Venom',tagEn:'Move speed↑·poison'},
+  spider:   {en:'Tarantula Venom', tagEn:'Slow on hit'},
+  centipede:{en:'Centipede Venom',tagEn:'Move speed↑·strong poison'},
   scorpion: {en:'Scorpion Sac',   tagEn:'Strong poison on hit'},
-  hornet:   {en:'Hornet Sting',   tagEn:'Poison·atk speed↑'},
+  hornet:   {en:'Giant Hornet Venom', tagEn:'Poison + attack speed up'},
   dragonfly:{en:'Dragonfly Wings',tagEn:'Move speed↑↑'},
   ant:      {en:'Venom Burn',     tagEn:'Burning slow on hit'},
 };
@@ -1262,12 +1286,14 @@ function applyTheme(stage){
 }
 
 function mat(c,rough=0.55,metal=0.1){return new THREE.MeshStandardMaterial({color:c,roughness:rough,metalness:metal});}
-function legPair(group, M, x, z, len, ang, downpair=true){
+function legPair(group, M, x, z, len, ang, downpair=true, tipMat=null){
   for(const s of [1,-1]){
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.09,len,5), M);
     leg.castShadow=true;
     leg.position.set(s*x, 0.22, z);
     leg.rotation.z = s*ang; leg.rotation.x = -0.5;
+    if(tipMat){ const tip=new THREE.Mesh(new THREE.CylinderGeometry(0.052,0.052,len*0.26,5), tipMat);  // 끝마디 색 단계
+      tip.position.y = -len*0.4; leg.add(tip); }
     const pivot = new THREE.Group(); pivot.add(leg);
     leg.position.y = -len/2*0.4;
     pivot.position.set(s*x,0.32,z);
@@ -1317,10 +1343,11 @@ function buildStag(c,c2,eye){
   const head=new THREE.Mesh(new THREE.SphereGeometry(0.34,10,8),M2);
   head.scale.set(1,0.8,0.9); head.position.set(0,0.5,0.7); head.castShadow=true; g.add(head);
   const jaws=new THREE.Group(); jaws.position.set(0,0.5,1.0); g.add(jaws); g.userData.weapon=jaws;
+  const Mjaw=mat(0x7a3a1a,.4,.3);   // 큰턱 적갈색 포인트(실루엣 구분)
   for(const s of [1,-1]){
-    const j1=new THREE.Mesh(new THREE.TorusGeometry(0.42,0.07,6,10,Math.PI*0.9),M2);
+    const j1=new THREE.Mesh(new THREE.TorusGeometry(0.42,0.07,6,10,Math.PI*0.9),Mjaw);
     j1.position.set(s*0.18,0,0.2); j1.rotation.set(Math.PI/2,0,s*1.3); j1.castShadow=true; jaws.add(j1);
-    const tip=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.3,5),M2);
+    const tip=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.3,5),Mjaw);
     tip.position.set(s*0.5,0,0.6); tip.rotation.x=-Math.PI/2; jaws.add(tip);
   }
   for(const s of [1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,6),mat(eye,.2));
@@ -1329,38 +1356,55 @@ function buildStag(c,c2,eye){
   return g;
 }
 function buildRhino(c,c2,eye){
-  const g=new THREE.Group(); g.userData={legs:[]}; const M=mat(c,.4,.3),M2=mat(c2,.35,.35);
-  const body=new THREE.Mesh(new THREE.SphereGeometry(0.78,14,12),M);
-  body.scale.set(1,0.7,1.35); body.position.set(0,0.6,-0.25); body.castShadow=true; g.add(body);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.32,10,8),M2);
-  head.position.set(0,0.5,0.75); head.castShadow=true; g.add(head);
-  const horns=new THREE.Group(); horns.position.set(0,0.5,0.8); g.add(horns); g.userData.weapon=horns;
-  const horn=new THREE.Mesh(new THREE.ConeGeometry(0.13,1.2,7),M2);
-  horn.position.set(0,0.55,0.4); horn.rotation.x=-0.5; horn.castShadow=true; horns.add(horn);
-  for(const s of[1,-1]){const f=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.4,5),M2);
-    f.position.set(s*0.12,0.95,0.7); f.rotation.set(-0.5,0,s*0.4); horns.add(f);}
-  const ph=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.6,6),M2);
-  ph.position.set(0,0.78,0.05); ph.rotation.x=0.6; horns.add(ph);
-  for(const s of [1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.07,6,6),mat(eye,.2));
-    e.position.set(s*0.2,0.55,0.95); g.add(e);}
-  legPair(g,M,0.55,0.35,0.95,1.0); legPair(g,M,0.6,-0.1,1.0,1.1); legPair(g,M,0.55,-0.6,0.95,1.0);
+  const g=new THREE.Group(); g.userData={legs:[]}; const M=mat(c,.35,.4),M2=mat(c2,.3,.45);
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.78,14,12),M);   // 황금 등딱지
+  body.scale.set(1,0.7,1.4); body.position.set(0,0.6,-0.3); body.castShadow=true; g.add(body);
+  for(let i=0;i<7;i++){ const spot=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,6),M2);   // 등 검은 반점
+    const a=Math.random()*Math.PI*2, rr=0.3+Math.random()*0.4;
+    spot.position.set(Math.cos(a)*rr*0.7, 0.92, -0.3+Math.sin(a)*rr); g.add(spot); }
+  const thorax=new THREE.Mesh(new THREE.SphereGeometry(0.52,12,10),M2);   // 검정 가슴
+  thorax.scale.set(1,0.72,0.95); thorax.position.set(0,0.6,0.5); thorax.castShadow=true; g.add(thorax);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.3,10,8),M2);
+  head.position.set(0,0.5,0.95); head.castShadow=true; g.add(head);
+  const horns=new THREE.Group(); horns.position.set(0,0,0); g.add(horns); g.userData.weapon=horns;
+  // 위 거대 뿔 — 앞으로 길게 뻗다 끝이 아래로 굽음(헤라클레스 상징)
+  const up1=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.17,1.4,8),M2);
+  up1.position.set(0,1.0,0.95); up1.rotation.x=Math.PI/2-0.25; up1.castShadow=true; horns.add(up1);
+  const up2=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.6,7),M2);
+  up2.position.set(0,0.82,1.75); up2.rotation.x=Math.PI*0.78; horns.add(up2);   // 끝 아래로 굽음
+  for(const s of[1,-1]){ const tooth=new THREE.Mesh(new THREE.ConeGeometry(0.05,0.22,5),M2);  // 위 뿔 안쪽 톱니
+    tooth.position.set(s*0.07,0.92,1.3); tooth.rotation.set(Math.PI/2,0,s*0.6); horns.add(tooth); }
+  // 아래 뿔 — 위로 굽어 위 뿔과 집게를 이룬다
+  const low=new THREE.Mesh(new THREE.ConeGeometry(0.12,1.0,7),M2);
+  low.position.set(0,0.5,1.2); low.rotation.x=-Math.PI/2-0.35; low.castShadow=true; horns.add(low);
+  const lowTip=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.4,6),M2);
+  lowTip.position.set(0,0.72,1.7); lowTip.rotation.x=-Math.PI*0.62; horns.add(lowTip);   // 끝 위로
+  for(const s of [1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,6),mat(eye,.2));
+    e.position.set(s*0.18,0.55,1.15); g.add(e);}
+  legPair(g,M2,0.55,0.35,0.95,1.0); legPair(g,M2,0.6,-0.1,1.0,1.1); legPair(g,M2,0.55,-0.6,0.95,1.0);
   return g;
 }
 function buildSpider(c,c2,eye){
-  const g=new THREE.Group(); g.userData={legs:[]}; const M=mat(c,.7),M2=mat(c2,.5,.2);
+  const g=new THREE.Group(); g.userData={legs:[]}; const M=mat(c,.85),M2=mat(c2,.6,.1), Mleg=mat(c2,.8,.05);
   const abd=new THREE.Mesh(new THREE.SphereGeometry(0.72,14,12),M);
-  abd.scale.set(1,0.85,1.1); abd.position.set(0,0.6,-0.5); abd.castShadow=true; g.add(abd);
-  for(let i=-1;i<=1;i++){const st=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.07,6,16,Math.PI),M2);
+  abd.scale.set(1,0.82,1.15); abd.position.set(0,0.6,-0.5); abd.castShadow=true; g.add(abd);
+  for(let i=-1;i<=1;i++){const st=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.06,6,16,Math.PI),M2);  // 복부 파란 무늬
     st.position.set(0,0.62+i*0.18,-0.5); st.rotation.x=Math.PI/2; g.add(st);}
-  const ceph=new THREE.Mesh(new THREE.SphereGeometry(0.4,12,10),M);
-  ceph.position.set(0,0.5,0.45); ceph.castShadow=true; g.add(ceph);
-  const fangs=new THREE.Group(); fangs.position.set(0,0.42,0.75); g.add(fangs); g.userData.weapon=fangs;
-  for(const s of[1,-1]){const f=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.32,5),M2);
-    f.position.set(s*0.13,0,0.1); f.rotation.x=Math.PI*0.8; fangs.add(f);}
-  for(const s of[1,-1])for(let r=0;r<2;r++){const e=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,6),mat(eye,.2));
-    e.position.set(s*0.12,0.6-r*0.1,0.72); g.add(e);}
-  legPair(g,M,0.4,0.45,1.3,1.35); legPair(g,M,0.42,0.15,1.4,1.3);
-  legPair(g,M,0.42,-0.2,1.4,1.3); legPair(g,M,0.4,-0.55,1.3,1.35);
+  const ceph=new THREE.Mesh(new THREE.SphereGeometry(0.42,12,10),M);
+  ceph.scale.set(1.05,0.92,1); ceph.position.set(0,0.5,0.45); ceph.castShadow=true; g.add(ceph);
+  const fangs=new THREE.Group(); fangs.position.set(0,0.4,0.78); g.add(fangs); g.userData.weapon=fangs;
+  for(const s of[1,-1]){
+    const base=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,8),M2);   // 독니 받침(파랑)
+    base.position.set(s*0.16,0.05,0); fangs.add(base);
+    const f=new THREE.Mesh(new THREE.ConeGeometry(0.09,0.46,6),mat(0x141414,.4));  // 큰 검정 독니
+    f.position.set(s*0.16,-0.12,0.14); f.rotation.x=Math.PI*0.82; fangs.add(f);
+  }
+  for(const s of[1,-1])for(let r=0;r<2;r++){const e=new THREE.Mesh(new THREE.SphereGeometry(0.055,6,6),mat(eye,.2));
+    e.position.set(s*0.12,0.6-r*0.1,0.74); g.add(e);}
+  // 다리 — 코발트블루(끝마디 더 진한 파랑)
+  const Mtip=mat(0x0a1f7a,.7);   // 끝마디 더 진한 파랑
+  legPair(g,Mleg,0.4,0.45,1.35,1.38,true,Mtip); legPair(g,Mleg,0.42,0.15,1.45,1.32,true,Mtip);
+  legPair(g,Mleg,0.42,-0.2,1.45,1.32,true,Mtip); legPair(g,Mleg,0.4,-0.55,1.35,1.38,true,Mtip);
   return g;
 }
 function buildCentipede(c,c2,eye){
@@ -1394,13 +1438,15 @@ function buildScorpion(c,c2,eye){
     const t=new THREE.Mesh(new THREE.SphereGeometry(0.18-i*0.015,8,6),i%2?M2:M);
     py+=0.28; pz-= (i<2?0.05:-0.18); t.position.set(0,py,pz); t.castShadow=true; tail.add(t);
   }
-  const sting=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.4,6),M2);
+  const Msting=mat(0xc0392b,.4,.2);   // 꼬리 독침 붉은 포인트(실루엣 구분)
+  const sting=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.42,6),Msting);
   sting.position.set(0,py+0.1,pz+0.2); sting.rotation.x=2.4; sting.castShadow=true; tail.add(sting);
   const claws=new THREE.Group(); claws.position.set(0,0.4,0.55); g.add(claws);
+  const Mpincer=mat(0x9a4a2a,.45,.25);   // 집게 적갈 포인트
   for(const s of[1,-1]){
     const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.1,0.6,6),M);
     arm.position.set(s*0.3,0,0.2); arm.rotation.z=s*0.5; arm.castShadow=true; claws.add(arm);
-    const pincer=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,6),M2);
+    const pincer=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,6),Mpincer);
     pincer.scale.set(0.7,0.5,1.2); pincer.position.set(s*0.5,0,0.55); pincer.castShadow=true; claws.add(pincer);
   }
   for(const s of[1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.05,6,6),mat(eye,.2));
@@ -1423,8 +1469,8 @@ function buildHornet(c,c2,eye){
   // 두꺼운 가슴
   const thx=new THREE.Mesh(new THREE.SphereGeometry(0.43,14,12),M2);
   thx.scale.set(1,0.95,1.12); thx.position.set(0,0.5,0.5); thx.castShadow=true; g.add(thx);
-  // 크고 각진 머리
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.35,12,10),M);
+  // 크고 각진 주황 머리(장수말벌)
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.36,12,10),mat(0xe8730f,.45,.2));
   head.scale.set(1.18,1,0.95); head.position.set(0,0.52,0.94); head.castShadow=true; g.add(head);
   // 사나운 붉은 겹눈
   for(const s of[1,-1]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.15,12,12),mat(eye,.15,.45));
@@ -1596,7 +1642,7 @@ function makeHybridSpecies(baseT, subT){
     atk:   Math.round((a.atk+b.atk)/2*1.12),
     range: +(((a.range+b.range)/2)).toFixed(2),
     rate:  +(((a.rate+b.rate)/2)*0.95).toFixed(2),
-    col:blendHex(a.col,b.col), col2:blendHex(a.col2,b.col2), eye:a.eye,
+    col:blendHex(a.col,b.col,0.4), col2:blendHex(a.col2,b.col2,0.65), eye:a.eye,   // 몸통은 주 곤충 우세, 무늬는 보조색 강조
     sp:a.sp, spDesc:a.spDesc,
     desc:'두 종을 합성한 하이브리드',
     base:baseT, sub:subT,
@@ -1852,13 +1898,13 @@ function updateSwapUI(){
 const SP_DASH = {
   dragonfly:{t:0.72, spd:38, r:1.5},   // 초고속 장거리 활공
   centipede:{t:0.58, spd:30, r:1.5},   // 관통 질주
-  rhino:    {t:0.52, spd:28, r:1.8},   // 뿔 돌진(넉백)
+  rhino:    {t:0.5, spd:30, r:3.0},   // 집게 뿔로 들이받아 집어 던지기
   hornet:   {t:0.50, spd:28, r:1.5},   // 독침 돌진
   mantis:   {t:0.46, spd:26, r:1.9},   // 도약 베기
   stag:     {t:0.44, spd:22, r:2.1},   // 도약 분쇄
   scorpion: {t:0.42, spd:18, r:2.7},   // 도약 후 꼬리 광역
   ant:      {t:0.44, spd:20, r:3.1},   // 도약 후 독침 강타 + 화상 광역
-  spider:   {t:0.36, spd:16, r:1.7},   // 거미줄 + 짧은 도약
+  spider:   {t:0.5, spd:22, r:2.4},   // 독니 덮치기 — 앞으로 도약해 물어뜯기
 };
 function doAttack(e, special=false){
   const d=e.d;
@@ -1935,8 +1981,9 @@ function applyHit(e,o,dmg,special){
   let kb = special?6:2.5;
   if(e.type==='rhino'){
     kb = special?28:12; o.stun=Math.max(o.stun, special?0.9:0.3);
-    if(special){ o.air=Math.max(o.air||0, 0.55); o.airV=9;   // 위로 띄워 날아가는 연출
-      o.thrown=true; o.thrownBy=e; o.thrownDmg=dmg*mult; }   // 던지기 콤보용 정보
+    if(special){ o.air=Math.max(o.air||0, 0.95); o.airV=15;   // 🪲 헤라클레스 — 뿔로 높이 집어 올림
+      o.thrown=true; o.thrownBy=e; o.thrownDmg=dmg*mult; o.heraSlam=true; o.lastBy=e;   // 내리꽂기 표식
+      spawnHitFx(o.pos, 0xd9a838, 1.4, 'ring'); }
   } else if(e.type==='stag'){
     kb = special?16:5; if(special) o.stun=Math.max(o.stun,0.7);  // 집게로 메다꽂기
   }
@@ -1956,6 +2003,8 @@ function applyHit(e,o,dmg,special){
   if(e.type==='ant' && special){ o.burn=Math.max(o.burn||0, 3.5); o.lastBurn=e; }   // 🔥 불개미 독침 — 화상(지속 피해)
   if(e.type==='centipede'||e.type==='scorpion'||e.type==='hornet'){ o.poison=Math.max(o.poison,special?4:2); }
   if((e.type==='stag'||e.type==='rhino')&&special){ o.stun=Math.max(o.stun,0.8); }
+  if(e.type==='spider'&&special){ o.stun=Math.max(o.stun,1.1); o.slow=Math.max(o.slow,3.0);   // 🕷️ 독니로 물어 잠깐 고정 + 둔화
+    spawnHitFx(o.pos, 0x1a4fd0, 1.0, 'ring'); }
   if(am.includes('spider')){ o.slow=Math.max(o.slow,1.5); }
   if(am.includes('ant')){ o.slow=Math.max(o.slow,1.2); }
   if(am.includes('scorpion')){ o.poison=Math.max(o.poison,3); }
@@ -2074,7 +2123,12 @@ function spawnSpecialFx(e, d){
       spawnHitFx(e.pos.clone().add(new THREE.Vector3(Math.cos(a)*2.3,0,Math.sin(a)*2.3)), col, 1.0, 'spark'); }
   } else if(T==='mantis'){                  // 낫 — 전방 빠른 베기 섬광 연쇄
     for(let i=1;i<=4;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.3), 0xb6ff7a, 1.1, 'flash');
-  } else {                                  // 고속 관통(말벌/잠자리/지네) — 길게 뻗는 빛줄기
+  } else if(T==='hornet'){                  // 장수말벌 — 고속 폭격기 속도선(전방 + 양옆 잔상)
+    for(let i=1;i<=7;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.2), col, 1.05-i*0.1, 'spark');
+    const side=new THREE.Vector3(-fwd.z,0,fwd.x);
+    for(const sgn of[1,-1]) for(let i=1;i<=4;i++)
+      spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.3).addScaledVector(side,sgn*0.45), 0xffe06a, 0.7, 'spark');
+  } else {                                  // 고속 관통(잠자리/지네) — 길게 뻗는 빛줄기
     for(let i=1;i<=5;i++) spawnHitFx(e.pos.clone().addScaledVector(fwd,i*1.5), col, 0.9-i*0.07, 'spark');
   }
 }
@@ -2151,6 +2205,20 @@ function spawnDashPath(pos, dir, dist, col){
     m.rotation.x=-Math.PI/2; m.position.copy(p);
     scene.add(m);
     G.fx.push({mesh:m,t:0,life:0.5,kind:'path',mat:m.material,op0:0.6-i*0.07});
+  }
+}
+function spawnCrack(pos, col){    // 헤라클레스 내리꽂기 — 갈라진 땅 자국
+  if(!G.fx) G.fx=[];
+  const n=6;
+  for(let i=0;i<n;i++){
+    const ang=(i/n)*Math.PI*2 + Math.random()*0.3;
+    const len=1.2+Math.random()*1.0;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(0.12, len),
+      new THREE.MeshBasicMaterial({color:col||0x2a2018,transparent:true,opacity:0.85,side:THREE.DoubleSide,depthWrite:false}));
+    m.rotation.x=-Math.PI/2; m.rotation.z=ang;
+    m.position.set(pos.x+Math.sin(ang)*len/2, 0.05, pos.z+Math.cos(ang)*len/2);
+    scene.add(m);
+    G.fx.push({mesh:m,t:0,life:1.1,kind:'path',mat:m.material,op0:0.85});
   }
 }
 
@@ -2367,6 +2435,14 @@ function applyMove(e, desired, dt, speedMul=1){
   let baseY = e.flyer ? (0.55 + Math.sin(G.t*4+e.face)*0.12) : 0.05;
   if(e.air>0){ e.air-=dt; e.airY=(e.airY||0)+(e.airV||0)*dt; e.airV=(e.airV||0)-34*dt;
     if(e.airY<=0){ e.airY=0; e.air=0; e.airV=0;
+      if(e.heraSlam){ e.heraSlam=false;        // 🪲 내리꽂기 — 착지 충격파 + 크랙 + 주변 피해
+        spawnHitFx(e.pos, 0xd9a838, 2.4, 'burst');
+        if(typeof spawnCrack==='function') spawnCrack(e.pos, 0x3a2c18);
+        e.hp-=e.hpMax*0.08; e.stun=Math.max(e.stun||0,0.7);
+        for(const o2 of G.entities){ if(o2===e||o2.dead||o2.corpse) continue;
+          if(e.pos.distanceTo(o2.pos)<2.6){ o2.hp-=o2.hpMax*0.045; o2.stun=Math.max(o2.stun||0,0.35); } }
+        if(typeof G!=='undefined'){ G.shake=Math.max(G.shake||0,0.4); }
+        if(e.hp<=0&&!e.dead) killEntity(e, e.lastBy||null); }
       if(e.thrown){ e.thrown=false; throwCombo(e); } } }   // 착지 — 다른 적 위면 콤보
   e.mesh.position.y = baseY + (e.airY||0);
   if(!e.corpse) e.mesh.rotation.y = e.face;
@@ -2842,7 +2918,13 @@ function renderShopInfo(it){
   const buyMode = !it.hyb && !G.owned[it.type];
   const canBuy = buyMode && G.coins>=BALANCE.coins.shopCost;
   el.innerHTML='<div class="si-name">'+name+'</div><div class="si-sub">'+sub+'</div>'+
-    statBarsHTML(d2)+'<button class="si-btn'+(buyMode?' buy':'')+(buyMode&&!canBuy?' disabled':'')+'" id="shopPickBtn">'+
+    statBarsHTML(d2)+
+    (it.hyb ? '<div class="si-trivia">💡 '+(LANG==='en'
+         ?('A fantasy hybrid of two insects — '+emo(it.hyb.base)+' + '+emo(it.hyb.sub))
+         :('두 곤충 '+emo(it.hyb.base)+SPECIES[it.hyb.base].ko+' + '+emo(it.hyb.sub)+SPECIES[it.hyb.sub].ko+'을(를) 합친 상상의 종이에요.'))+'</div>' : '')+
+    (!it.hyb && TRIVIA[it.type] ? '<div class="si-lat">'+(SPECIES[it.type].lat||'')+'</div>'+
+       '<div class="si-trivia">💡 '+(LANG==='en'?TRIVIA_EN[it.type]:TRIVIA[it.type])+'</div>' : '')+
+    '<button class="si-btn'+(buyMode?' buy':'')+(buyMode&&!canBuy?' disabled':'')+'" id="shopPickBtn">'+
     (buyMode?'🛒 '+act:act)+'</button>';
   const isDeploying = it.hyb ? (G.hybrid && G.hybrid.base===it.hyb.base && G.hybrid.sub===it.hyb.sub)
                              : (!G.hybrid && it.type===G.playerType && !!G.owned[it.type]);
@@ -3007,7 +3089,11 @@ function carUpdate(dt){
         shopPreviewMob._intro+=dt*1.6;
         const ip=shopPreviewMob._intro, st=shopPreviewMob._style;   // 종별 고유 소개 모션
         const wp=shopPreviewMob.userData && shopPreviewMob.userData.weapon;
-        if(st==='mantis' && wp){ wp.rotation.x = -Math.abs(Math.sin(ip*Math.PI*4))*1.0; }    // 낫 부위만 휘두르기(부위 태깅 시범)
+        if(st==='mantis' && wp){ const reveal=ip<0.35?0:(ip-0.35)/0.65;   // 🌸 꽃처럼 가만히 있다가 본모습 드러내며 베기
+          wp.rotation.x = -Math.abs(Math.sin(reveal*Math.PI*4))*1.0;
+          shopPreviewMob.rotation.y = 0.4 + Math.sin(ip*Math.PI)*(1-reveal)*0.25; }    // 위장 중 살랑이는 꽃 흔들림
+        else if(st==='spider' && wp){ wp.rotation.x = Math.sin(ip*Math.PI*5)*0.55; shopPreviewMob.position.z=-Math.abs(Math.sin(ip*Math.PI*2))*0.5; }  // 독니 덮쳐 물기
+        else if(st==='rhino' && wp){ wp.rotation.x = Math.sin(ip*Math.PI*4)*0.28; shopPreviewMob.position.z=-Math.abs(Math.sin(ip*Math.PI*2))*1.15; }  // 뿔 집게 + 들이받기
         else if(st==='mantis'||st==='scorpion') shopPreviewMob.rotation.z=Math.sin(ip*Math.PI*4)*0.38; // 낫·꼬리 휘두르기
         else if(st==='rhino'||st==='stag') shopPreviewMob.position.z=-Math.abs(Math.sin(ip*Math.PI*2))*1.1; // 뿔·집게 들이받기
         else if(st==='hornet'||st==='dragonfly') shopPreviewMob.rotation.y+=dt*7;                       // 날갯짓 급선회
