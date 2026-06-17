@@ -322,12 +322,24 @@
   .shopcard.hybridcard{border-color:#7a5fd0;background:rgba(150,110,220,.1);}
   .shopcard.hybridcard.selected{border-color:#b478ff;box-shadow:0 0 0 2px #b478ff,0 4px 16px rgba(180,120,255,.35);}
   .shopcard.hybridcard .sn{font-size:12px;color:#dcc4ff;}
+  .win-topbar{position:sticky;top:0;z-index:12;display:flex;align-items:center;gap:8px;width:100%;
+    padding:8px 4px;margin-bottom:6px;background:linear-gradient(180deg,rgba(8,10,6,.96),rgba(8,10,6,.82));backdrop-filter:blur(6px);border-bottom:1px solid #1e2814;}
+  .win-topbar .win-tabs{flex:1;margin:0;}
+  .win-coin{flex-shrink:0;font-size:17px;font-weight:800;color:var(--chitin);background:rgba(212,160,60,.14);
+    border:1px solid rgba(212,160,60,.4);border-radius:12px;padding:6px 13px;white-space:nowrap;}
   .shop-stage{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:2px 0 6px;}
-  .shop-preview{width:200px;height:170px;border-radius:14px;background:radial-gradient(70% 70% at 50% 40%,rgba(143,209,59,.08),rgba(8,10,6,.4));border:1px solid #2a3a1c;overflow:hidden;}
+.shop-preview{width:280px;height:230px;border-radius:14px;background:radial-gradient(70% 70% at 50% 40%,rgba(143,209,59,.08),rgba(8,10,6,.4));border:1px solid #2a3a1c;overflow:hidden;}
   .shop-arrow{font-size:30px;font-weight:800;color:var(--bone);background:rgba(20,26,13,.7);border:1px solid #2a3a1c;border-radius:50%;width:42px;height:42px;cursor:pointer;line-height:1;flex-shrink:0;}
   .shop-arrow:hover{border-color:var(--toxin);color:var(--toxin);}
   .shop-info{text-align:center;margin-bottom:8px;}
   .shop-info .si-name{font-size:16px;font-weight:800;color:var(--bone);}
+  .si-bars{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;align-items:center;max-width:240px;margin:6px auto 8px;}
+  .si-bars span{font-size:10px;color:var(--bone-dim);text-align:right;}
+  .si-bar{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+  .si-bar i{display:block;height:100%;border-radius:4px;}
+  .fuse-delta{font-size:12px;font-weight:700;color:#8fd13b;margin:2px auto 6px;text-align:center;}
+  .fuse-delta.dn{color:#e8804a;}
+  .deploy-badge{display:inline-block;font-size:12px;font-weight:800;color:#0c1108;background:var(--toxin);border-radius:10px;padding:3px 12px;margin-bottom:5px;}
   .shop-info .si-sub{font-size:11px;color:var(--bone-dim);margin:2px 0 6px;}
   .shop-info .si-btn{font-size:13px;font-weight:800;color:#0c1108;background:var(--toxin);border:none;border-radius:10px;padding:8px 22px;cursor:pointer;}
   .shop-info .si-btn:active{transform:translateY(1px);}
@@ -411,17 +423,19 @@
 
 <div class="overlay win" id="winScreen">
   <div class="lang-toggle ov-lang"><button class="lang-btn" data-lang="ko">한국어</button><button class="lang-btn" data-lang="en">EN</button></div>
+  <div class="win-topbar">
+    <div class="win-tabs" id="winTabs">
+      <button class="wtab on" data-tab="shop" id="wtabShop">🛒 상점</button>
+      <button class="wtab" data-tab="fuse" id="wtabFuse">🧬 합성</button>
+      <button class="wtab" data-tab="meta" id="wtabMeta">🔒 능력</button>
+    </div>
+    <div class="win-coin">◈ <span id="winCoins">0</span></div>
+  </div>
   <div class="eyebrow">Sole Survivor · Stage <span id="stageNum">1</span></div>
   <h2 id="winTitle">승리</h2>
   <p id="winMsg"></p>
-  <div class="big">획득 코인 ◈ <span id="winCoins">0</span></div>
   <div class="deploy-now" id="deployNow"></div>
   <div class="stage-hint" id="stageHint"></div>
-  <div class="win-tabs" id="winTabs">
-    <button class="wtab on" data-tab="shop" id="wtabShop">🛒 상점</button>
-    <button class="wtab" data-tab="fuse" id="wtabFuse">🧬 합성</button>
-    <button class="wtab" data-tab="meta" id="wtabMeta">🔒 능력</button>
-  </div>
   <div class="wtab-pane" data-pane="shop">
     <p id="shopHintEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">다음 스테이지에서 사용할 종을 구매·선택하라</p>
     <div class="shop-stage" id="shopStage">
@@ -435,6 +449,7 @@
   <div class="wtab-pane" data-pane="fuse" style="display:none;">
     <p id="deploySingleEl" style="font-size:12px;color:var(--bone-dim);margin:2px 0 8px;">보유한 두 곤충을 합쳐 더 강한 합성체로 출전</p>
     <div class="shop-stage"><div class="shop-preview" id="fusePreview"></div></div>
+    <div class="shop-info" id="fuseInfo"></div>
     <div class="fuse" id="fusePanel">
       <div class="fuse-title" id="fuseTitleEl">🧬 합성 연구소 — 보유한 두 곤충을 합쳐 출전</div>
       <div class="fuse-slots">
@@ -719,6 +734,8 @@ const SND = (()=>{
     else if(kind==='start'){ [392,523,659,784].forEach((f,i)=>tone({type:'triangle',f,dur:0.18,gain:0.14,t:now()+i*0.08})); }
     else if(kind==='win'){ [523,659,784,1047,1319].forEach((f,i)=>tone({type:'triangle',f,dur:0.4,gain:0.16,t:now()+i*0.12})); }
     else if(kind==='lose'){ [392,330,262,196].forEach((f,i)=>tone({type:'sawtooth',f,dur:0.5,gain:0.16,t:now()+i*0.16})); }
+    else if(kind==='lock'){ tone({type:'triangle',f:880,f2:1380,dur:0.15,gain:0.18}); }   // 자석 조준 명중 — 경쾌한 상승음
+    else if(kind==='whiff'){ tone({type:'sine',f:320,f2:200,dur:0.13,gain:0.1}); }          // 빈 공간 직진 — 둔한 하강음
   }
 
   function setMuted(m){ muted=m; if(master) master.gain.value = m?0:0.9; }
@@ -1620,6 +1637,7 @@ const PERMA_MAX=2, PERMA_COST=55;   // 영구 슬롯 최대 수 / 고정 비용
 const HYBRID_MAX=3;                 // 합성체 보유 상한(초과 시 분해 필요)
 const HYBRID_REFUND=0.4;            // 분해 시 합성 비용 환급 비율
 const tmp = new THREE.Vector3();
+const _aimV = new THREE.Vector3();   // 필살기 자석 조준용
 const FLYERS = {hornet:1, dragonfly:1};
 
 function makeEntity(type, isPlayer=false, zombie=false){
@@ -1834,7 +1852,31 @@ function doAttack(e, special=false){
 
   if(special){
     const c = SP_DASH[e.type] || {t:0.46, spd:24, r:1.7};
-    e.dash = {dir:fwd.clone(), t:c.t, dmg, hit:new Set(), spd:c.spd, r:c.r};
+    let dir=fwd.clone();
+    // 🧲 자석 조준 — 전방의 가장 적절한 적으로 방향을 틀어 발사
+    let best=null, bestScore=Infinity;
+    for(const o of G.entities){
+      if(o===e||o.dead||o.corpse) continue;
+      _aimV.copy(o.pos).sub(e.pos); _aimV.y=0; const dist=_aimV.length();
+      if(dist<0.6 || dist>20) continue; _aimV.normalize();
+      const ahead=_aimV.dot(fwd); if(ahead<0.3) continue;        // 전방 ±72°만 — 스틱 방향 우선 존중
+      const score=dist*(1.9-ahead*1.1);                          // 바라보는 방향에 가까울수록 강하게 보정
+      if(score<bestScore){ bestScore=score; best=o; }
+    }
+    if(best){
+      dir.copy(best.pos).sub(e.pos); dir.y=0; dir.normalize();
+      e.face=Math.atan2(dir.x,dir.z);                            // 발동 순간 타겟으로 방향 전환
+      e.mesh.rotation.y=e.face;
+      if(e.isPlayer){ spawnHitFx(best.pos, 0xffd24a, 1.2, 'ring'); if(SND.ui) SND.ui('lock'); }   // 조준 명중 — 금색 고리 + 상승음
+    } else if(e.isPlayer && SND.ui){ SND.ui('whiff'); }          // 빈 공간 직진 — 둔한 소리
+    let soft=null;
+    if(!best){                                                   // 전방에 적이 없으면 가장 가까운 적으로 약하게 보정
+      let nd=Infinity;
+      for(const o of G.entities){ if(o===e||o.dead||o.corpse) continue;
+        const dd=e.pos.distanceTo(o.pos); if(dd<nd && dd<22){ nd=dd; soft=o; } }
+    }
+    e.dash = {dir:dir.clone(), t:c.t, dmg, hit:new Set(), spd:c.spd, r:c.r, lock:best||null, soft};
+    spawnDashPath(e.pos, dir, (c.spd||22)*c.t*0.85, best?0xffd24a:(d.col||0x8fd13b));  // 진행 방향 바닥 궤적(조준=금색)
     spawnCastFx(e, d, true);     // 대형 발동 링
     spawnSpecialFx(e, d);        // 종별 화려한 연출
     spawnDashFx(e);              // 돌진 잔상 시작
@@ -1889,6 +1931,7 @@ function applyHit(e,o,dmg,special){
   const fxCol = syn?0x9fff5f : (special?0xffd86a : (mult>=1.45?0x8fd13b : (e.type==='rhino'?0xffcf6a:0xffffff)));
   spawnHitFx(o.pos, fxCol, special?1.35:0.85, special?'burst':'spark');
   SND.hit(o.pos, {special, mult, syn:!!syn, fatal:(o.hp<=0)});
+  if(special && e.isPlayer){ G.shake=Math.max(G.shake||0, 0.45); G.hitStop=Math.max(G.hitStop||0, 0.07); }   // 필살기 적중 타격감
   if(e.type==='spider'||e.type==='ant'){ o.slow=Math.max(o.slow,special?2.5:1.2); }
   if(e.type==='centipede'||e.type==='scorpion'||e.type==='hornet'){ o.poison=Math.max(o.poison,special?4:2); }
   if((e.type==='stag'||e.type==='rhino')&&special){ o.stun=Math.max(o.stun,0.8); }
@@ -2073,6 +2116,20 @@ function updateFx(dt){
     else if(f.kind==='shard'){ f.mesh.position.x+=f.vx*dt; f.mesh.position.z+=f.vz*dt; f.vy-=9*dt;
       f.mesh.position.y=Math.max(0.1,f.mesh.position.y+f.vy*dt); f.mat.opacity=1-k; }
     else if(f.kind==='trail'){ f.mesh.scale.setScalar(f.s0+(f.s1-f.s0)*k); f.mat.opacity=0.55*(1-k); }
+    else if(f.kind==='path'){ f.mat.opacity=(f.op0||0.6)*(1-k); }
+  }
+}
+// 필살기 돌진 경로 — 바닥에 진행 방향 점 궤적을 잠깐 그린다
+function spawnDashPath(pos, dir, dist, col){
+  if(!G.fx) G.fx=[];
+  for(let i=1;i<=5;i++){
+    const fr=i/5;
+    const p=pos.clone().addScaledVector(dir, dist*fr); p.y=0.06;
+    const m=new THREE.Mesh(new THREE.CircleGeometry(0.42-i*0.05,18),
+      new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.6,side:THREE.DoubleSide,depthWrite:false}));
+    m.rotation.x=-Math.PI/2; m.position.copy(p);
+    scene.add(m);
+    G.fx.push({mesh:m,t:0,life:0.5,kind:'path',mat:m.material,op0:0.6-i*0.07});
   }
 }
 
@@ -2295,6 +2352,15 @@ function applyMove(e, desired, dt, speedMul=1){
 
   if(e.dash){
     e.dash.t-=dt;
+    if(e.dash.lock && !e.dash.lock.dead && !e.dash.lock.corpse){   // 🧲 자석 추적 — 타겟 쪽으로 살짝 휘어짐
+      _aimV.copy(e.dash.lock.pos).sub(e.pos); _aimV.y=0;
+      if(_aimV.lengthSq()>0.4){ _aimV.normalize(); e.dash.dir.lerp(_aimV, Math.min(1,dt*4)).normalize();
+        e.face=Math.atan2(e.dash.dir.x,e.dash.dir.z); }
+    } else if(e.dash.soft && !e.dash.soft.dead && !e.dash.soft.corpse){   // 약한 보정 — 헛스윙 방지
+      _aimV.copy(e.dash.soft.pos).sub(e.pos); _aimV.y=0;
+      if(_aimV.lengthSq()>0.4){ _aimV.normalize(); e.dash.dir.lerp(_aimV, Math.min(1,dt*1.4)).normalize();
+        e.face=Math.atan2(e.dash.dir.x,e.dash.dir.z); }
+    }
     const spd=e.dash.spd||22;
     e.pos.addScaledVector(e.dash.dir, spd*dt);            // 필살기 돌진 — 크게 전진
     const rr=e.pos.length();
@@ -2435,6 +2501,7 @@ function loop(now){
   render();
 }
 function step(dt){
+  if(G.hitStop>0){ G.hitStop=Math.max(0,G.hitStop-dt); dt*=0.35; }   // 자석 적중 순간 짧은 슬로우(타격감)
   maybeSpawn(dt);
   updateWeather(dt);   // 스테이지 기후 파티클(비·눈·모래·재·반딧불) 갱신
   updateBiomeTransition(dt);   // [Q3] 바이옴 색·안개·조명 부드러운 전환
@@ -2532,6 +2599,10 @@ function step(dt){
     const tp=G.player.pos.clone().add(CAM_OFF);
     camera.position.lerp(tp,0.08);
     camera.lookAt(G.player.pos.x, 0.5, G.player.pos.z);
+    if(G.shake>0){ G.shake=Math.max(0,G.shake-dt); const s=G.shake*0.7;   // 적중 화면 흔들림
+      camera.position.x += (Math.random()-0.5)*s;
+      camera.position.y += (Math.random()-0.5)*s*0.5;
+      camera.position.z += (Math.random()-0.5)*s; }
   }
   if(G.player && G.player.swapCd>0){ G.player.swapCd=Math.max(0,G.player.swapCd-dt); }
   updateSwapUI();
@@ -2706,28 +2777,45 @@ function shopChoices(){
   ORDER.forEach(t=>list.push({type:t}));
   return list;
 }
+function darkenMesh(mesh){     // 미보유 곤충 — 어두운 실루엣
+  mesh.traverse(o=>{ const m=o.material; if(!m) return;
+    (Array.isArray(m)?m:[m]).forEach(mm=>{ if(mm.color) mm.color.setRGB(0.07,0.07,0.10); if(mm.emissive) mm.emissive.setRGB(0,0,0); });
+  });
+}
 function setShopPreviewMesh(it, dir){
   if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
   carMobs.forEach(o=>o.m.visible=false);    // 시작 캐러셀 곤충 숨김
   let mesh, col;
   if(it.hyb){ makeHybridSpecies(it.hyb.base,it.hyb.sub); mesh=makeInsect('__hybrid'); col=SPECIES['__hybrid'].col; }
-  else { mesh=makeInsect(it.type); col=SPECIES[it.type].col; }
+  else { mesh=makeInsect(it.type); col=SPECIES[it.type].col; if(!G.owned[it.type]) darkenMesh(mesh); }   // 미보유 실루엣
   mesh.position.set((dir||0)*5, 0.2, 0);    // 넘긴 방향 반대편에서 슬라이드 인
   mesh._slideTo=0; mesh._intro=0; mesh._style=it.hyb?'__hybrid':it.type; mesh.scale.setScalar(2.0);
   carGroup.add(mesh); carGroup.rotation.y=0; shopPreviewMob=mesh;
   carColTarget.set(col); carFogTarget.set(col).multiplyScalar(0.25);
 }
+function statBarsHTML(d){    // 무대 곤충 능력치 막대(체력/속도/공격)
+  return '<div class="si-bars">'+
+    '<span>'+t('statHp')+'</span><div class="si-bar"><i style="width:'+Math.min(100,d.hp/660*100)+'%;background:linear-gradient(90deg,#5a8a2e,#8fd13b)"></i></div>'+
+    '<span>'+t('statSpd')+'</span><div class="si-bar"><i style="width:'+Math.min(100,d.speed/6*100)+'%;background:linear-gradient(90deg,#7a5a1c,#d4a03c)"></i></div>'+
+    '<span>'+t('statAtk')+'</span><div class="si-bar"><i style="width:'+Math.min(100,d.atk/30*100)+'%;background:linear-gradient(90deg,#7a2418,#c1432e)"></i></div>'+
+    '</div>';
+}
 function renderShopInfo(it){
   const el=document.getElementById('shopInfo'); if(!el) return;
-  let name, sub, act;
-  if(it.hyb){ name='🧬 '+emo(it.hyb.base)+SPECIES[it.hyb.base].ko+'×'+emo(it.hyb.sub)+SPECIES[it.hyb.sub].ko;
+  let name, sub, act, d2;
+  if(it.hyb){ makeHybridSpecies(it.hyb.base,it.hyb.sub); d2=SPECIES['__hybrid'];
+    name='🧬 '+emo(it.hyb.base)+SPECIES[it.hyb.base].ko+'×'+emo(it.hyb.sub)+SPECIES[it.hyb.sub].ko;
     const on=G.hybrid&&G.hybrid.base===it.hyb.base&&G.hybrid.sub===it.hyb.sub;
     sub=LANG==='en'?'Hybrid':'합성체'; act=on?t('shopSelected'):t('shopOwned'); }
   else { const d=SPECIES[it.type], owned=!!G.owned[it.type], sel=owned&&!G.hybrid&&it.type===G.playerType;
-    name=emo(it.type)+' '+d.ko; sub=d.sp||'';
+    d2=d; name=emo(it.type)+' '+d.ko; sub=d.sp||'';
     act = owned ? (sel?t('shopSelected'):t('shopOwned')) : ('◈ '+BALANCE.coins.shopCost+' '+t('shopBuy')); }
   el.innerHTML='<div class="si-name">'+name+'</div><div class="si-sub">'+sub+'</div>'+
-    '<button class="si-btn" id="shopPickBtn">'+act+'</button>';
+    statBarsHTML(d2)+'<button class="si-btn" id="shopPickBtn">'+act+'</button>';
+  const isDeploying = it.hyb ? (G.hybrid && G.hybrid.base===it.hyb.base && G.hybrid.sub===it.hyb.sub)
+                             : (!G.hybrid && it.type===G.playerType && !!G.owned[it.type]);
+  if(isDeploying){ const bd=document.createElement('div'); bd.className='deploy-badge';
+    bd.textContent='🎯 '+(LANG==='en'?'Deploying next stage':'다음 출전 예정'); el.insertBefore(bd, el.firstChild); }
   const btn=document.getElementById('shopPickBtn');
   if(btn) btn.addEventListener('click',()=>pickShopChoice(it));
 }
@@ -2822,6 +2910,7 @@ function updateFusePreview(){
   if(shopPreviewMob){ carGroup.remove(shopPreviewMob); shopPreviewMob=null; }
   carMobs.forEach(o=>o.m.visible=false);
   carGroup.rotation.y=0;
+  const fi=document.getElementById('fuseInfo');
   if(fuseA && fuseB){          // 두 재료가 양옆에서 등장 → 가운데로 합쳐짐
     const a=makeInsect(fuseA), b=makeInsect(fuseB);
     a.position.set(-3.6,0.2,0); a.scale.setScalar(1.5);
@@ -2831,11 +2920,26 @@ function updateFusePreview(){
     const hy=makeInsect('__hybrid'); hy.position.set(0,0.2,0); hy.scale.setScalar(0.01);
     carGroup.add(hy); shopPreviewMob=hy; shopPreviewMob._fuseAnim=0;
     carColTarget.set(SPECIES['__hybrid'].col); carFogTarget.set(SPECIES['__hybrid'].col).multiplyScalar(0.25);
+    if(fi){ const h=SPECIES['__hybrid'], a=SPECIES[fuseA];
+      const dhp=Math.round(h.hp-a.hp), datk=Math.round(h.atk-a.atk), dsp=+(h.speed-a.speed).toFixed(1);
+      const ups=[], downs=[];
+      const L=(k)=>LANG==='en'?({hp:'HP',atk:'ATK',spd:'SPD'})[k]:({hp:'체력',atk:'공격',spd:'속도'})[k];
+      if(dhp>0)ups.push(L('hp')+' +'+dhp); else if(dhp<0)downs.push(L('hp')+' '+dhp);
+      if(datk>0)ups.push(L('atk')+' +'+datk); else if(datk<0)downs.push(L('atk')+' '+datk);
+      if(dsp>0)ups.push(L('spd')+' +'+dsp); else if(dsp<0)downs.push(L('spd')+' '+dsp);
+      let deltaLine='';
+      if(ups.length) deltaLine+='<div class="fuse-delta">⬆ '+(LANG==='en'?('vs '+SPECIES[fuseA].ko+': '):(SPECIES[fuseA].ko+' 대비 '))+ups.join(' · ')+'</div>';
+      if(downs.length) deltaLine+='<div class="fuse-delta dn">⚠️ '+(LANG==='en'?'Lower: ':'하락: ')+downs.join(' · ')+'</div>';
+      fi.innerHTML='<div class="si-name">🧬 '+emo(fuseA)+SPECIES[fuseA].ko+'×'+emo(fuseB)+SPECIES[fuseB].ko+'</div>'+
+        '<div class="si-sub">'+(LANG==='en'?'Hybrid result':'합성 결과')+'</div>'+statBarsHTML(h)+deltaLine; }
   } else {
-    const tp=fuseA||fuseB; if(!tp){ carColTarget.set(0x8a5fd0); return; }
+    const tp=fuseA||fuseB;
+    if(!tp){ carColTarget.set(0x8a5fd0); if(fi) fi.innerHTML='<div class="si-sub">'+(LANG==='en'?'Pick two species to fuse':'두 곤충을 골라 합성하세요')+'</div>'; return; }
     const mesh=makeInsect(tp); mesh.position.set(0,0.2,0); mesh.scale.setScalar(2.0); mesh._slideTo=0; mesh._intro=0; mesh._style=tp;
     carGroup.add(mesh); shopPreviewMob=mesh;
     carColTarget.set(SPECIES[tp].col); carFogTarget.set(SPECIES[tp].col).multiplyScalar(0.25);
+    if(fi){ const d=SPECIES[tp];
+      fi.innerHTML='<div class="si-name">'+emo(tp)+' '+d.ko+'</div><div class="si-sub">'+(LANG==='en'?'Pick a partner to fuse':'보조 곤충을 더 고르세요')+'</div>'+statBarsHTML(d); }
   }
 }
 const _carCol=new THREE.Color(), carColTarget=new THREE.Color(SPECIES[ORDER[0]].col);
