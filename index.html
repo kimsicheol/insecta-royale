@@ -3379,7 +3379,6 @@ function carUpdate(dt){
   carRing.material.color.lerp(_carCol.copy(carColTarget).lerp(WHITE3,0.45),0.07);
   carRing.material.emissive.lerp(carColTarget,0.07);
   if(carScene.fog) carScene.fog.color.lerp(carFogTarget,0.05);
-  if(carScene.background && carScene.background.lerp) carScene.background.lerp(_carCol.copy(carColTarget).multiplyScalar(0.1),0.04);   // 배경도 곤충색 은은히
 }
 function carSnap(){
   carTarget=-Math.round(-carRot/CAR_STEP)*CAR_STEP;   // 가장 가까운 슬롯으로 스냅
@@ -3470,9 +3469,12 @@ let _carLast=performance.now();
 function carLoop(){
   requestAnimationFrame(carLoop);
   if(!carRenderer) return;
-  if(G.state!=='select' && carMode!=='shop' && carMode!=='fuse') return;   // 시작화면·상점·합성 프리뷰
+  const _ss = (typeof document!=='undefined') ? document.getElementById('select') : null;
+  const onSelect = _ss && _ss.style.display!=='none';
+  if(G.state!=='select' && carMode!=='shop' && carMode!=='fuse' && !onSelect) return;   // 시작화면·상점·합성 프리뷰
   const now=performance.now(); const dt=Math.min(0.05,(now-_carLast)/1000); _carLast=now;
-  carResize(); carUpdate(dt);
+  carResize();
+  try{ carUpdate(dt); }catch(e){ /* 한 프레임 갱신 실패해도 렌더는 계속 → 3D 유지 */ }
   try{ carRenderer.render(carScene,carCam); }catch(e){}
 }
 updateCarUI();
