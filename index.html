@@ -117,7 +117,8 @@
   .thp-side{display:flex;align-items:center;gap:5px;font-weight:800;font-size:13px;color:var(--bone);}
   .thp-dot{width:13px;height:13px;border-radius:50%;display:inline-block;box-shadow:0 0 6px rgba(0,0,0,.5);}
   .thp-dot.guard{width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;box-shadow:0 0 8px #39d353;}
-  .thp-dot.ctrl{outline:2px solid #fff;outline-offset:1px;}
+  .thp-dot.ctrl{outline:2px solid #6cff7a;outline-offset:1px;width:17px;height:17px;line-height:17px;text-align:center;box-shadow:0 0 9px #39d353;position:relative;}
+  .thp-ctrl-arrow{font-style:normal;font-size:11px;color:#062b0a;font-weight:900;}
   .thp-vs{font-size:11px;color:var(--bone-dim);font-weight:800;}
   .thp-base{display:inline-flex;align-items:center;gap:3px;font-size:12px;}
   .thp-bbar{display:inline-block;width:42px;height:7px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;}
@@ -125,6 +126,15 @@
   .thp-stage{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:900;
     color:var(--chitin);background:rgba(8,11,7,.8);border:1px solid rgba(212,160,60,.4);border-radius:9px;padding:2px 12px;white-space:nowrap;}
   .tf-hint{font-size:12px;color:var(--bone-dim);text-align:center;line-height:1.5;margin:4px 4px 10px;}
+  .hall-box{background:rgba(212,160,60,.08);border:1px solid rgba(212,160,60,.28);border-radius:11px;padding:8px 10px;margin:0 0 10px;}
+  .hall-t{font-size:11px;font-weight:800;color:var(--chitin);margin-bottom:6px;}
+  .hall-chip{font-size:15px;background:rgba(8,11,7,.5);border:1px solid #3a4a24;border-radius:9px;padding:5px 10px;margin:0 5px 5px 0;cursor:pointer;color:var(--bone);letter-spacing:1px;}
+  .hall-chip:hover{border-color:var(--chitin);background:rgba(212,160,60,.15);}
+  .ts-best{font-size:12.5px;font-weight:800;color:var(--chitin);background:rgba(212,160,60,.13);border:1px solid rgba(212,160,60,.32);border-radius:9px;padding:4px 12px;margin:0 auto 8px;display:inline-block;}
+  .tf-leg-box{margin:4px 0 10px;text-align:left;}
+  .tf-leg-t{font-size:11.5px;font-weight:800;color:var(--chitin);margin-bottom:5px;}
+  .tf-leg{display:inline-block;font-size:11px;color:var(--bone-dim);background:rgba(255,255,255,.05);border:1px solid #2a3a1c;border-radius:8px;padding:3px 7px;margin:0 4px 4px 0;}
+  .tf-leg.avail{color:#ffd24a;border-color:rgba(212,160,60,.5);background:rgba(212,160,60,.12);}
   .tf-prev{background:rgba(212,160,60,.12);border:1px solid rgba(212,160,60,.35);border-radius:11px;
     padding:10px 12px;margin:4px 0 10px;text-align:center;font-size:13.5px;color:var(--bone);line-height:1.5;}
   .ts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
@@ -266,6 +276,18 @@
     border-radius:22px;padding:9px 15px;cursor:pointer;backdrop-filter:blur(4px);}
   #swapBtn i{font-style:normal;font-size:11px;color:var(--toxin);background:rgba(143,209,59,.2);border-radius:8px;padding:1px 6px;}
   #swapBtn.cooling{border-color:#555;color:var(--bone-dim);opacity:.7;}
+  #teamCmd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(26px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:9px;}
+  .tcmd{font-size:13px;font-weight:800;color:var(--bone);background:rgba(8,11,7,.78);border:1.6px solid #3a4a24;
+    border-radius:13px;padding:9px 14px;cursor:pointer;backdrop-filter:blur(4px);white-space:nowrap;}
+  .tcmd:active{transform:scale(.94);}
+  #cmdCharge{border-color:#e0432e;color:#ffd2ca;}
+  #cmdDefend{border-color:#39d353;color:#cfeecb;}
+  .tcmd.on{background:rgba(255,255,255,.14);box-shadow:0 0 14px currentColor;font-weight:900;transform:translateY(-1px);}
+  #cmdCharge.on{background:rgba(224,67,46,.32);color:#fff;}
+  #cmdDefend.on{background:rgba(57,211,83,.3);color:#fff;}
+  #baseAlert{position:absolute;inset:0;z-index:7;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;animation:baPulse .85s ease-in-out infinite;}
+  .ba-txt{margin-top:62px;background:rgba(120,20,12,.88);color:#ffd2ca;font-weight:900;font-size:13px;padding:6px 14px;border-radius:13px;border:1.5px solid #e0432e;box-shadow:0 0 12px rgba(224,67,46,.6);}
+  @keyframes baPulse{0%,100%{box-shadow:inset 0 0 38px rgba(224,67,46,.32);}50%{box-shadow:inset 0 0 72px rgba(224,67,46,.68);}}
   #atk{position:absolute;right:max(24px,env(safe-area-inset-right));
     bottom:calc(40px + env(safe-area-inset-bottom));width:108px;height:108px;border-radius:50%;
     pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;
@@ -317,6 +339,13 @@
   .fuse-pre{font-size:12px;font-weight:800;color:var(--chitin);margin-bottom:4px;}
   .coin-hint{font-size:11px;color:#caa86a;background:rgba(212,160,60,.1);border-radius:7px;padding:5px 9px;margin:5px 0;}
   .birth-fx{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;pointer-events:none;}
+  .legend-flash{position:fixed;inset:0;z-index:58;pointer-events:none;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 45%, rgba(255,210,74,.55) 0%, rgba(255,191,58,.22) 30%, transparent 65%);
+    animation:lfFade 1.7s ease-out forwards;}
+  .lf-text{font-size:clamp(22px,7vw,46px);font-weight:900;color:#fff7da;text-shadow:0 0 24px #ffd24a,0 0 48px #ffae2a,0 2px 4px #6a4500;
+    letter-spacing:.02em;animation:lfPop 1.7s cubic-bezier(.2,1.3,.4,1) forwards;}
+  @keyframes lfFade{0%{opacity:0}12%{opacity:1}70%{opacity:1}100%{opacity:0}}
+  @keyframes lfPop{0%{transform:scale(.4);opacity:0}18%{transform:scale(1.15);opacity:1}30%{transform:scale(1)}80%{transform:scale(1);opacity:1}100%{transform:scale(1.05);opacity:0}}
   .birth-inner{font-size:34px;font-weight:900;color:#eafff0;text-align:center;background:rgba(8,12,6,.82);
     border:2px solid var(--chitin);border-radius:18px;padding:22px 38px;animation:birthPop 1.6s ease forwards;
     box-shadow:0 0 40px rgba(212,160,60,.5);}
@@ -596,6 +625,8 @@
   <div id="teamHud" class="team-hud" style="display:none;"></div>
   <div id="stick"><div id="knob"></div></div>
   <button id="swapBtn" style="display:none;">🔄</button>
+  <div id="teamCmd" style="display:none;"><button id="cmdCharge" class="tcmd">⚔️ 전군 돌격</button><button id="cmdDefend" class="tcmd">🛡️ 전군 수비</button></div>
+  <div id="baseAlert" style="display:none;"><span id="baTxt" class="ba-txt">🏠 본진 공격받는 중!</span></div>
   <div id="atk"><span class="ring"></span><span id="atkLabel">공격</span></div>
   <div class="hint" id="hintEl">스틱/WASD 이동 · 공격버튼·스페이스 탭=공격 · <b style="color:var(--chitin)">꾹 누르면 필살기</b></div>
 </div>
@@ -916,6 +947,8 @@ const SND = (()=>{
     else if(kind==='lose'){ [392,330,262,196].forEach((f,i)=>tone({type:'sawtooth',f,dur:0.5,gain:0.16,t:now()+i*0.16})); }
     else if(kind==='lock'){ tone({type:'triangle',f:880,f2:1380,dur:0.15,gain:0.18}); }   // 자석 조준 명중 — 경쾌한 상승음
     else if(kind==='whiff'){ tone({type:'sine',f:320,f2:200,dur:0.13,gain:0.1}); }          // 빈 공간 직진 — 둔한 하강음
+    else if(kind==='charge'){ [523,659,880].forEach((f,i)=>tone({type:'sawtooth',f,dur:0.16,gain:0.16,t:now()+i*0.05})); tone({type:'triangle',f:1175,dur:0.2,gain:0.14,t:now()+0.15}); }   // ⚔️ 전군 돌격 — 치솟는 진군 나팔
+    else if(kind==='rally'){ [330,247].forEach((f,i)=>tone({type:'sawtooth',f,dur:0.26,gain:0.16,t:now()+i*0.06})); tone({type:'triangle',f:392,dur:0.3,gain:0.12,t:now()+0.12}); }   // 🛡️ 전군 수비 — 묵직한 결집 호른
   }
 
   function setMuted(m){ muted=m; if(master) master.gain.value = m?0:0.9; }
@@ -1384,6 +1417,7 @@ function setLang(lang){
   try{ if(onWin && typeof updateDeployNow==='function') updateDeployNow(); }catch(e){}
   try{ if(onWin && typeof updateStageHint==='function') updateStageHint(); }catch(e){}
   try{ if(onWin && typeof setWinTab==='function') setWinTab(winTab); }catch(e){}   // 탭 레이아웃·슬롯 갱신
+  try{ if(G.mode==='team' && G.state==='play'){ updateTeamHUD(); showTeamCmd(true); } }catch(e){}   // 팀전 중 라벨 갱신
 }
 function applyStaticLang(){
   const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
@@ -2554,6 +2588,12 @@ function spawnBirthFx(h, firstLegend){    // 🎉 합성 성공 — 별명 크�
     (h.legend?'⭐ ':'🧬 ')+'<b>'+h.ko+'</b> '+(LANG==='en'?'born!':'탄생!')+
     (h.legend?'<div class="birth-leg">'+(LANG==='en'?'LEGENDARY HYBRID':'전설의 합성체')+'</div>':'')+'</div>';
   if(typeof document!=='undefined' && document.body) document.body.appendChild(o);
+  if(firstLegend && document.body){   // ✨ 첫 전설 완성 — 화면 전체가 금빛으로 번쩍
+    const fl=document.createElement('div'); fl.className='legend-flash';
+    fl.innerHTML='<div class="lf-text">'+(LANG==='en'?'⭐ LEGEND FORGED! ⭐':'⭐ 전설 합성 성공! ⭐')+'</div>';
+    document.body.appendChild(fl);
+    setTimeout(function(){ if(fl.parentNode) fl.parentNode.removeChild(fl); }, 1700);
+  }
   if(h.legend){   // ⭐ 전설만 — 금색 색종이가 화면 위에서 쏟아짐
     for(let i=0;i<26;i++){ const c=document.createElement('div'); c.className='confetti';
       c.style.left=(Math.random()*100)+'%';
@@ -2725,21 +2765,47 @@ function updateAI(e, dt){
   if(e.boss) bossThink(e, dt);                             // 보스는 고유 패턴 추가
   if(!e.zombie) e.spReady=Math.min(100,(e.spReady||0)+dt*6);
   let best=null, bd=1e9;
-  // 🛡️ 팀전 수비 배치: 본진 근처를 벗어나지 않고 접근하는 적만 상대
+  // 🛡️ 팀전 수비 배치: 본진으로 오는 적을 본진 앞에서 가로막아 요격
   if(G.mode==='team' && e.guarding && e.team!=='free'){
     const myBase = e.team==='ally'?G.baseAlly:G.baseEnemy;
     if(myBase && !myBase.dead){
-      const fromBase=e.pos.distanceTo(myBase.pos);
-      if(fromBase>8){ tmp.copy(myBase.pos).sub(e.pos).normalize(); applyMove(e,tmp,dt,0.8); return; }   // 너무 멀면 복귀
-      let gb=null, gd=9;   // 본진 근처(반경 9) 적만
+      let threat=null, td=13;   // 본진 위협권(넓게) 안에서 본진에 가장 가까운 적
       for(const o of G.entities){ if(o.dead||o.corpse||o.isBase||o.team===e.team) continue;
-        const db=myBase.pos.distanceTo(o.pos); if(db<gd){ gd=db; gb=o; } }
-      if(gb){ best=gb; }
-      else { tmp.copy(myBase.pos).sub(e.pos); if(tmp.lengthSq()>4){ tmp.normalize().multiplyScalar(0.4); applyMove(e,tmp,dt,0.6); } e.target=null; return; }   // 적 없으면 본진 곁 대기
+        const db=myBase.pos.distanceTo(o.pos); if(db<td){ td=db; threat=o; } }
+      if(threat){
+        const inRange=e.pos.distanceTo(threat.pos) <= (e.d.range+threat.size+0.4);
+        if(inRange){ best=threat; }   // 사거리 안 → 교전
+        else {   // 사거리 밖 → 본진과 적 사이(요격 지점)로 막아선다
+          tmp.copy(myBase.pos).add(threat.pos).multiplyScalar(0.5).sub(e.pos);
+          if(tmp.lengthSq()>0.5){ tmp.normalize(); applyMove(e,tmp,dt,1.0); }
+          e.target=threat; return;
+        }
+      } else {   // 위협 없으면 본진 곁 대기
+        const fromBase=e.pos.distanceTo(myBase.pos);
+        if(fromBase>5){ tmp.copy(myBase.pos).sub(e.pos).normalize().multiplyScalar(0.5); applyMove(e,tmp,dt,0.7); }
+        e.target=null; return;
+      }
     }
   }
-  // ⚔️ 팀전: 지정 명령(cmdTarget)이 살아있으면 그 적을 우선 표적
-  if(!best && G.mode==='team' && e.cmdTarget && !e.cmdTarget.dead && !e.cmdTarget.corpse){ best=e.cmdTarget; }
+  // ⚔️ 팀전: 지정 명령(cmdTarget) 처리 — 본진 공성 중 적이 길을 막으면 먼저 처치 후 진격
+  if(!best && G.mode==='team' && e.cmdTarget && !e.cmdTarget.dead && !e.cmdTarget.corpse){
+    if(e.cmdTarget.isBase){
+      let block=null, bd=6;   // 진격로의 위협(가까운 적 곤충) 먼저 처리
+      for(const o of G.entities){ if(o.dead||o.corpse||o.isBase||o.team===e.team) continue;
+        const d=e.pos.distanceTo(o.pos); if(d<bd){ bd=d; block=o; } }
+      best = block || e.cmdTarget;   // 막아선 적 있으면 반격, 없으면 본진으로 직진
+    } else best=e.cmdTarget;
+  }
+  // 🧠 명령 없는 아군 — 우리 본진이 위협받으면 자동으로 막으러 간다
+  if(!best && G.mode==='team' && !e.cmdTarget && !e.guarding && e.team!=='free'){
+    const myBase = e.team==='ally'?G.baseAlly:G.baseEnemy;
+    if(myBase && !myBase.dead){
+      let def=null, dd=10;
+      for(const o of G.entities){ if(o.dead||o.corpse||o.isBase||o.team===e.team) continue;
+        const db=myBase.pos.distanceTo(o.pos); if(db<dd){ dd=db; def=o; } }
+      if(def) best=def;   // 본진 근처 침입자 자동 요격(없으면 아래 일반 로직대로 진격)
+    }
+  }
   else if(!best)
   for(const o of G.entities){
     if(o===e||o.dead) continue;
@@ -3020,6 +3086,31 @@ function step(dt){
     if(G.buffZone.ring){ const p=1+Math.sin(G.t*3)*0.06; G.buffZone.ring.scale.set(p,p,p);
       G.buffZone.ring.material.opacity=0.5+Math.sin(G.t*3)*0.18; }
   }
+  if(G.mode==='team' && G.allies){   // 🟢 조종 중인 곤충 위에만 화살표 표시 + 둥실/회전
+    for(const a of G.allies){ if(!a.ctrlMarker) continue;
+      const on = (a===G.player && !a.dead);
+      a.ctrlMarker.visible = on;
+      if(on){ a.ctrlMarker.position.y = Math.sin(G.t*4)*0.16; a.ctrlMarker.rotation.y = G.t*1.6; }
+    }
+  }
+  if(G.mode==='team' && G.enemies && G.baseAlly && !G.baseAlly.dead){   // ⚠️ 적의 본진 역습 — 우리 본진이 비면 그 틈을 노린다
+    G.enemyRaidTimer = (G.enemyRaidTimer||0) - dt;
+    const guarders = G.allies ? G.allies.filter(a=>!a.dead && a.pos.distanceTo(G.baseAlly.pos)<13).length : 0;
+    if(guarders>0){   // 아군이 본진으로 복귀 → 역습 중단
+      for(const en of G.enemies){ if(en.raiding){ en.raiding=false; if(en.cmdTarget===G.baseAlly) en.cmdTarget=null; } }
+    } else if(G.enemyRaidTimer<=0){   // 본진이 텅 빔 → 적 한 마리가 본진으로 돌진
+      G.enemyRaidTimer=3.5;
+      const raider=G.enemies.find(en=>!en.dead && !en.corpse && !en.raiding);
+      if(raider){ raider.raiding=true; raider.cmdTarget=G.baseAlly; raider.guarding=false; raider.moveTarget=null;
+        flashBanner(LANG==='en'?'⚠️ Enemy raids your base!':'⚠️ 적이 빈 본진을 노린다!','hurt'); }
+    }
+  }
+  if(true){   // 🏠 본진 피습 경고 — 멀리서 싸워도 화면 가장자리로 즉시 알림
+    const al=document.getElementById('baseAlert');
+    if(al){ const under = G.mode==='team' && G.state==='play' && G.baseAlly && !G.baseAlly.dead && G.enemies &&
+        G.enemies.some(e=>!e.dead && !e.corpse && e.pos.distanceTo(G.baseAlly.pos)<7);
+      al.style.display = under?'flex':'none'; }
+  }
   updateWeather(dt);   // 스테이지 기후 파티클(비·눈·모래·재·반딧불) 갱신
   updateBiomeTransition(dt);   // [Q3] 바이옴 색·안개·조명 부드러운 전환
   if(G.player && !G.player.dead && !G.player.corpse){
@@ -3176,8 +3267,20 @@ function spawnTeamRing(e, ally){   // 진영 표시 — 발밑 색 링
     new THREE.MeshBasicMaterial({color: ally?0x39d353:0xe0432e, transparent:true, opacity:0.85}));
   ring.rotation.x=Math.PI/2; ring.position.y=0.06; e.mesh.add(ring); e.teamRing=ring;
 }
+function spawnCtrlMarker(e){   // 🟢 조종 중 표시 — 머리 위 아래쪽 화살표 + 빛 고리(G.player에게만 보임)
+  const grp=new THREE.Group();
+  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.42,0.7,4),
+    new THREE.MeshBasicMaterial({color:0x6cff7a, transparent:true, opacity:0.96}));
+  cone.rotation.x=Math.PI; cone.position.y=2.95;   // 끝이 아래(곤충)를 향함
+  const halo=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.06,6,22),
+    new THREE.MeshBasicMaterial({color:0x39d353, transparent:true, opacity:0.6}));
+  halo.rotation.x=Math.PI/2; halo.position.y=2.45;
+  grp.add(cone); grp.add(halo); grp.visible=false;
+  e.mesh.add(grp); e.ctrlMarker=grp;
+}
 function startTeamBattle(myTeam, enemyTeam, stage){
   stage = stage||1; G.teamStage=stage; G.teamRoster=myTeam.slice();
+  if(stage===1) G.teamHpBonus=0;   // 새 도전 시작 시 보너스 초기화
   for(const e of G.entities){scene.remove(e.mesh);} G.entities.length=0; NAMES_BY.clear();
   for(const sh of G.shadows){scene.remove(sh.mesh);} G.shadows.length=0;
   for(const w of G.webs){if(w.mesh)scene.remove(w.mesh);} G.webs.length=0;
@@ -3197,7 +3300,8 @@ function startTeamBattle(myTeam, enemyTeam, stage){
     let e;
     if(item==='__hybrid' && G.teamHybrid){ makeHybridSpecies(G.teamHybrid.base, G.teamHybrid.sub); e=makeEntity('__hybrid', i===0, false, 'ally'); absorb(e, G.teamHybrid.sub); const lm=e.muts[e.muts.length-1]; if(lm) lm.t=1e9; }
     else e=makeEntity(item, i===0, false, 'ally');
-    e.team='ally'; e.pos.set(-15, 0, (i-1)*5); e.mesh.position.copy(e.pos); spawnTeamRing(e,true);
+    e.team='ally'; e.pos.set(-15, 0, (i-1)*5); e.mesh.position.copy(e.pos); spawnTeamRing(e,true); spawnCtrlMarker(e);
+    const hpBonus=1+(G.teamHpBonus||0); e.hpMax=Math.round(e.hpMax*hpBonus); e.hp=e.hpMax;   // 🩹 클리어 누적 강화 + 풀 체력 시작
     NAMES_BY.set(e, (item==='__hybrid'&&SPECIES['__hybrid'])?SPECIES['__hybrid'].ko:SPECIES[item].ko); G.allies.push(e);
   });
   // 적 팀 3마리(편성 화면에서 본 그대로) + 스테이지 강화
@@ -3217,9 +3321,9 @@ function startTeamBattle(myTeam, enemyTeam, stage){
     new THREE.MeshBasicMaterial({color:0xffd24a,transparent:true,opacity:0.65}));
   zr.rotation.x=Math.PI/2; zr.position.y=0.12; scene.add(zr);
   G.buffZone={pos:new THREE.Vector3(0,0,0), r:4.2, mesh:zg, ring:zr};
-  G.zombieTimer=1e9; G.spawnTimer=1e9; G.bossEnt=null;
+  G.zombieTimer=1e9; G.spawnTimer=1e9; G.bossEnt=null; G.enemyRaidTimer=4;   // 시작 4초 뒤부터 본진 공백 감시
   document.getElementById('bossBar').classList.remove('on');
-  G.state='play'; updateTeamHUD();
+  G.state='play'; G.teamStance=null; updateTeamHUD(); showTeamCmd(true); if(typeof updateStanceUI==='function') updateStanceUI();
   flashBanner(LANG==='en'?'⚔️ 3:3 TEAM BATTLE — tap ally=control · enemy/base=focus · 🏠 destroy enemy base to win!':'⚔️ 3:3 팀전! 아군 탭=조종 · 적/본진 탭=집중공격 · 빈 곳 탭=이동 · 🏠 적 본진을 부수면 승리!','kill');
 }
 function selectAlly(e){   // 조종 대상 전환
@@ -3236,22 +3340,58 @@ function cycleAlly(){   // Q — 다음 살아있는 아군으로
   const idx=live.indexOf(G.player);
   selectAlly(live[(idx+1)%live.length]);
 }
+function allCharge(){   // ⚔️ 전군 돌격 — 모든 아군이 적 본진(없으면 가까운 적)으로 공성
+  if(G.mode!=='team' || !G.allies) return;
+  const tgt = (G.baseEnemy && !G.baseEnemy.dead) ? G.baseEnemy : (G.enemies||[]).find(e=>!e.dead);
+  if(!tgt) return;
+  G.allies.forEach(a=>{ if(!a.dead){ a.cmdTarget=tgt; a.moveTarget=null; a.guarding=false;
+    spawnHitFx(a.pos, 0xffd24a, 0.9, 'ring'); } });   // 💨 발밑 먼지 — 일제히 달려나가는 박력
+  if(G.baseEnemy && !G.baseEnemy.dead) spawnHitFx(G.baseEnemy.pos, 0xe0432e, 1.3, 'ring');
+  try{ SND.ui&&SND.ui('charge'); }catch(e){}
+  G.teamStance='charge'; updateStanceUI();
+  flashBanner(LANG==='en'?'⚔️ ALL-OUT CHARGE!':'⚔️ 전군 돌격!','warn');
+  if(typeof updateTeamHUD==='function') updateTeamHUD();
+}
+function allDefend(){   // 🛡️ 전군 수비 — 모든 아군이 본진 방어 배치
+  if(G.mode!=='team' || !G.allies) return;
+  G.allies.forEach(a=>{ if(!a.dead){ a.guarding=true; a.cmdTarget=null; a.moveTarget=null;
+    spawnHitFx(a.pos, 0x39d353, 0.9, 'ring'); } });   // 💨 결집 먼지
+  if(G.baseAlly && !G.baseAlly.dead) spawnHitFx(G.baseAlly.pos, 0x39d353, 1.3, 'ring');
+  try{ SND.ui&&SND.ui('rally'); }catch(e){}
+  G.teamStance='defend'; updateStanceUI();
+  flashBanner(LANG==='en'?'🛡️ ALL DEFEND!':'🛡️ 전군 수비!','warn');
+  if(typeof updateTeamHUD==='function') updateTeamHUD();
+}
+function updateStanceUI(){   // 직전 전군 명령(돌격/수비)을 버튼에 강조 — 현재 부대 태세 표시
+  const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
+  if(cc) cc.classList.toggle('on', G.teamStance==='charge');
+  if(cd) cd.classList.toggle('on', G.teamStance==='defend');
+}
+function showTeamCmd(on){   // 전군 명령 바 표시/숨김 + 라벨 언어 적용
+  const bar=document.getElementById('teamCmd'); if(bar) bar.style.display = on?'flex':'none';
+  const hint=document.getElementById('hintEl'); if(hint && on) hint.style.display='none';
+  const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
+  if(cc) cc.textContent = LANG==='en'?'⚔️ Charge':'⚔️ 전군 돌격';
+  if(cd) cd.textContent = LANG==='en'?'🛡️ Defend':'🛡️ 전군 수비';
+  const ba=document.getElementById('baTxt'); if(ba) ba.textContent = LANG==='en'?'🏠 Base under attack!':'🏠 본진 공격받는 중!';
+}
 function teamCommand(worldPos, clicked){   // 클릭 명령
   if(G.mode!=='team') return;
   if(clicked && clicked.isBase && clicked.team==='ally'){   // 🛡️ 내 본진 탭 — 조종 곤충 수비 배치
     if(G.player && !G.player.dead){ G.player.guarding=true; G.player.cmdTarget=null; G.player.moveTarget=null;
-      spawnHitFx(G.baseAlly.pos, 0x39d353, 1.2, 'ring');
+      spawnHitFx(G.baseAlly.pos, 0x39d353, 1.2, 'ring'); G.teamStance=null; if(typeof updateStanceUI==='function') updateStanceUI();
       flashBanner(LANG==='en'?'🛡️ Defend the base!':'🛡️ 본진 수비 배치!','warn'); }
     return;
   }
   if(clicked && clicked.team==='ally' && !clicked.dead){ selectAlly(clicked); return; }
   if(clicked && !clicked.dead && (clicked.team==='enemy')){   // 적 곤충/적 본진 — 모든 아군 집중공격
     G.allies.forEach(a=>{ if(!a.dead){ a.cmdTarget=clicked; a.moveTarget=null; a.guarding=false; } });
-    spawnHitFx(clicked.pos, 0xe0432e, 1.1, 'ring');
+    spawnHitFx(clicked.pos, 0xe0432e, 1.1, 'ring'); G.teamStance=null; if(typeof updateStanceUI==='function') updateStanceUI();
     flashBanner(clicked.isBase?(LANG==='en'?'🏠 Siege the base!':'🏠 본진 공성!'):(LANG==='en'?'🎯 Focus fire!':'🎯 집중 공격!'),'warn'); return;
   }
   if(worldPos && G.player && !G.player.dead){   // 빈 땅 — 조종 아군 이동(수비 해제)
     G.player.moveTarget=worldPos.clone(); G.player.cmdTarget=null; G.player.guarding=false;
+    G.teamStance=null; if(typeof updateStanceUI==='function') updateStanceUI();
   }
 }
 function checkTeamWinLose(){
@@ -3266,9 +3406,17 @@ function checkTeamWinLose(){
   if(allyLive.length===0){ G.state='over'; teamEnd(false); return; }
   if(enemyLive.length===0 && (!G.baseEnemy || G.baseEnemy.dead)){ G.state='over'; teamEnd(true); return; }
 }
+function getHall(){ try{ return JSON.parse(localStorage.getItem('insecta_hall')||'[]'); }catch(e){ return []; } }
+function saveHall(roster, hybrid){ try{ const h=getHall();
+  h.unshift({ r:roster.slice(), h:hybrid?{base:hybrid.base, sub:hybrid.sub}:null, t:Date.now() });
+  const seen=new Set(), uniq=[]; for(const it of h){ const k=it.r.join()+'|'+(it.h?it.h.base+it.h.sub:''); if(!seen.has(k)){ seen.add(k); uniq.push(it); } }
+  localStorage.setItem('insecta_hall', JSON.stringify(uniq.slice(0,5))); }catch(e){} }
 function teamEnd(win, final){
+  if(win && final){ saveHall(G.teamRoster, G.teamHybrid); }   // 🏛️ 9스테이지 완주 조합을 명예의 전당에 박제
   if(win && !final){ advanceTeam(); return; }   // 중간 승리 → 다음 스테이지로
   flashBanner(final?(LANG==='en'?'🏆 ALL 9 STAGES CLEARED!':'🏆 9스테이지 완전 정복!'):(win?(LANG==='en'?'🏆 TEAM VICTORY!':'🏆 팀 승리!'):(LANG==='en'?'💀 TEAM DEFEAT':'💀 팀 패배')), win?'kill':'hurt');
+  if(typeof showTeamCmd==='function') showTeamCmd(false);
+  { const al=document.getElementById('baseAlert'); if(al) al.style.display='none'; }
   setTimeout(()=>{
     const ti=document.getElementById('title'), hd=document.getElementById('hud'), se=document.getElementById('select');
     if(hd) hd.style.display='none'; if(se) se.style.display='none'; if(ti) ti.style.display='flex';   // 모드 선택으로
@@ -3277,8 +3425,10 @@ function teamEnd(win, final){
 }
 function advanceTeam(){   // 스테이지 클리어 → 다음(3·6 통과 시 합성)
   const passed=G.teamStage;
+  if((STATS.teamBest||0) < passed){ STATS.teamBest=passed; saveStats(); }   // 🏆 최고 스테이지 기록
   if(passed>=9){ teamEnd(true, true); return; }   // 9스테이지 완전 정복
-  flashBanner(LANG==='en'?('✅ Stage '+passed+' cleared! → Stage '+(passed+1)):('✅ 스테이지 '+passed+' 클리어! → '+(passed+1)+'스테이지'),'kill');
+  G.teamHpBonus=(G.teamHpBonus||0)+0.12;   // 🩹 클리어마다 팀 최대 체력 +12% 누적
+  flashBanner(LANG==='en'?('✅ Stage '+passed+' cleared! Team +12% HP → Stage '+(passed+1)):('✅ 스테이지 '+passed+' 클리어! 팀 체력 +12% → '+(passed+1)+'스테이지'),'kill');
   G.teamStage = passed+1;
   if(passed%3===0){ setTimeout(openTeamFuse, 1300); }   // 3·6 통과 시 합성 보너스
   else setTimeout(nextTeamFight, 1300);
@@ -3307,15 +3457,22 @@ function openTeamFuse(){   // 🧬 3스테이지마다 — 내 팀 2마리를 �
     const cards=realTypes.map(t=>{ const on=pick.includes(t); const idx=pick.indexOf(t);
       return '<div class="ts-card'+(on?' on':'')+'" data-t="'+t+'">'+(on?'<span class="ts-num">'+(idx+1)+'</span>':'')+
         '<span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span></div>'; }).join('');
+    const found=getFoundLegends();   // 💡 전설 조합 힌트(발견=공개, 미발견=가림)
+    const legHints=Object.keys(LEGEND_HYBRID).map(key=>{ const [a,b]=key.split('+'); const seen=found.includes(key);
+      const inTeam=realTypes.includes(a)&&realTypes.includes(b);
+      return '<span class="tf-leg'+(inTeam?' avail':'')+'">'+emo(a)+'+'+emo(b)+' '+(seen?('⭐'+LEGEND_HYBRID[key].ko):'❓???')+'</span>'; }).join('');
     wrap.innerHTML='<div class="sp-detail-box ts-box"><div class="sp-d-head">🧬 '+(LANG==='en'?'Fuse 2 of your team':'내 팀 2마리 합성')+' ('+pick.length+'/2)</div>'+
       '<div class="tf-hint">'+(LANG==='en'?'Combine two into one stronger hybrid! Your team shrinks but powers up.':'두 마리를 합쳐 더 강한 합성체로! 머릿수는 줄지만 강해진다.')+'</div>'+
       '<div class="ts-grid">'+cards+'</div>'+preview+
+      '<div class="tf-leg-box"><div class="tf-leg-t">⭐ '+(LANG==='en'?'Legendary combos':'전설 조합')+'</div>'+legHints+'</div>'+
       '<button class="sp-d-close" id="tfGo"'+(pick.length===2?'':' disabled style="opacity:.4"')+'>'+(LANG==='en'?'🧬 Fuse & Continue ▸':'🧬 합성하고 계속 ▸')+'</button>'+
       '<button class="ts-cancel" id="tfSkip">'+(LANG==='en'?'Skip (keep 3)':'건너뛰기 (3마리 유지)')+'</button></div>';
     wrap.querySelectorAll('.ts-card').forEach(c=>{ c.addEventListener('click',()=>{ const t=c.dataset.t;
       const i=pick.indexOf(t); if(i>=0) pick.splice(i,1); else if(pick.length<2) pick.push(t); render(); }); });
     const go=document.getElementById('tfGo'); if(go&&pick.length===2) go.addEventListener('click',()=>{
       G.teamHybrid={base:pick[0], sub:pick[1]};
+      const hb=makeHybridSpecies(pick[0], pick[1]);   // 🎉 전설이면 특별 연출
+      if(hb && hb.legend){ const firstLegend=addFoundLegend(pick[0], pick[1]); spawnBirthFx(hb, firstLegend); try{ SND.ui&&SND.ui('start'); }catch(e){} }
       G.teamRoster=['__hybrid'].concat(realTypes.filter(t=>!pick.includes(t)));   // 합성체 + 남은 원종
       wrap.remove(); nextTeamFight();
     });
@@ -3328,7 +3485,7 @@ function updateTeamHUD(){
   const el=document.getElementById('teamHud'); if(!el) return;
   if(G.mode!=='team' || G.state!=='play'){ el.style.display='none'; return; }
   el.style.display='flex';
-  const dots=(arr,col)=> (arr||[]).map(a=>'<span class="thp-dot'+(a.guarding&&!a.dead?' guard':'')+(a===G.player&&!a.dead?' ctrl':'')+'" style="background:'+(a.dead?'#333':col)+'">'+(a.guarding&&!a.dead?'🛡️':'')+'</span>').join('');
+  const dots=(arr,col)=> (arr||[]).map(a=>'<span class="thp-dot'+(a.guarding&&!a.dead?' guard':'')+(a===G.player&&!a.dead?' ctrl':'')+'" style="background:'+(a.dead?'#333':col)+'">'+(a.guarding&&!a.dead?'🛡️':(a===G.player&&!a.dead?'<b class="thp-ctrl-arrow">▾</b>':''))+'</span>').join('');
   const baseBar=(b,col)=>{ if(!b) return ''; const r=Math.max(0,b.hp/b.hpMax*100);
     return '<span class="thp-base">🏠<span class="thp-bbar"><i style="width:'+r+'%;background:'+col+'"></i></span></span>'; };
   el.innerHTML='<span class="thp-stage">'+(LANG==='en'?'STAGE ':'스테이지 ')+(G.teamStage||1)+'/9</span>'+
@@ -3918,12 +4075,21 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
     return '<span class="tm-bars"><i style="width:'+Math.min(100,d.hp/660*100)+'%;background:#8fd13b"></i>'+
       '<i style="width:'+(d.atk/30*100)+'%;background:#c1432e"></i></span>'; }
   function render(){
+    const hall=getHall();   // 🏛️ 명예의 전당 — 9스테이지 완주 조합 다시 꺼내 쓰기
+    let hallHtml='';
+    if(hall.length){
+      const chips=hall.map((it,hi)=>{ const icons=it.r.map(t=> t==='__hybrid' ? (it.h?'⭐':'🧬') : emo(t)).join('');
+        return '<button class="hall-chip" data-hi="'+hi+'">🏛️ '+icons+'</button>'; }).join('');
+      hallHtml='<div class="hall-box"><div class="hall-t">🏛️ '+(LANG==='en'?'Hall of Fame — replay a winning team':'명예의 전당 — 완주 조합 다시 출전')+'</div>'+chips+'</div>';
+    }
     const enemyCards=enemyTeam.map(t=>'<div class="ts-foe"><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>').join('');
     const cards=ORDER.map(t=>{ const on=pick.includes(t); const idx=pick.indexOf(t);
       return '<div class="ts-card'+(on?' on':'')+'" data-t="'+t+'">'+
         (on?'<span class="ts-num">'+(idx+1)+'</span>':'')+
         '<span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>'; }).join('');
     wrap.innerHTML='<div class="sp-detail-box ts-box"><div class="sp-d-head">⚔️ '+(LANG==='en'?'3:3 Team Setup':'3:3 팀전 편성')+'</div>'+
+      ((STATS.teamBest||0)>0?'<div class="ts-best">🏆 '+(LANG==='en'?('Best: Stage '+STATS.teamBest+'/9'):('최고 기록: '+STATS.teamBest+'/9 스테이지'))+'</div>':'')+
+      hallHtml+
       '<div class="ts-foe-label">'+(LANG==='en'?'🔴 ENEMY TEAM':'🔴 상대 팀')+'</div>'+
       '<div class="ts-foe-row">'+enemyCards+'</div>'+
       '<div class="ts-vs">▼ '+(LANG==='en'?'VS — pick your 3':'VS — 우리 팀 3마리 선택')+' ('+pick.length+'/3) ▼</div>'+
@@ -3942,6 +4108,13 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
       const ti=document.getElementById('title'), se=document.getElementById('select');
       if(se) se.style.display='none'; if(ti) ti.style.display='flex';
     });
+    wrap.querySelectorAll('.hall-chip').forEach(ch=>{ ch.addEventListener('click',()=>{   // 🏛️ 완주 조합 그대로 다시 출전
+      const it=getHall()[+ch.dataset.hi]; if(!it) return;
+      G.teamHybrid = it.h ? {base:it.h.base, sub:it.h.sub} : null;
+      wrap.remove(); selectScreen.style.display='none'; hud.style.display='block';
+      if(typeof restoreCarousel==='function') restoreCarousel();
+      startTeamBattle(it.r.slice(), enemyTeam.slice(), 1);
+    }); });
   }
   render();
   if(document.body) document.body.appendChild(wrap);
@@ -4384,6 +4557,9 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=
 (function(){ const sb=document.getElementById('swapBtn');
   if(sb) sb.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); if(G.mode==='team') cycleAlly(); else cycleSwap(); });
   window.addEventListener('keydown',(e)=>{ if((e.key==='q'||e.key==='Q') && G.state==='play'){ if(G.mode==='team') cycleAlly(); else cycleSwap(); } });
+  const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
+  if(cc&&cc.addEventListener) cc.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); allCharge(); });
+  if(cd&&cd.addEventListener) cd.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); allDefend(); });
 })();
 // ⚔️ 팀전 클릭 명령 — 게임 화면 탭으로 아군 선택 / 적 지정 / 이동
 (function(){
