@@ -331,6 +331,12 @@
   #engageToast .et-go{color:#ffe2d6;font-weight:800;font-size:11px;background:rgba(0,0,0,.28);border-radius:11px;padding:2px 8px;}
   @keyframes etPop{from{opacity:0;transform:translate(-50%,-8px);}to{opacity:1;transform:translate(-50%,0);}}
   #selBox{position:fixed;z-index:12;pointer-events:none;border:1.5px solid #9fe85a;background:rgba(143,209,59,.16);border-radius:3px;box-shadow:0 0 12px rgba(143,209,59,.4);}
+  #teamKeys{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:calc(150px + env(safe-area-inset-bottom));z-index:9;pointer-events:none;
+    background:rgba(8,11,7,.72);border:1px solid #2a3a1c;border-radius:11px;padding:8px 11px;max-width:210px;
+    font-size:10.5px;line-height:1.55;color:#cfe8be;letter-spacing:.01em;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+  #teamKeys b{color:#9fe85a;font-weight:800;}
+  #teamKeys .tk-t{font-size:11px;font-weight:900;color:#eafff0;margin-bottom:3px;display:block;}
+  #teamKeys kbd{display:inline-block;min-width:13px;text-align:center;background:#1c2614;border:1px solid #3a4a24;border-radius:5px;padding:0 4px;color:#eafff0;font-weight:800;font-family:inherit;font-size:10px;}
   .tcmd{font-size:13px;font-weight:800;color:var(--bone);background:rgba(8,11,7,.78);border:1.6px solid #3a4a24;
     border-radius:13px;padding:9px 14px;cursor:pointer;backdrop-filter:blur(4px);white-space:nowrap;}
   .tcmd:active{transform:scale(.94);}
@@ -682,6 +688,7 @@
   <div id="allyBar" style="display:none;"></div>
   <div id="engageToast" style="display:none;"></div>
   <div id="selBox" style="display:none;"></div>
+  <div id="teamKeys" style="display:none;"></div>
   <div id="teamCmd" style="display:none;"><button id="cmdCharge" class="tcmd">⚔️ 전군 돌격</button><button id="cmdDefend" class="tcmd">🛡️ 전군 수비</button></div>
   <div id="baseAlert" style="display:none;"><span id="baTxt" class="ba-txt">🏠 본진 공격받는 중!</span></div>
   <div id="atk"><span class="ring"></span><span id="atkLabel">공격</span></div>
@@ -2937,7 +2944,7 @@ function updateAI(e, dt){
     const d=e.pos.distanceTo(s.pos);
     if(d<s.r+1.5){tmp.copy(e.pos).sub(s.pos).normalize();desired.add(tmp.multiplyScalar(1.5));}
   }
-  applyMove(e, desired, dt, e.zombie?0.45:0.8);
+  applyMove(e, desired, dt, e.zombie?0.45:(G.mode==='team'?1.05:0.8));   // 팀전은 진격이 또렷하도록 빠르게
 }
 
 function applyMove(e, desired, dt, speedMul=1){
@@ -3470,7 +3477,7 @@ function startTeamBattle(myTeam, enemyTeam, stage){
   document.getElementById('bossBar').classList.remove('on');
   G.state='play'; G.teamStance=null; updateTeamHUD(); showTeamCmd(true); if(typeof updateStanceUI==='function') updateStanceUI();
   const _pc = (typeof window!=='undefined' && window.matchMedia && window.matchMedia('(pointer:fine)').matches);
-  const _pcHint = _pc ? (LANG==='en'?' · 🖱️ L-click attack, R-click move, drag=select · ⌨️ 1/2/3 pick, Space charge':' · 🖱️ 좌클릭 공격, 우클릭 이동, 드래그 묶어선택 · ⌨️ 1/2/3 선택, 스페이스 돌격') : '';
+  const _pcHint = _pc ? (LANG==='en'?' · 🖱️ L-click attack, R-click move, drag=select · ⌨️ 1/2/3 pick, Space attack, E special, R charge, T guard':' · 🖱️ 좌클릭 공격, 우클릭 이동, 드래그 선택 · ⌨️ 1·2·3 선택, 스페이스 공격, E 필살, R 돌격, T 수비') : '';
   flashBanner((LANG==='en'?'⚔️ 3:3 TEAM! tap ally=select · enemy base=attack-move · your base=guard · empty=move · 🏠 smash enemy base to win!':'⚔️ 3:3 팀전! 아군 탭=선택 · 적 본진 탭=진격 · 내 본진 탭=수비 · 빈 곳 탭=이동 · 🏠 적 본진을 부수면 승리!')+_pcHint,'kill');
 }
 function selectAlly(e){   // 조종 대상 전환(단일 선택)
@@ -3568,6 +3575,16 @@ function showTeamCmd(on){   // 전군 명령 바 표시/숨김 + 라벨 언어 �
   if(cc) cc.textContent = LANG==='en'?'⚔️ Charge':'⚔️ 전군 돌격';
   if(cd) cd.textContent = LANG==='en'?'🛡️ Defend':'🛡️ 전군 수비';
   const ba=document.getElementById('baTxt'); if(ba) ba.textContent = LANG==='en'?'🏠 Base under attack!':'🏠 본진 공격받는 중!';
+  const tk=document.getElementById('teamKeys');
+  if(tk){
+    const pc = (typeof window!=='undefined' && window.matchMedia && window.matchMedia('(pointer:fine)').matches);
+    if(on && pc){
+      tk.style.display='block';
+      tk.innerHTML = (LANG==='en'
+        ? '<span class="tk-t">⌨️ Controls</span><b>L-click</b> attack/select · <b>R-click</b> move<br><b>drag</b> box-select<br><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pick · <kbd>Q</kbd> swap<br><kbd>Space</kbd> attack · <kbd>E</kbd> special<br><kbd>R</kbd> all charge · <kbd>T</kbd> all guard'
+        : '<span class="tk-t">⌨️ 조작 안내</span><b>좌클릭</b> 공격·선택 · <b>우클릭</b> 이동<br><b>드래그</b> 묶어 선택<br><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 곤충 선택 · <kbd>Q</kbd> 교대<br><kbd>스페이스</kbd> 공격 · <kbd>E</kbd> 필살<br><kbd>R</kbd> 전군 돌격 · <kbd>T</kbd> 전군 수비');
+    } else tk.style.display='none';
+  }
 }
 function spawnMoveMarker(pos){   // 🚩 이동 명령 표식 — 목적지에 깃발+퍼지는 원(잠깐 표시)
   if(G.moveMarker){ scene.remove(G.moveMarker.mesh); G.moveMarker=null; }
@@ -3628,6 +3645,7 @@ function teamEnd(win, final){
   flashBanner(final?(LANG==='en'?'🏆 ALL 9 STAGES CLEARED!':'🏆 9스테이지 완전 정복!'):(win?(LANG==='en'?'🏆 TEAM VICTORY!':'🏆 팀 승리!'):(LANG==='en'?'💀 TEAM DEFEAT':'💀 팀 패배')), win?'kill':'hurt');
   if(typeof showTeamCmd==='function') showTeamCmd(false);
   { const al=document.getElementById('baseAlert'); if(al) al.style.display='none'; }
+  { const tk=document.getElementById('teamKeys'); if(tk) tk.style.display='none'; }
   { const et=document.getElementById('engageToast'); if(et) et.style.display='none'; }
   if(G.moveMarker){ scene.remove(G.moveMarker.mesh); G.moveMarker=null; }
   if(G.teamField && G.teamField.group){ scene.remove(G.teamField.group); G.teamField=null; }
@@ -3799,17 +3817,20 @@ addEventListener('mouseup',()=>{if(pressing)pressEnd();});
 const keys={};
 addEventListener('keydown',e=>{
   keys[e.key.toLowerCase()]=true;
-  if(G.mode==='team' && G.state==='play'){   // ⌨️ PC 단축키 — 1·2·3 곤충 선택, 스페이스 전군 돌격, G 전군 수비
+  if(G.mode==='team' && G.state==='play'){   // ⌨️ 팀전 PC 단축키
     if(e.key==='1'||e.key==='2'||e.key==='3'){ e.preventDefault(); const a=G.allies&&G.allies[+e.key-1]; if(a&&!a.dead) selectAlly(a); return; }
-    if(e.key===' '){ e.preventDefault(); if(typeof allCharge==='function') allCharge(); return; }
-    if(e.key.toLowerCase()==='g'){ e.preventDefault(); if(typeof allDefend==='function') allDefend(); return; }
+    if(e.key.toLowerCase()==='r'){ e.preventDefault(); if(typeof allCharge==='function') allCharge(); return; }   // R = 전군 돌격
+    if(e.key.toLowerCase()==='t'){ e.preventDefault(); if(typeof allDefend==='function') allDefend(); return; }   // T = 전군 수비
+    if(e.key.toLowerCase()==='e'){ e.preventDefault(); input.fireSpecial=true; return; }   // E = 필살기
+    if(e.key.toLowerCase()==='q'){ return; }   // Q = 곤충 교대(아래 필살 트리거 방지)
+    // 스페이스는 아래 공통 처리(공격)로 흐른다 — 팀전에서도 공격은 스페이스
   }
-  if(e.key===' '){ e.preventDefault(); pressStart(); }
-  if(e.key.toLowerCase()==='q'){ input.fireSpecial=true; }
+  if(e.key===' '){ e.preventDefault(); pressStart(); }   // 스페이스 = 공격(양 모드 공통)
+  if(e.key.toLowerCase()==='q'){ input.fireSpecial=true; }   // 배틀로얄: Q = 필살기
 });
 addEventListener('keyup',e=>{
   keys[e.key.toLowerCase()]=false;
-  if(e.key===' ' && !(G.mode==='team' && G.state==='play')){ pressEnd(); }
+  if(e.key===' '){ pressEnd(); }   // 스페이스 떼면 공격 해제(양 모드)
 });
 function keyLoop(){let x=0,y=0;
   if(keys['w']||keys['arrowup'])y-=1; if(keys['s']||keys['arrowdown'])y+=1;
@@ -4818,16 +4839,16 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=
     ray.setFromCamera(ndc, camera);
     return ray.ray.intersectPlane(ground, hit) ? hit.clone() : null;
   }
-  function doCommand(clientX, clientY, forceMove, isMouse){
-    const picked=pickEntity(clientX,clientY);
-    if(picked){ teamCommand(null, picked); return; }
-    if(forceMove || !isMouse){ const g=groundAt(clientX,clientY); if(g) teamCommand(g, null); }   // 우클릭/터치만 빈 땅 이동
-  }
   cv.addEventListener('pointerdown',(ev)=>{
     if(G.mode!=='team' || G.state!=='play') return;
     const isMouse=(ev.pointerType==='mouse');
-    if(isMouse && ev.button===2){ doCommand(ev.clientX,ev.clientY,true,true); return; }   // 우클릭 → 이동/명령(즉시)
-    dragStart={x:ev.clientX, y:ev.clientY, mouse:isMouse}; dragging=false;
+    const right = isMouse && ev.button===2;
+    camera.updateMatrixWorld();
+    // 🐞 대상(곤충/적/본진) 위 클릭 → 누르는 즉시 명령 (좌·우 공통: 아군=선택, 적=공격, 내 본진=수비)
+    const picked=pickEntity(ev.clientX,ev.clientY);
+    if(picked){ teamCommand(null, picked); return; }
+    if(right){ const g=groundAt(ev.clientX,ev.clientY); if(g) teamCommand(g, null); return; }   // 우클릭 빈 땅 → 즉시 이동
+    dragStart={x:ev.clientX, y:ev.clientY, mouse:isMouse}; dragging=false;   // 좌클릭/터치 빈 땅 → 드래그 후보
   });
   window.addEventListener('pointermove',(ev)=>{
     if(!dragStart) return;
@@ -4845,6 +4866,7 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=
     if(selBox) selBox.style.display='none';
     if(G.mode!=='team' || G.state!=='play') return;
     if(was){   // 🔲 드래그 박스 — 박스 안의 아군을 묶어 선택
+      camera.updateMatrixWorld();
       const x1=Math.min(ds.x,ev.clientX), x2=Math.max(ds.x,ev.clientX);
       const y1=Math.min(ds.y,ev.clientY), y2=Math.max(ds.y,ev.clientY);
       const r=cv.getBoundingClientRect(); const inside=[];
@@ -4853,8 +4875,8 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=
         const sx=r.left+(v.x*0.5+0.5)*r.width, sy=r.top+(-v.y*0.5+0.5)*r.height;
         if(sx>=x1&&sx<=x2&&sy>=y1&&sy<=y2) inside.push(a); }
       if(inside.length) setSelected(inside);
-    } else {   // 단순 클릭(드래그 아님) → 좌클릭 명령(공격/선택; 빈 땅은 무시)
-      doCommand(ev.clientX, ev.clientY, false, ds.mouse);
+    } else if(!ds.mouse){   // 터치로 빈 땅 탭 → 이동(마우스 좌클릭 빈 땅은 공격 전용이라 무시)
+      const g=groundAt(ev.clientX,ev.clientY); if(g) teamCommand(g, null);
     }
   });
   cv.addEventListener('contextmenu',(e)=>{ if(G.mode==='team' && G.state==='play') e.preventDefault(); });   // 우클릭 메뉴 차단
