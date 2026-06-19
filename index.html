@@ -164,6 +164,49 @@
   .ts-title b{color:#9fe85a;}
   .ts-pro .ts-best{font-size:11px;font-weight:800;color:#f0d080;background:rgba(212,160,60,.14);border:1px solid rgba(212,160,60,.34);border-radius:20px;padding:4px 11px;margin:0;white-space:nowrap;}
   .ts-board{background:linear-gradient(180deg,rgba(224,67,46,.12),rgba(8,12,7,.18) 50%,rgba(57,211,83,.12));border:1px solid #2a3a22;border-radius:16px;padding:11px 11px 13px;margin-bottom:12px;box-shadow:inset 0 0 26px rgba(0,0,0,.4);}
+  /* 좌우 대치 아레나 — 좁은 화면은 세로, 넓은 화면은 좌(내팀)·중(픽)·우(적팀) 3열 */
+  .ts-arena{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;}
+  .ts-side{background:rgba(8,12,7,.3);border:1px solid #2a3a22;border-radius:14px;padding:10px;}
+  .ts-side.mine{background:linear-gradient(180deg,rgba(57,211,83,.12),rgba(8,12,7,.2));}
+  .ts-side.foe{background:linear-gradient(180deg,rgba(224,67,46,.12),rgba(8,12,7,.2));}
+  .ts-col{display:flex;gap:8px;}
+  .ts-col .ts-unit{flex:1;}
+  .ts-mid{display:flex;flex-direction:column;}
+  @media (min-width:760px){
+    #teamSetup .ts-box{max-width:980px;}
+    .ts-arena{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:16px;align-items:start;}
+    .ts-col{flex-direction:column;}
+    .ts-mid{align-self:stretch;}
+  }
+  /* ⚖️ 종합 전투력 비교 막대 */
+  .ts-power{background:rgba(8,12,7,.4);border:1px solid #2a3a22;border-radius:12px;padding:9px 11px;margin:0 0 10px;}
+  .ts-pw-t{font-size:11px;font-weight:800;color:#dcead0;margin-bottom:6px;text-align:center;}
+  .ts-pw-t b{font-weight:900;}
+  .ts-pw-t b.lead{color:#7ee68a;} .ts-pw-t b.lose{color:#ff8a6a;}
+  .ts-pw-row{display:flex;align-items:center;gap:7px;margin:4px 0;}
+  .ts-pw-lab{font-size:10px;font-weight:900;width:34px;flex:none;}
+  .ts-pw-lab.mine{color:#7ee68a;} .ts-pw-lab.foe{color:#ff8a6a;}
+  .ts-pw-bar{flex:1;height:9px;background:rgba(0,0,0,.45);border-radius:6px;overflow:hidden;}
+  .ts-pw-bar i{display:block;height:100%;border-radius:6px;transition:width .35s ease;}
+  .ts-pw-bar i.mine{background:linear-gradient(90deg,#2ea043,#8fd13b);}
+  .ts-pw-bar i.foe{background:linear-gradient(90deg,#e0432e,#ff8a6a);}
+  .ts-pw-num{font-size:10px;font-weight:800;color:#cfe8be;width:34px;text-align:right;flex:none;}
+  /* 🪽 고른 곤충이 슬롯으로 날아가기 */
+  .ts-fly{position:fixed;z-index:80;font-size:30px;pointer-events:none;transform:translate(-50%,-50%);transition:transform .42s cubic-bezier(.3,.8,.4,1),opacity .42s ease;will-change:transform,opacity;}
+  .ts-pop{animation:tsPop .32s ease;}
+  @keyframes tsPop{0%{transform:scale(.7);}55%{transform:scale(1.12);}100%{transform:scale(1);}}
+  /* 🐞 곤충 입체감 — 크게 + 부드러운 부유 + 그림자 */
+  .ts-pro .ts-emo{font-size:30px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.55));animation:tsBob 2.6s ease-in-out infinite;}
+  .ts-side.foe .ts-emo{animation-delay:.5s;} .ts-grid .ts-card:nth-child(3n+2) .ts-emo{animation-delay:.4s;} .ts-grid .ts-card:nth-child(3n) .ts-emo{animation-delay:.8s;}
+  @keyframes tsBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+  /* 🐞 3D 곤충 미리보기 패널 */
+  .ts-prev{display:flex;flex-direction:column;align-items:center;margin:0 0 10px;}
+  #tsPrevHost{width:100%;max-width:260px;height:175px;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 38%, rgba(143,209,59,.12), rgba(8,12,7,.55));border:1px solid #2a3a22;border-radius:14px;overflow:hidden;box-shadow:inset 0 0 22px rgba(0,0,0,.4);}
+  .ts-prev-cvs{width:100%;height:100%;display:block;}
+  .ts-prev-fallback{font-size:48px;}
+  .ts-prev-nm{font-size:13px;font-weight:900;color:#eafff0;margin-top:6px;}
+  .ts-prev-hint{font-size:10px;color:#7a8a64;margin-top:1px;}
   .ts-team-label{font-size:11px;font-weight:900;letter-spacing:.4px;margin:0 2px 6px;text-align:left;}
   .ts-team-label.foe{color:#ff8a6a;}
   .ts-team-label.mine{color:#7ee68a;margin-top:2px;}
@@ -314,13 +357,17 @@
     border-radius:22px;padding:9px 15px;cursor:pointer;backdrop-filter:blur(4px);}
   #swapBtn i{font-style:normal;font-size:11px;color:var(--toxin);background:rgba(143,209,59,.2);border-radius:8px;padding:1px 6px;}
   #swapBtn.cooling{border-color:#555;color:var(--bone-dim);opacity:.7;}
-  #teamCmd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(26px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:9px;}
-  #allyBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:6px;}
-  .ally-btn{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:48px;padding:4px 6px;border-radius:11px;background:rgba(20,28,16,.82);border:1.5px solid #2c3a22;color:#cfe8be;font-size:10px;font-weight:800;cursor:pointer;transition:transform .08s;}
-  .ally-btn .ab-emo{font-size:17px;line-height:1;}
-  .ally-btn .ab-hp{width:40px;height:4px;border-radius:3px;background:rgba(0,0,0,.5);overflow:hidden;margin:1px 0;}
-  .ally-btn .ab-hp i{display:block;height:100%;border-radius:3px;transition:width .2s,background .2s;}
-  .ally-btn .ab-st{font-size:9px;opacity:.92;}
+  #teamCmd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));z-index:14;display:flex;gap:9px;pointer-events:auto;}
+  #allyBar{position:absolute;left:max(8px,env(safe-area-inset-left));top:50%;transform:translateY(-50%);z-index:14;display:flex;flex-direction:column;gap:9px;pointer-events:auto;}
+  .ally-btn{display:flex;flex-direction:row;align-items:center;gap:7px;width:140px;padding:7px 9px;border-radius:13px;background:rgba(20,28,16,.85);border:1.5px solid #2c3a22;color:#cfe8be;font-size:11px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;}
+  .ally-btn .ab-emo{font-size:22px;line-height:1;flex:none;}
+  .ally-btn .ab-meta{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .ally-btn .ab-hp{width:100%;height:6px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;}
+  .ally-btn .ab-hp i{display:block;height:100%;border-radius:4px;transition:width .2s,background .2s;}
+  .ally-btn .ab-sp{width:100%;height:4px;border-radius:3px;background:rgba(0,0,0,.5);overflow:hidden;}
+  .ally-btn .ab-sp i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#ffb01f,#ffe07a);transition:width .2s;}
+  .ally-btn .ab-st{font-size:14px;opacity:.95;flex:none;}
+  .ally-btn.dead{opacity:.45;filter:grayscale(.7);}
   .ally-btn.on{border-color:#6cff7a;background:rgba(57,211,83,.26);color:#fff;box-shadow:0 0 12px rgba(57,211,83,.5);transform:translateY(-2px);}
   .ally-btn.dead{opacity:.4;filter:grayscale(1);border-color:#444;}
   #engageToast{position:absolute;left:50%;transform:translateX(-50%);top:84px;z-index:11;display:flex;align-items:center;gap:8px;
@@ -2886,17 +2933,20 @@ function updateAI(e, dt){
       best = block || e.cmdTarget;   // 막아선 적 있으면 반격, 없으면 본진으로 직진
     } else best=e.cmdTarget;
   }
-  // 🪧 명령 없는 아군 — 제자리 대기, 사거리 안의 적만 공격(유저가 명령하기 전엔 진격·배회 안 함)
+  // 🪧 명령 없는 아군 — 제자리 대기하되, 곤충 고유 사거리에 비례한 감지권에 적이 들어오면 다가가 교전
   if(!best && G.mode==='team' && e.team==='ally' && !e.cmdTarget && !e.guarding && !e.moveTarget){
-    let near=null, nd=e.d.range+e.size+1.6;
+    const atkR=e.d.range+e.size+1.6, detR=e.d.range+e.size+5.5;   // 공격권 / 감지권(사거리 긴 곤충일수록 멀리서 반응)
+    let near=null, nd=detR;
     for(const o of G.entities){ if(o.dead||o.corpse||o.isBase||o.team===e.team) continue;
       const d=e.pos.distanceTo(o.pos); if(d<nd){ nd=d; near=o; } }
-    if(near){   // 코앞의 적만 제자리에서 응전(이동 없음)
+    if(near && nd<=atkR){   // 사거리 안 → 제자리 응전(이동 없음)
       e.target=near; tmp.copy(near.pos).sub(e.pos);
       if(e.atkCd<=0){ e.face=Math.atan2(tmp.x,tmp.z); doAttack(e,false); e.atkCd=e.d.rate; }
-      if(e.special<=0 && e.spReady>=100 && Math.random()<0.01){ doAttack(e,true); e.spReady=0; }
-    } else { e.target=null; }
-    return;   // 대기 — 직접 명령(이동/돌격/수비) 전엔 움직이지 않음
+      if(e.special<=0 && e.spReady>=100 && Math.random()<0.02){ doAttack(e,true); e.spReady=0; }   // 가끔 필살
+      return;
+    } else if(near){   // 감지권 안 → 적에게 다가가 교전(곤충 사거리만큼 접근)
+      best=near;
+    } else { e.target=null; return; }   // 적 없음 — 대기(직접 명령 전엔 배회 안 함)
   }
   else if(!best)
   for(const o of G.entities){
@@ -3323,13 +3373,13 @@ function step(dt){
     if(taken || pk.life<=0){ scene.remove(pk.mesh); G.pickups.splice(i,1); }
   }
 
-  if(G.mode==='team' && G.state==='play'){   // 팀전: 맵 전체가 한 화면에 들어오는 고정 부감 카메라
-    const halfX=15;                                   // 좌우 절반(여유 포함) — 가로가 다 보이게
+  if(G.mode==='team' && G.state==='play'){   // 팀전: 경기장이 화면을 가득 채우는 고정 부감 카메라
+    const halfX=14.4;                                 // 좌우 절반 — 가로가 화면을 꽉 채우게(여백 최소)
     const hFov=2*Math.atan(Math.tan((52*Math.PI/180)/2)*camera.aspect);
-    const dist=Math.max(halfX/Math.tan(hFov/2)*1.05, 26);
-    const tilt=0.92;                                  // 카메라 고도각(약 53°)
+    const dist=Math.max(halfX/Math.tan(hFov/2)*0.94, 19);
+    const tilt=1.0;                                   // 카메라 고도각을 세워 직사각형이 더 크게 보이게
     const tp=new THREE.Vector3(0, dist*Math.sin(tilt), dist*Math.cos(tilt));
-    camera.position.lerp(tp,0.1); camera.lookAt(0,0.5,0);
+    camera.position.lerp(tp,0.1); camera.lookAt(0,0.2,0);
     if(G.shake>0){ G.shake=Math.max(0,G.shake-dt); const s=G.shake*0.7;
       camera.position.x+=(Math.random()-0.5)*s; camera.position.y+=(Math.random()-0.5)*s*0.5; camera.position.z+=(Math.random()-0.5)*s; }
   } else if(G.player){
@@ -3521,9 +3571,11 @@ function updateAllyBar(){   // 🐞 화면 아래 3마리 조종 버튼 — 탭 
     const on=(a===G.player&&!a.dead), st=a.dead?'💀':(a.guarding?'🛡️':((a.cmdTarget||a.moveTarget)?'⚔️':'⏸️'));
     const r=a.dead?0:Math.max(0,Math.min(1,a.hp/a.hpMax));
     const hc = r>0.5?'#39d353':(r>0.25?'#e8c13b':'#e0432e');   // 체력 색: 초록→노랑→빨강
+    const sp=a.dead?0:Math.max(0,Math.min(100,a.spReady||0));   // 필살 충전(%)
     return '<button class="ally-btn'+(on?' on':'')+(a.dead?' dead':'')+'" data-i="'+i+'">'+
       '<span class="ab-emo">'+(a.dead?'☠️':emo(a.type))+'</span>'+
-      '<span class="ab-hp"><i style="width:'+(r*100)+'%;background:'+hc+'"></i></span>'+
+      '<span class="ab-meta"><span class="ab-hp"><i style="width:'+(r*100)+'%;background:'+hc+'"></i></span>'+
+      '<span class="ab-sp"><i style="width:'+sp+'%"></i></span></span>'+
       '<span class="ab-st">'+st+'</span></button>';
   }).join('');
   if(!_allyBarWired){ _allyBarWired=true;
@@ -3571,6 +3623,11 @@ function showTeamCmd(on){   // 전군 명령 바 표시/숨김 + 라벨 언어 �
   const ab=document.getElementById('allyBar'); if(ab) ab.style.display = on?'flex':'none';
   if(on && typeof updateAllyBar==='function') updateAllyBar();
   const hint=document.getElementById('hintEl'); if(hint && on) hint.style.display='none';
+  // 🕹️ 반자율 팀전 — 터치 기기에서는 조종 스틱·공격 버튼을 숨김(클릭/탭 지휘만)
+  const touch = !(typeof window!=='undefined' && window.matchMedia && window.matchMedia('(pointer:fine)').matches);
+  const st=document.getElementById('stick'), at=document.getElementById('atk');
+  if(st) st.style.display = (on && touch) ? 'none' : '';
+  if(at) at.style.display = (on && touch) ? 'none' : '';
   const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
   if(cc) cc.textContent = LANG==='en'?'⚔️ Charge':'⚔️ 전군 돌격';
   if(cd) cd.textContent = LANG==='en'?'🛡️ Defend':'🛡️ 전군 수비';
@@ -4311,6 +4368,91 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   G.lives=DIFF.lives||1;   // 난이도별 목숨(쉬움 3)
   startStage();
 });
+// 🐞 편성 3D 미리보기 — 드래그로 돌려보고 줌, 팀 3마리 동시, 가끔 위협 모션(가벼움: 컨텍스트 1개 재사용)
+let tsPrev=null;
+function tsClamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function tsApplyCam(){ if(!tsPrev) return; const d=tsPrev.camDist; tsPrev.camera.position.set(0,d*0.16,d); tsPrev.camera.lookAt(0,0,0); }
+function tsClearMeshes(p){ for(const m of p.meshes){ try{ p.pivot.remove(m); }catch(e){} } p.meshes=[]; p.pivot.rotation.set(0,0,0); }
+function tsFrame(p, maxSpan){ p.baseDist=maxSpan*1.5+2.2; p.camDist=p.baseDist; tsApplyCam(); }
+function tsPreviewEnsure(){
+  if(tsPrev) return tsPrev;
+  let rnd; const cvs=document.createElement('canvas'); cvs.className='ts-prev-cvs'; cvs.style.touchAction='none';
+  try{ rnd=new THREE.WebGLRenderer({canvas:cvs, antialias:true, alpha:true}); }catch(e){ return null; }
+  try{ rnd.setPixelRatio(Math.min((typeof window!=='undefined'&&window.devicePixelRatio)||1, 1.5)); rnd.setSize(260,185,false); }catch(e){}
+  const sc=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(40, 260/185, 0.1, 100);
+  sc.add(new THREE.AmbientLight(0xffffff,0.9));
+  const dl=new THREE.DirectionalLight(0xffffff,0.95); dl.position.set(3,6,4); sc.add(dl);
+  const dl2=new THREE.DirectionalLight(0x88aaff,0.35); dl2.position.set(-4,2,-3); sc.add(dl2);
+  const pivot=new THREE.Group(); sc.add(pivot);
+  tsPrev={canvas:cvs, renderer:rnd, scene:sc, camera:cam, pivot, meshes:[], type:null, team:null, raf:0, active:true,
+    dragging:false, autoSpin:true, camDist:6, baseDist:6, spinResume:0};
+  const loop=()=>{ if(!tsPrev||!tsPrev.active) return; const p=tsPrev, now=performance.now()/1000;
+    if(!p.dragging && p.autoSpin) p.pivot.rotation.y += 0.01;
+    for(const m of p.meshes){ const u=m.userData;
+      m.position.y = (u.baseY||0) + Math.sin(now*1.6+(u.bob||0))*0.05;
+      if(u.motionT>0){ u.motionT-=0.016; const pr=1-Math.max(0,u.motionT)/0.5, s=Math.sin(pr*Math.PI);   // ⚔️ 짧은 위협 까딱
+        m.rotation.x=(u.baseRX||0)-s*0.5; m.position.z=(u.baseZ||0)+s*0.45; }
+      else { m.rotation.x=(u.baseRX||0); m.position.z=(u.baseZ||0);
+        u.motionCd=(u.motionCd==null?2+Math.random()*3:u.motionCd)-0.016;
+        if(u.motionCd<=0){ u.motionT=0.5; u.motionCd=2.6+Math.random()*3.5; } }
+    }
+    try{ p.renderer.render(p.scene,p.camera); }catch(e){} p.raf=requestAnimationFrame(loop); };
+  tsPrev.raf=requestAnimationFrame(loop);
+  // 🖱️ 드래그 회전 + 휠/핀치 줌
+  const ptrs=new Map(); let pinch0=0, dist0=0;
+  cvs.addEventListener('pointerdown',e=>{ if(!tsPrev) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); tsPrev.dragging=true; tsPrev.autoSpin=false;
+    if(ptrs.size===2){ const a=[...ptrs.values()]; pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); dist0=tsPrev.camDist; } });
+  cvs.addEventListener('pointermove',e=>{ if(!tsPrev||!ptrs.has(e.pointerId)) return; const pv=ptrs.get(e.pointerId);
+    if(ptrs.size===1){ const dx=e.clientX-pv.x, dy=e.clientY-pv.y; tsPrev.pivot.rotation.y+=dx*0.01; tsPrev.pivot.rotation.x=tsClamp(tsPrev.pivot.rotation.x+dy*0.01,-1.0,1.0); }
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===2){ const a=[...ptrs.values()]; const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1; tsPrev.camDist=tsClamp(dist0*(pinch0/d), tsPrev.baseDist*0.5, tsPrev.baseDist*2); tsApplyCam(); } });
+  const up=e=>{ ptrs.delete(e.pointerId); if(ptrs.size===0 && tsPrev){ tsPrev.dragging=false; tsPrev.spinResume=performance.now()+1800; setTimeout(()=>{ if(tsPrev && performance.now()>=tsPrev.spinResume) tsPrev.autoSpin=true; },1850); } };
+  cvs.addEventListener('pointerup',up); cvs.addEventListener('pointercancel',up); cvs.addEventListener('pointerleave',up);
+  cvs.addEventListener('wheel',e=>{ if(!tsPrev) return; e.preventDefault(); tsPrev.camDist=tsClamp(tsPrev.camDist*(e.deltaY>0?1.12:0.89), tsPrev.baseDist*0.5, tsPrev.baseDist*2); tsApplyCam(); },{passive:false});
+  return tsPrev;
+}
+function tsSetMesh(p, m, x){ const box=new THREE.Box3().setFromObject(m), sz=new THREE.Vector3(), ctr=new THREE.Vector3();
+  box.getSize(sz); box.getCenter(ctr); m.position.set((x||0)-ctr.x, -ctr.y, -ctr.z);
+  m.userData.baseY=m.position.y; m.userData.baseZ=m.position.z; m.userData.baseRX=0; m.userData.bob=Math.random()*6; m.userData.motionCd=1.5+Math.random()*3;
+  p.pivot.add(m); p.meshes.push(m); return Math.max(sz.x,sz.y,sz.z)||1.5; }
+function tsPreviewShow(type){
+  const p=tsPreviewEnsure(); if(!p||!type) return;
+  if(p.type===type && !p.team) return;
+  tsClearMeshes(p);
+  let m; try{ m=makeInsect(type,false); }catch(e){ return; }
+  const maxd=tsSetMesh(p,m,0); tsFrame(p,maxd);
+  p.type=type; p.team=null;
+  const lbl=document.getElementById('tsPrevName'); if(lbl) lbl.textContent=(SPECIES[type]&&SPECIES[type].ko)||'';
+}
+function tsPreviewShowTeam(arr){
+  const p=tsPreviewEnsure(); if(!p||!arr||!arr.length) return;
+  if(p.team && p.team.join()===arr.join()) return;
+  tsClearMeshes(p);
+  const gap=2.5; let maxd=1.5;
+  arr.forEach((t,i)=>{ let m; try{ m=makeInsect(t,false); }catch(e){ return; } const d=tsSetMesh(p,m,(i-(arr.length-1)/2)*gap); if(d>maxd)maxd=d; });
+  tsFrame(p, gap*(arr.length-1)+maxd);
+  p.type=null; p.team=arr.slice();
+  const lbl=document.getElementById('tsPrevName'); if(lbl) lbl.textContent=(LANG==='en'?'⚔️ Your squad ('+arr.length+')':'⚔️ 출전 부대 ('+arr.length+'마리)');
+}
+function tsPreviewMount(wrap){
+  const host=wrap&&wrap.querySelector?wrap.querySelector('#tsPrevHost'):null; if(!host) return;
+  const p=tsPreviewEnsure(); if(!p){ host.innerHTML='<div class="ts-prev-fallback">🐞</div>'; return; }
+  p.active=true; if(!p.raf){ const loop=()=>{ if(!tsPrev||!tsPrev.active) return; const q=tsPrev, now=performance.now()/1000;
+      if(!q.dragging && q.autoSpin) q.pivot.rotation.y+=0.01;
+      for(const m of q.meshes){ const u=m.userData; m.position.y=(u.baseY||0)+Math.sin(now*1.6+(u.bob||0))*0.05;
+        if(u.motionT>0){ u.motionT-=0.016; const pr=1-Math.max(0,u.motionT)/0.5, s=Math.sin(pr*Math.PI); m.rotation.x=(u.baseRX||0)-s*0.5; m.position.z=(u.baseZ||0)+s*0.45; }
+        else { m.rotation.x=(u.baseRX||0); m.position.z=(u.baseZ||0); u.motionCd=(u.motionCd==null?2:u.motionCd)-0.016; if(u.motionCd<=0){ u.motionT=0.5; u.motionCd=2.6+Math.random()*3.5; } } }
+      try{ q.renderer.render(q.scene,q.camera); }catch(e){} q.raf=requestAnimationFrame(loop); }; tsPrev.raf=requestAnimationFrame(loop); }
+  try{ host.appendChild(p.canvas); }catch(e){}
+}
+function tsPreviewDispose(){
+  if(!tsPrev) return; tsPrev.active=false; try{ cancelAnimationFrame(tsPrev.raf); }catch(e){}
+  try{ tsClearMeshes(tsPrev); }catch(e){}
+  try{ tsPrev.renderer.dispose(); }catch(e){}
+  try{ if(tsPrev.canvas&&tsPrev.canvas.parentNode) tsPrev.canvas.parentNode.removeChild(tsPrev.canvas); }catch(e){}
+  tsPrev=null;
+}
 function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보고 우리 3마리를 9장 카드에서 선택
   const old=document.getElementById('teamSetup'); if(old) old.remove();
   let pick=[];
@@ -4320,6 +4462,15 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
   function statMini(t){ const d=SPECIES[t];
     return '<span class="tm-bars"><i style="width:'+Math.min(100,d.hp/660*100)+'%;background:#8fd13b"></i>'+
       '<i style="width:'+(d.atk/30*100)+'%;background:#c1432e"></i></span>'; }
+  function teamPower(arr){ let p=0; for(const t of (arr||[])){ const d=SPECIES[t]; if(d) p+=d.hp + d.atk*22; } return Math.round(p); }
+  function powerBars(mine, foe){
+    const pm=teamPower(mine), pf=teamPower(foe), mx=Math.max(pm,pf,1);
+    const verdict = pm===0 ? (LANG==='en'?'pick your team':'팀을 고르세요')
+      : (pm>pf*1.05 ? (LANG==='en'?'⬆ you lead':'⬆ 우세') : (pf>pm*1.05 ? (LANG==='en'?'⬇ behind':'⬇ 열세') : (LANG==='en'?'≈ even':'≈ 막상막하')));
+    return '<div class="ts-power"><div class="ts-pw-t">⚖️ '+(LANG==='en'?'Team Power':'종합 전투력')+' <b class="'+(pm>pf?'lead':(pf>pm?'lose':''))+'">'+verdict+'</b></div>'+
+      '<div class="ts-pw-row"><span class="ts-pw-lab mine">'+(LANG==='en'?'YOU':'내 팀')+'</span><div class="ts-pw-bar"><i class="mine" style="width:'+(pm/mx*100)+'%"></i></div><span class="ts-pw-num">'+pm+'</span></div>'+
+      '<div class="ts-pw-row"><span class="ts-pw-lab foe">'+(LANG==='en'?'FOE':'적 팀')+'</span><div class="ts-pw-bar"><i class="foe" style="width:'+(pf/mx*100)+'%"></i></div><span class="ts-pw-num">'+pf+'</span></div></div>';
+  }
   function render(){
     const hall=getHall();   // 🏛️ 명예의 전당 — 9스테이지 완주 조합 다시 꺼내 쓰기
     let hallHtml='';
@@ -4328,9 +4479,9 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
         return '<button class="hall-chip" data-hi="'+hi+'">🏛️ '+icons+'</button>'; }).join('');
       hallHtml='<div class="hall-box"><div class="hall-t">🏛️ '+(LANG==='en'?'Hall of Fame — replay a winning team':'명예의 전당 — 완주 조합 다시 출전')+'</div>'+chips+'</div>';
     }
-    const enemyCards=enemyTeam.map(t=>'<div class="ts-unit foe"><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>').join('');
+    const enemyCards=enemyTeam.map(t=>'<div class="ts-unit foe" data-t="'+t+'"><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>').join('');
     const slots=[0,1,2].map(i=>{ const t=pick[i];
-      if(t) return '<div class="ts-unit mine filled"><span class="ts-slotnum">'+(i+1)+'</span><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>';
+      if(t) return '<div class="ts-unit mine filled" data-t="'+t+'"><span class="ts-slotnum">'+(i+1)+'</span><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+statMini(t)+'</div>';
       return '<div class="ts-unit mine empty"><span class="ts-plus">+</span><span class="ts-nm dim">'+(LANG==='en'?'pick':'선택')+'</span></div>'; }).join('');
     const cards=ORDER.map(t=>{ const on=pick.includes(t); const idx=pick.indexOf(t);
       return '<div class="ts-card'+(on?' on':'')+'" data-t="'+t+'">'+
@@ -4340,25 +4491,56 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
     wrap.innerHTML='<div class="sp-detail-box ts-box ts-pro">'+
       '<div class="ts-top"><span class="ts-title">⚔️ <b>'+(LANG==='en'?'3:3 Team Setup':'3:3 팀전 편성')+'</b></span>'+bestBadge+'</div>'+
       hallHtml+
-      '<div class="ts-board">'+
-        '<div class="ts-team-label foe">🔴 '+(LANG==='en'?'ENEMY TEAM':'상대 팀')+'</div>'+
-        '<div class="ts-row">'+enemyCards+'</div>'+
-        '<div class="ts-vsbar"><span>⚔️ VS</span></div>'+
-        '<div class="ts-team-label mine">🟢 '+(LANG==='en'?'YOUR TEAM':'내 팀')+' ('+pick.length+'/3)</div>'+
-        '<div class="ts-row">'+slots+'</div>'+
+      '<div class="ts-arena">'+
+        '<div class="ts-side mine"><div class="ts-team-label mine">🟢 '+(LANG==='en'?'YOUR TEAM':'내 팀')+' ('+pick.length+'/3)</div><div class="ts-col">'+slots+'</div></div>'+
+        '<div class="ts-mid">'+
+          '<div class="ts-vsbar"><span>⚔️ VS</span></div>'+
+          '<div class="ts-prev"><div id="tsPrevHost"></div><div id="tsPrevName" class="ts-prev-nm"></div><div class="ts-prev-hint">'+(LANG==='en'?'drag to rotate · scroll/pinch to zoom':'드래그로 회전 · 휠/핀치로 확대')+'</div></div>'+
+          powerBars(pick, enemyTeam)+
+          '<div class="ts-pick-label">▾ '+(LANG==='en'?'pick 3 of 9':'9마리 중 3마리 선택')+' ▾</div>'+
+          '<div class="ts-grid">'+cards+'</div>'+
+        '</div>'+
+        '<div class="ts-side foe"><div class="ts-team-label foe">🔴 '+(LANG==='en'?'ENEMY TEAM':'상대 팀')+'</div><div class="ts-col">'+enemyCards+'</div></div>'+
       '</div>'+
-      '<div class="ts-pick-label">▾ '+(LANG==='en'?'pick 3 of 9 below':'아래에서 3마리를 고르세요')+' ▾</div>'+
-      '<div class="ts-grid">'+cards+'</div>'+
       '<button class="ts-go" id="tsGo"'+(pick.length===3?'':' disabled')+'>'+(pick.length===3?(LANG==='en'?'⚔️ Start Battle ▸':'⚔️ 전투 시작 ▸'):(LANG==='en'?('pick '+(3-pick.length)+' more'):('곤충 '+(3-pick.length)+'마리 더 선택')))+'</button>'+
       '<button class="ts-cancel" id="tsCancel">'+(LANG==='en'?'‹ Back to modes':'‹ 모드 선택으로')+'</button></div>';
     wrap.querySelectorAll('.ts-card').forEach(c=>{ c.addEventListener('click',()=>{ const t=c.dataset.t;
-      const i=pick.indexOf(t); if(i>=0) pick.splice(i,1); else if(pick.length<3) pick.push(t); render(); }); });
+      const i=pick.indexOf(t);
+      if(i>=0){ pick.splice(i,1); render(); return; }
+      if(pick.length<3){
+        const fromRect=c.getBoundingClientRect(); const slotIdx=pick.length;
+        pick.push(t); render(); tsPreviewShow(t);
+        requestAnimationFrame(()=>{   // 🪽 고른 곤충이 내 팀 슬롯으로 날아가 꽂힘
+          const slots=wrap.querySelectorAll('.ts-side.mine .ts-unit');
+          const toEl=slots&&slots[slotIdx]; if(!toEl || !fromRect) return;
+          const to=toEl.getBoundingClientRect();
+          const fly=document.createElement('div'); fly.className='ts-fly'; fly.textContent=emo(t);
+          fly.style.left=(fromRect.left+fromRect.width/2)+'px'; fly.style.top=(fromRect.top+fromRect.height/2)+'px';
+          document.body.appendChild(fly);
+          const dx=(to.left+to.width/2)-(fromRect.left+fromRect.width/2);
+          const dy=(to.top+to.height/2)-(fromRect.top+fromRect.height/2);
+          requestAnimationFrame(()=>{ fly.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) scale(.7)'; fly.style.opacity='0.2'; });
+          setTimeout(()=>{ fly.remove();
+            try{ const su=wrap.querySelectorAll('.ts-side.mine .ts-unit')[slotIdx]; if(su) su.classList.add('ts-pop'); }catch(e){}
+          }, 440);
+          try{ SND.ui&&SND.ui('select'); }catch(e){}
+        });
+      }
+    }); });
+    tsPreviewMount(wrap);                                   // 🐞 3D 미리보기 장착
+    if(pick.length===3) tsPreviewShowTeam(pick);            // 3마리 다 차면 출전 부대 동시 표시
+    else tsPreviewShow(pick[pick.length-1]||pick[0]||enemyTeam[0]);
+    wrap.querySelectorAll('[data-t]').forEach(el=>{ const tt=el.dataset.t; if(!tt) return;
+      el.addEventListener('mouseenter',()=>tsPreviewShow(tt));   // 호버(PC) — 단일 곤충 감상
+      if(el.classList.contains('ts-unit')) el.addEventListener('click',()=>tsPreviewShow(tt)); });  // 적·내팀 카드 탭(모바일)
     const go=document.getElementById('tsGo'); if(go&&pick.length===3) go.addEventListener('click',()=>{
+      tsPreviewDispose();
       wrap.remove(); selectScreen.style.display='none'; hud.style.display='block';
       if(typeof restoreCarousel==='function') restoreCarousel();
       startTeamBattle(pick.slice(), enemyTeam.slice());
     });
     const cc=document.getElementById('tsCancel'); if(cc) cc.addEventListener('click',()=>{   // ‹ 뒤로 — 모드 선택 화면으로
+      tsPreviewDispose();
       wrap.remove();
       const ti=document.getElementById('title'), se=document.getElementById('select');
       if(se) se.style.display='none'; if(ti) ti.style.display='flex';
@@ -4366,6 +4548,7 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
     wrap.querySelectorAll('.hall-chip').forEach(ch=>{ ch.addEventListener('click',()=>{   // 🏛️ 완주 조합 그대로 다시 출전
       const it=getHall()[+ch.dataset.hi]; if(!it) return;
       G.teamHybrid = it.h ? {base:it.h.base, sub:it.h.sub} : null;
+      tsPreviewDispose();
       wrap.remove(); selectScreen.style.display='none'; hud.style.display='block';
       if(typeof restoreCarousel==='function') restoreCarousel();
       startTeamBattle(it.r.slice(), enemyTeam.slice(), 1);
@@ -4813,8 +4996,10 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=
   if(sb) sb.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); if(G.mode==='team') cycleAlly(); else cycleSwap(); });
   window.addEventListener('keydown',(e)=>{ if((e.key==='q'||e.key==='Q') && G.state==='play'){ if(G.mode==='team') cycleAlly(); else cycleSwap(); } });
   const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
-  if(cc&&cc.addEventListener) cc.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); allCharge(); });
-  if(cd&&cd.addEventListener) cd.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); allDefend(); });
+  if(cc&&cc.addEventListener){ const f=(e)=>{ e.preventDefault(); e.stopPropagation(); allCharge(); };
+    cc.addEventListener('click',f); cc.addEventListener('pointerdown',f); }
+  if(cd&&cd.addEventListener){ const f=(e)=>{ e.preventDefault(); e.stopPropagation(); allDefend(); };
+    cd.addEventListener('click',f); cd.addEventListener('pointerdown',f); }
 })();
 // ⚔️ 팀전 입력 — 드래그=다중 선택 / 좌클릭=공격·선택 / 우클릭=이동
 (function(){
