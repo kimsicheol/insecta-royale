@@ -179,6 +179,35 @@
     .ts-col{flex-direction:column;}
     .ts-mid{align-self:stretch;}
   }
+  /* 🖥️ 가로(16:9) — 픽 카드를 아레나 아래 전체 폭 한 줄로 내려 스크롤 없이 한눈에, 시작 버튼 고정 */
+  @media (orientation:landscape) and (min-height:360px){
+    #teamSetup .ts-box{max-width:1120px;height:100%;max-height:100%;overflow:hidden;display:flex;flex-direction:column;}
+    #teamSetup .hall-box{flex:none;}
+    #teamSetup .ts-arena{flex:none;margin-bottom:8px;grid-template-columns:1fr 1.5fr 1fr;}
+    #teamSetup #tsPrevHost{height:122px;max-width:300px;}
+    #teamSetup .ts-prev{margin-bottom:6px;}
+    #teamSetup .ts-prev-hint{display:none;}
+    #teamSetup .ts-power{margin-bottom:6px;padding:7px 11px;}
+    #teamSetup .ts-vsbar{margin:6px 0 6px;}
+    #teamSetup .ts-syn{margin:0 0 6px;padding:5px 8px;}
+    #teamSetup .ts-pickbar{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+    #teamSetup .ts-pick-label{margin:0 0 6px;}
+    #teamSetup .ts-pickwrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:row;align-items:flex-start;gap:10px;overflow-y:auto;}
+    #teamSetup .ts-pickwrap .ts-bgrid{flex:1 1 auto;}
+    #teamSetup .ts-pro .ts-grid{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:8px;margin:0;}
+    #teamSetup .ts-pro .ts-grid.ts-bgrid{display:grid;grid-template-columns:repeat(5,1fr);flex:1 1 auto;}
+    #teamSetup .ts-pro .ts-grid .ts-card{flex:0 0 96px;}
+    #teamSetup .ts-fusionzone{flex:0 0 auto;max-width:42%;border-left:2px dashed #5a3a8a;padding-left:10px;}
+    #teamSetup .ts-go{flex:none;margin:8px 0 4px;}
+    #teamSetup .ts-cancel{flex:none;margin-top:2px;}
+  }
+  /* 🧬 합성체 구분 영역 — 보라 톤으로 기본 곤충과 시각 분리 */
+  .ts-fusionzone{background:linear-gradient(165deg,rgba(120,80,220,.12),rgba(30,16,50,.18));border:1px solid #4a2e7a;border-radius:12px;padding:8px;margin-top:8px;}
+  .ts-fz-label{display:block;font-size:10px;font-weight:900;color:#c9a8ff;letter-spacing:.4px;margin:0 0 6px;text-align:center;}
+  .ts-pickwrap{display:flex;flex-direction:column;gap:8px;}
+  /* 🔍 카드 탭 시 미리보기가 잠깐 확대됐다 돌아옴 */
+  @keyframes tsPrevPop{0%{transform:scale(1);}40%{transform:scale(1.22);}100%{transform:scale(1);}}
+  #tsPrevHost.ts-prev-pop{animation:tsPrevPop .5s ease;}
   /* ⚖️ 종합 전투력 비교 막대 */
   .ts-power{background:rgba(8,12,7,.4);border:1px solid #2a3a22;border-radius:12px;padding:9px 11px;margin:0 0 10px;}
   .ts-pw-t{font-size:11px;font-weight:800;color:#dcead0;margin-bottom:6px;text-align:center;}
@@ -198,6 +227,8 @@
   @keyframes tsPop{0%{transform:scale(.7);}55%{transform:scale(1.12);}100%{transform:scale(1);}}
   /* 🐞 곤충 입체감 — 크게 + 부드러운 부유 + 그림자 */
   .ts-pro .ts-emo{font-size:30px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.55));animation:tsBob 2.6s ease-in-out infinite;}
+  .ts-emo .bug-svg{width:34px;height:34px;display:block;margin:0 auto;}
+  .ts-unit .ts-emo .bug-svg{width:30px;height:30px;}
   .ts-side.foe .ts-emo{animation-delay:.5s;} .ts-grid .ts-card:nth-child(3n+2) .ts-emo{animation-delay:.4s;} .ts-grid .ts-card:nth-child(3n) .ts-emo{animation-delay:.8s;}
   @keyframes tsBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
   /* 🐞 3D 곤충 미리보기 패널 */
@@ -230,6 +261,7 @@
   .ts-vsbar span{position:relative;font-size:12px;font-weight:900;color:#fff;background:#11160c;border:1px solid var(--chitin);border-radius:20px;padding:3px 14px;letter-spacing:1px;}
   .ts-pick-label{font-size:12px;font-weight:800;color:#9fe85a;text-align:center;margin:2px 0 9px;}
   .ts-pro .ts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 4px;}
+  .ts-pro .ts-grid.ts-bgrid{grid-template-columns:repeat(5,1fr);}   /* 🐞 기본 9마리 — 한 줄 5마리×2줄로 폭 활용 */
   .ts-pro .ts-card{background:linear-gradient(165deg,#1a2212,#0e1409);border:1px solid #2a3a1c;border-radius:13px;padding:11px 5px 9px;}
   .ts-pro .ts-card:active{transform:scale(.96);}
   .ts-pro .ts-card.on{border-color:#9fe85a;background:linear-gradient(165deg,rgba(57,211,83,.22),rgba(20,60,28,.14));box-shadow:0 0 0 1px #9fe85a inset,0 6px 18px rgba(143,209,59,.25);}
@@ -238,6 +270,47 @@
   .ts-crole{display:block;font-size:9px;font-weight:800;margin-top:1px;line-height:1.2;}
   .ts-card.fusion{border-color:#7a4ec8;background:linear-gradient(165deg,rgba(120,80,220,.18),rgba(30,16,50,.2));}
   .ts-card.fusion.on{border-color:#b98cff;box-shadow:0 0 0 1px #b98cff inset,0 6px 18px rgba(150,100,240,.3);}
+  /* ⭐ 전설(6성) 합성체 — 금색 테두리 + 반짝임 */
+  .ts-card.fusion.legend{border-color:#ffd24a;background:linear-gradient(165deg,rgba(255,210,74,.2),rgba(90,60,10,.22));box-shadow:0 0 0 1px rgba(255,210,74,.5) inset,0 0 16px rgba(255,210,74,.3);animation:tsLegGlow 1.8s ease-in-out infinite;}
+  .ts-card.fusion.legend.on{border-color:#ffe07a;box-shadow:0 0 0 2px #ffd24a inset,0 6px 22px rgba(255,210,74,.5);}
+  .ts-card.fusion.legend .ts-emo{filter:drop-shadow(0 0 6px rgba(255,210,74,.8));}
+  /* 🔒 미수집 전설 — 흐릿한 잠금 카드(레시피 힌트만) */
+  .ts-card.fusion.locked{opacity:.62;filter:grayscale(.45);border-style:dashed;border-color:#6a5a2a;background:linear-gradient(165deg,rgba(90,70,20,.14),rgba(20,16,8,.2));box-shadow:none;animation:none;cursor:default;}
+  .ts-card.fusion.locked .ts-emo{filter:grayscale(.6) brightness(.85);opacity:.7;}
+  .ts-card.fusion.locked:active{transform:none;}
+  .ts-lockbadge{position:absolute;top:3px;left:4px;font-size:13px;filter:drop-shadow(0 1px 2px #000);}
+  .ts-recipe{display:block;font-size:11px;letter-spacing:1px;margin-top:1px;opacity:.8;}
+  .ts-legtag{position:absolute;top:-7px;right:-5px;font-size:13px;filter:drop-shadow(0 1px 2px #000);animation:tsLegSpin 2.4s linear infinite;}
+  @keyframes tsLegGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,210,74,.5) inset,0 0 14px rgba(255,210,74,.25);}50%{box-shadow:0 0 0 1px rgba(255,210,74,.85) inset,0 0 22px rgba(255,210,74,.55);}}
+  @keyframes tsLegSpin{0%{transform:rotate(0);}50%{transform:rotate(18deg) scale(1.15);}100%{transform:rotate(0);}}
+  /* ⚔️🛡️⚖️ 역할별 상단 색 띠 — 정렬된 묶음을 한눈에 (카드·슬롯·적 카드 공통) */
+  .ts-card.ts-r-atk{border-top:3px solid rgba(255,138,106,.75);}
+  .ts-card.ts-r-def{border-top:3px solid rgba(122,215,255,.75);}
+  .ts-card.ts-r-bal{border-top:3px solid rgba(207,232,190,.7);}
+  .ts-unit.ts-r-atk{border-top:3px solid rgba(255,138,106,.85);}
+  .ts-unit.ts-r-def{border-top:3px solid rgba(122,215,255,.85);}
+  .ts-unit.ts-r-bal{border-top:3px solid rgba(207,232,190,.8);}
+  /* ⚔️ 3마리 완성 — 출전 준비 연출 */
+  .ts-flourish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:40;}
+  .ts-fl-card{font-size:22px;font-weight:900;color:#06210a;background:linear-gradient(90deg,#ffd24a,#8fd13b);padding:12px 26px;border-radius:16px;letter-spacing:.5px;box-shadow:0 10px 30px rgba(143,209,59,.5),0 0 0 2px rgba(255,255,255,.25) inset;animation:tsFlourish 1.3s ease forwards;}
+  @keyframes tsFlourish{0%{transform:scale(.6);opacity:0;}18%{transform:scale(1.12);opacity:1;}70%{transform:scale(1);opacity:1;}100%{transform:scale(1.02);opacity:0;}}
+  @keyframes tsPrevBig{0%{transform:scale(1);}45%{transform:scale(1.38);}100%{transform:scale(1);}}
+  #tsPrevHost.ts-prev-big{animation:tsPrevBig .9s ease;}
+  /* 🎬 전투 직전 양 팀 등장 연출 */
+  .te-overlay{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(0,0,0,.25),rgba(0,0,0,.55));animation:teFade 1.5s ease forwards;}
+  .te-row{display:flex;gap:18px;font-size:min(13vw,64px);filter:drop-shadow(0 6px 10px rgba(0,0,0,.6));}
+  .te-row.te-mine{animation:teInL .55s cubic-bezier(.2,.9,.3,1.1) both;}
+  .te-row.te-foe{animation:teInR .55s cubic-bezier(.2,.9,.3,1.1) both;animation-delay:.1s;}
+  .te-bug{display:inline-block;animation:teBob 1.2s ease-in-out infinite;}
+  .te-row.te-foe .te-bug{transform:scaleX(-1);}
+  .te-vs{font-size:min(9vw,40px);font-weight:900;color:#fff;letter-spacing:3px;text-shadow:0 0 18px rgba(255,210,74,.8),0 3px 8px #000;animation:teVs .6s ease both;animation-delay:.35s;}
+  @keyframes teInL{0%{opacity:0;transform:translateX(-60vw);}100%{opacity:1;transform:translateX(0);}}
+  @keyframes teInR{0%{opacity:0;transform:translateX(60vw);}100%{opacity:1;transform:translateX(0);}}
+  @keyframes teVs{0%{opacity:0;transform:scale(2.2);}55%{opacity:1;transform:scale(.9);}100%{opacity:1;transform:scale(1);}}
+  @keyframes teBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+  .te-row.te-foe .te-bug{animation:teBobFoe 1.2s ease-in-out infinite;}
+  @keyframes teBobFoe{0%,100%{transform:scaleX(-1) translateY(0);}50%{transform:scaleX(-1) translateY(-7px);}}
+  @keyframes teFade{0%,72%{opacity:1;}100%{opacity:0;}}
   .ts-unit .ts-cstar,.ts-unit .ts-crole{margin-top:2px;}
   .ts-foetag{display:inline-block;font-size:9px;font-weight:900;border:1px solid;border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:middle;}
   .ts-syn{text-align:center;font-size:11px;font-weight:800;border-radius:10px;padding:6px 8px;margin:0 0 9px;background:rgba(8,12,7,.4);border:1px solid #2a3a22;color:#cfe8be;}
@@ -372,8 +445,11 @@
     border-radius:22px;padding:9px 15px;cursor:pointer;backdrop-filter:blur(4px);}
   #swapBtn i{font-style:normal;font-size:11px;color:var(--toxin);background:rgba(143,209,59,.2);border-radius:8px;padding:1px 6px;}
   #swapBtn.cooling{border-color:#555;color:var(--bone-dim);opacity:.7;}
-  #teamCmd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));z-index:14;display:flex;gap:9px;pointer-events:auto;}
-  #allyBar{position:absolute;left:max(10px,env(safe-area-inset-left));top:50%;transform:translateY(-50%);z-index:14;display:flex;flex-direction:column;gap:11px;pointer-events:auto;}
+  /* ⚔️🛡️ 전군 명령(공격/수비) — 공격 버튼 바로 위(우하단) */
+  #teamCmd{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:calc(156px + env(safe-area-inset-bottom));z-index:15;display:flex;flex-direction:column;gap:7px;align-items:flex-end;pointer-events:auto;}
+  /* 🐞 아군(곤충) 선택 — 조이스틱 바로 위(좌하단) 가로줄 */
+  #allyBar{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:calc(170px + env(safe-area-inset-bottom));top:auto;transform:none;z-index:15;display:flex;flex-direction:row;gap:8px;pointer-events:auto;}
+  #allyBar .ally-btn{width:62px;height:62px;padding:5px;border-radius:14px;}
   .ally-btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:78px;height:78px;padding:7px;border-radius:18px;background:rgba(20,28,16,.88);border:2.5px solid #2c3a22;color:#cfe8be;font-size:11px;font-weight:800;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;-webkit-tap-highlight-color:transparent;overflow:hidden;}
   .ally-btn .ab-emo{font-size:30px;line-height:1;}
   .ally-btn .ab-meta{width:100%;display:flex;flex-direction:column;gap:3px;}
@@ -388,19 +464,20 @@
   .ally-btn.on{border-color:#6cff7a;background:rgba(57,211,83,.26);color:#fff;box-shadow:0 0 16px rgba(57,211,83,.55);transform:scale(1.08);}
   .ally-btn.sel{border-color:#9fe85a;}
   .ally-btn.dead{opacity:.6;filter:grayscale(.6);}
-  /* 🎮 액티브 스킬 바 — 우하단(필살 + 회복·광폭·집중) */
-  #skillBar{position:absolute;right:max(10px,env(safe-area-inset-right));bottom:calc(150px + env(safe-area-inset-bottom));z-index:14;display:flex;flex-direction:column;gap:8px;pointer-events:auto;}
+  /* 🎮 액티브 스킬 바 — 3:3 전투 시 하단 가운데 가로줄(배틀로얄 조작부와 같은 라인) */
+  #skillBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:15;
+    display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:7px;
+    max-width:min(560px,calc(100vw - 300px));pointer-events:auto;}
   .skbtn{position:relative;width:60px;height:60px;border-radius:15px;background:rgba(16,22,12,.9);border:2px solid #34431f;color:#eafff0;cursor:pointer;overflow:hidden;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;-webkit-tap-highlight-color:transparent;transition:transform .1s,box-shadow .1s,border-color .1s;}
   .skbtn .sk-ic{font-size:22px;line-height:1;z-index:2;}
   .skbtn .sk-nm{font-size:10px;font-weight:800;z-index:2;}
   .skbtn .sk-cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;z-index:3;text-shadow:0 1px 3px #000;}
-  .skbtn .sk-fill{position:absolute;left:0;bottom:0;width:100%;height:0;background:rgba(120,200,120,.5);z-index:1;transition:height .3s linear,opacity .2s;}
+  .skbtn .sk-fill{position:absolute;inset:0;z-index:1;background:transparent;transition:background .25s linear,opacity .2s;}
   .skbtn.cool{filter:grayscale(.35);opacity:.92;}
   .skbtn.cool .sk-ic{opacity:.85;}
   .skbtn.ready{border-color:#6cff7a;box-shadow:0 0 12px rgba(57,211,83,.45);}
   .skbtn.ult{border-color:#caa23a;}
-  .skbtn.ult .sk-fill{background:linear-gradient(180deg,rgba(255,210,74,.25),rgba(255,176,31,.55));}
   .skbtn.ult.ready{border-color:#ffd24a;box-shadow:0 0 16px rgba(255,210,74,.6);animation:skPulse 1s ease-in-out infinite;}
   .skbtn.aiming{border-color:#ffe07a;box-shadow:0 0 18px rgba(255,224,122,.75);animation:skPulse .7s ease-in-out infinite;}
   .skbtn.lockbtn{width:60px;height:44px;}
@@ -409,7 +486,7 @@
   #skPair{display:flex;flex-direction:column;gap:6px;padding:5px;border:1.5px dashed #4a5a2c;border-radius:16px;position:relative;}
   #skPair::before{content:'1택';position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:900;color:#cfe8be;background:#1a2410;padding:0 6px;border-radius:6px;}
   @keyframes skPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
-  #resBadge{align-self:flex-end;font-size:13px;font-weight:900;color:#bfeaff;background:rgba(8,16,22,.85);border:1.5px solid #2a4250;border-radius:11px;padding:3px 9px;}
+  #resBadge{order:-1;align-self:center;font-size:13px;font-weight:900;color:#bfeaff;background:rgba(8,16,22,.85);border:1.5px solid #2a4250;border-radius:11px;padding:3px 9px;}
   #resBadge b{color:#fff;}
   .skbtn.res{border-color:#2a4250;}
   .skbtn.res.ready{border-color:#6fd2ff;box-shadow:0 0 12px rgba(111,210,255,.45);}
@@ -812,10 +889,8 @@
   <div id="skillBar" style="display:none;">
     <div id="resBadge">🧪 <b id="resN">0</b></div>
     <button id="skUlt" class="skbtn ult" data-sk="ult"><span class="sk-ic">💥</span><span class="sk-nm">필살</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
-    <div id="skPair">
-      <button id="skHeal" class="skbtn" data-sk="heal"><span class="sk-ic">💚</span><span class="sk-nm">회복</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
-      <button id="skRage" class="skbtn" data-sk="rage"><span class="sk-ic">🔥</span><span class="sk-nm">광폭</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
-    </div>
+    <button id="skHeal" class="skbtn" data-sk="heal"><span class="sk-ic">💚</span><span class="sk-nm">회복</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
+    <button id="skRage" class="skbtn" data-sk="rage"><span class="sk-ic">🔥</span><span class="sk-nm">광폭</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
     <button id="skFocus" class="skbtn" data-sk="focus"><span class="sk-ic">🎯</span><span class="sk-nm">집중</span><span class="sk-cd"></span><span class="sk-fill"></span></button>
     <button id="skLock" class="skbtn lockbtn"><span class="sk-ic">🔓</span><span class="sk-nm">고정</span></button>
     <button id="skEnhance" class="skbtn res" data-sk="enhance"><span class="sk-ic">⬆️</span><span class="sk-nm">강화</span><span class="sk-cost">🧪3</span></button>
@@ -1319,6 +1394,59 @@ const TRIVIA_EN = {
 };
 // 누구나 한눈에 알아보도록 종마다 그림(이모지) 부여
 const EMOJI = { mantis:'🦗', stag:'🪲', rhino:'🦏', spider:'🕷️', centipede:'🐛', scorpion:'🦂', hornet:'🐝', dragonfly:'🪰', ant:'🐜', __hybrid:'🧬' };
+// 🎨 실제 3D 모델 색감(col/col2/eye)을 그대로 쓴 톱다운 2D 곤충 그림 — 카드가 3D와 같은 팔레트로 보이도록
+function _hx(n){ return '#'+((n||0)>>>0).toString(16).padStart(6,'0').slice(-6); }
+function bugSvg(type){
+  const d=SPECIES[type]||{}; const c=_hx(d.col!=null?d.col:0x88aa55), c2=_hx(d.col2!=null?d.col2:0x335522), eye=_hx(d.eye!=null?d.eye:0x111111);
+  const gid='bg'+(type||'h')+Math.floor(Math.random()*1e6).toString(36);
+  const grad='<defs><radialGradient id="'+gid+'" cx="40%" cy="32%" r="72%"><stop offset="0%" stop-color="'+c+'"/><stop offset="100%" stop-color="'+c2+'"/></radialGradient></defs>';
+  const fill='url(#'+gid+')';
+  const leg=(x1,y1,x2,y2,w)=>'<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+c2+'" stroke-width="'+(w||2)+'" stroke-linecap="round"/>';
+  const eyes=(cx,cy,r,dx)=>'<circle cx="'+(cx-dx)+'" cy="'+cy+'" r="'+r+'" fill="'+eye+'"/><circle cx="'+(cx+dx)+'" cy="'+cy+'" r="'+r+'" fill="'+eye+'"/>';
+  let g='';
+  if(type==='spider'){   // 🕷️ 8다리 + 둥근 배
+    for(let i=0;i<4;i++){ const y=14+i*6; leg(24,22,5,y-4,2); g+=leg(24,22,6,y-3,2)+leg(24,22,42,y-3,2); }
+    g+='<ellipse cx="24" cy="30" rx="11" ry="12" fill="'+fill+'"/><ellipse cx="24" cy="16" rx="7" ry="6" fill="'+c2+'"/>'+eyes(24,14,1.4,3);
+  } else if(type==='centipede'){   // 🐛 길쭉한 마디 + 많은 다리
+    for(let i=0;i<7;i++){ const y=8+i*5.2; g+=leg(24,y,15,y,1.6)+leg(24,y,33,y,1.6); }
+    for(let i=0;i<7;i++){ const y=8+i*5.2; g+='<circle cx="24" cy="'+y+'" r="'+(i===0?5:4.4)+'" fill="'+fill+'"/>'; }
+    g+=eyes(24,7,1.2,2.4)+leg(22,5,19,2,1.6)+leg(26,5,29,2,1.6);
+  } else if(type==='scorpion'){   // 🦂 집게 + 꼬리 독침
+    for(let i=0;i<3;i++){ const y=24+i*4; g+=leg(24,y,9,y+3,2)+leg(24,y,39,y+3,2); }
+    g+='<path d="M16 16 Q9 10 12 6 Q15 9 18 12 Z" fill="'+c2+'"/><path d="M32 16 Q39 10 36 6 Q33 9 30 12 Z" fill="'+c2+'"/>';   // 집게
+    g+='<ellipse cx="24" cy="26" rx="8" ry="11" fill="'+fill+'"/>';
+    g+='<path d="M24 36 Q33 40 33 31 Q33 26 29 27" fill="none" stroke="'+c2+'" stroke-width="3.4" stroke-linecap="round"/><circle cx="28.5" cy="26.5" r="2.2" fill="'+eye+'"/>';   // 꼬리+독침
+    g+=eyes(24,20,1.2,2.4);
+  } else if(type==='hornet'||type==='dragonfly'){   // 🐝🪰 날개 달린 비행 곤충
+    const wl=type==='dragonfly'?22:13, wt=type==='dragonfly'?5:8;
+    g+='<ellipse cx="'+(24-wt)+'" cy="20" rx="'+(wt)+'" ry="'+(wl/2)+'" fill="#ffffff" opacity="0.32"/><ellipse cx="'+(24+wt)+'" cy="20" rx="'+(wt)+'" ry="'+(wl/2)+'" fill="#ffffff" opacity="0.32"/>';
+    g+='<ellipse cx="'+(24-wt)+'" cy="30" rx="'+(wt*0.8)+'" ry="'+(wl/2.4)+'" fill="#ffffff" opacity="0.24"/><ellipse cx="'+(24+wt)+'" cy="30" rx="'+(wt*0.8)+'" ry="'+(wl/2.4)+'" fill="#ffffff" opacity="0.24"/>';
+    g+='<ellipse cx="24" cy="27" rx="'+(type==='dragonfly'?4:6)+'" ry="'+(type==='dragonfly'?15:13)+'" fill="'+fill+'"/>';
+    if(type==='hornet'){ g+='<rect x="18.5" y="22" width="11" height="3" rx="1.5" fill="'+c2+'"/><rect x="18.5" y="28" width="11" height="3" rx="1.5" fill="'+c2+'"/><path d="M24 40 l-2 4 l4 0 Z" fill="'+c2+'"/>'; }
+    g+='<ellipse cx="24" cy="12" rx="6" ry="5" fill="'+c2+'"/>'+eyes(24,11,2,3.4);
+  } else if(type==='mantis'){   // 🦗 낫다리 + 삼각 머리
+    g+=leg(22,26,8,34,2)+leg(22,30,9,40,2)+leg(26,26,40,34,2)+leg(26,30,39,40,2);
+    g+='<path d="M18 18 Q10 16 9 9 Q14 13 20 16 Z" fill="'+c2+'"/><path d="M30 18 Q38 16 39 9 Q34 13 28 16 Z" fill="'+c2+'"/>';   // 낫다리
+    g+='<ellipse cx="24" cy="28" rx="6" ry="13" fill="'+fill+'"/>';
+    g+='<path d="M18 10 L30 10 L24 17 Z" fill="'+c2+'"/>'+eyes(24,10,1.8,4);   // 삼각 머리
+  } else if(type==='ant'){   // 🐜 3마디 몸 + 6다리
+    for(let i=0;i<3;i++){ const y=18+i*4; g+=leg(24,y,10,y-3,2)+leg(24,y,38,y-3,2); }
+    g+='<ellipse cx="24" cy="32" rx="8" ry="9" fill="'+fill+'"/><ellipse cx="24" cy="21" rx="4.5" ry="4.5" fill="'+fill+'"/><ellipse cx="24" cy="12" rx="5.5" ry="5" fill="'+c2+'"/>';
+    g+=leg(22,8,18,3,1.6)+leg(26,8,30,3,1.6)+eyes(24,11,1.3,2.6);
+  } else if(type==='__hybrid'){   // 🧬 합성 — 두 색 반반 몸체
+    g+=leg(24,24,9,16,2)+leg(24,28,9,38,2)+leg(24,24,39,16,2)+leg(24,28,39,38,2);
+    g+='<ellipse cx="24" cy="27" rx="10" ry="13" fill="'+fill+'"/><path d="M24 14 A10 13 0 0 1 24 40 Z" fill="'+c2+'" opacity="0.55"/>';
+    g+='<ellipse cx="24" cy="13" rx="6" ry="5" fill="'+c2+'"/>'+eyes(24,12,1.6,3);
+  } else {   // 🪲 풍뎅이/사슴벌레/장수풍뎅이 — 갑각 + 뿔/큰턱
+    for(let i=0;i<3;i++){ const y=22+i*5; g+=leg(24,y,9,y+2,2.2)+leg(24,y,39,y+2,2.2); }
+    g+='<ellipse cx="24" cy="28" rx="11" ry="14" fill="'+fill+'"/><line x1="24" y1="16" x2="24" y2="40" stroke="'+c2+'" stroke-width="1.6" opacity="0.6"/>';
+    g+='<ellipse cx="24" cy="13" rx="6.5" ry="5" fill="'+c2+'"/>';
+    if(type==='rhino'){ g+='<path d="M24 12 Q22 4 26 2 Q25 8 26 12 Z" fill="'+c+'" stroke="'+c2+'" stroke-width="0.6"/>'; }   // 뿔
+    else if(type==='stag'){ g+='<path d="M19 11 Q13 5 16 3 Q17 8 21 10 Z" fill="'+c2+'"/><path d="M29 11 Q35 5 32 3 Q31 8 27 10 Z" fill="'+c2+'"/>'; }   // 큰턱
+    g+=eyes(24,12,1.5,3.2);
+  }
+  return '<svg class="bug-svg" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">'+grad+g+'</svg>';
+}
 function emo(type){ return EMOJI[type] || '🐛'; }
 const NAMES = ['글라디우스','크림슨','오닉스','베놈','스칼렛','타이탄','옵시디언','네뷸라','코발트','세이버','엠버','드레드','바이퍼','레이븐'];
 
@@ -2499,6 +2627,7 @@ function doAttack(e, special=false){
 }
 
 function applyHit(e,o,dmg,special){
+  if(G.mode==='team' && e && o && e.team && o.team && e.team===o.team) return;   // 🛡️ 같은 편 오사·자기 본진 자해는 피해 없음
   let mult = 1;
   if(e && e.rageT && (G.t||0)<e.rageT) mult *= 1.5;   // 🔥 광폭화 — 공격력 증가
   if(!e.zombie && !o.zombie) mult = (e && e.rageT && (G.t||0)<e.rageT?1.5:1) * counterMult(e.type, o.type);
@@ -3587,17 +3716,48 @@ function checkWinLose(){
 }
 /* ===== ⚔️ 3:3 팀전 ===== */
 let teamMyPick=[];           // 편성한 내 팀 3종
-function makeBase(team, x){   // 🏠 본진(집) — 부수면 승리하는 목표물
+function buildNest(team, stage){   // 🪳 곤충 둥지 — 스테이지마다 형태가 바뀌는 본진(집)
   const grp=new THREE.Group();
-  const wallCol=team==='ally'?0x2e5e3a:0x5e2e2e, roofCol=team==='ally'?0x39d353:0xe0432e;
-  const body=new THREE.Mesh(new THREE.BoxGeometry(3.4,2.6,3.4),
-    new THREE.MeshStandardMaterial({color:wallCol,roughness:0.7,metalness:0.1}));
-  body.position.y=1.3; grp.add(body);
-  const roof=new THREE.Mesh(new THREE.ConeGeometry(2.9,1.8,4),
-    new THREE.MeshStandardMaterial({color:roofCol,roughness:0.5,emissive:roofCol,emissiveIntensity:0.25}));
-  roof.position.y=3.4; roof.rotation.y=Math.PI/4; grp.add(roof);
-  const door=new THREE.Mesh(new THREE.BoxGeometry(1.0,1.5,0.2),
-    new THREE.MeshStandardMaterial({color:0x1a1206})); door.position.set(0,0.75,1.75); grp.add(door);
+  const ally = team==='ally';
+  const face = ally?1:-1;   // 입구는 가운데(전장)를 향함
+  const base = ally?0x3a6b40:0x6b3a3a, accent = ally?0x39d353:0xe0432e, dark=0x140e06;
+  const mat=(c,emi)=>new THREE.MeshStandardMaterial({color:c,roughness:0.82,metalness:0.05,emissive:emi||0x000000,emissiveIntensity:emi?0.3:0});
+  const hole=(r,x,y,z,ry)=>{ const h=new THREE.Mesh(new THREE.CylinderGeometry(r,r,0.5,16), mat(dark)); h.position.set(x,y,z); h.rotation.x=Math.PI/2; if(ry)h.rotation.z=ry; grp.add(h); return h; };
+  const arche=((stage||1)-1)%6; let top=null, topY=4.6;
+  if(arche===0){            // 🐜 개미집 흙무덤
+    const m=new THREE.Mesh(new THREE.ConeGeometry(2.7,2.4,20), mat(ally?0x4a5a30:0x5a4030)); m.position.y=1.2; grp.add(m);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(0.95,0.32,8,18), mat(0x2a1d10)); rim.rotation.x=Math.PI/2; rim.position.y=2.1; grp.add(rim);
+    hole(0.7,0,2.15,0); top=new THREE.Mesh(new THREE.ConeGeometry(0.45,0.6,12), mat(accent,accent)); top.position.y=2.9; grp.add(top); topY=3.4;
+  } else if(arche===1){     // 🐝 벌집 — 육각 적층
+    for(let i=0;i<3;i++){ const r=2.4-i*0.5; const hx=new THREE.Mesh(new THREE.CylinderGeometry(r,r,0.95,6), mat(ally?0xb0a02a:0xb86a2a)); hx.position.y=0.6+i*1.0; hx.rotation.y=Math.PI/6; grp.add(hx); }
+    for(let k=0;k<3;k++){ const c=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.4,6), mat(dark)); c.position.set((k-1)*0.95, 1.2, 1.95); c.rotation.x=Math.PI/2; grp.add(c); }
+    top=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.95,0.7,6), mat(accent,accent)); top.position.y=3.6; grp.add(top); topY=4.2;
+  } else if(arche===2){     // 🪵 흰개미 탑
+    for(let i=0;i<4;i++){ const r=2.1-i*0.42; const seg=new THREE.Mesh(new THREE.CylinderGeometry(r*0.8,r,1.1,12), mat(ally?0x4a6a44:0x6a4a44)); seg.position.y=0.55+i*1.0; grp.add(seg); }
+    const sp=new THREE.Mesh(new THREE.ConeGeometry(0.5,1.5,10), mat(ally?0x4a6a44:0x6a4a44)); sp.position.y=4.5; grp.add(sp);
+    hole(0.55,0,1.1,1.7); top=new THREE.Mesh(new THREE.SphereGeometry(0.42,12,12), mat(accent,accent)); top.position.y=5.3; grp.add(top); topY=5.9;
+  } else if(arche===3){     // 🐝 말벌집 — 물방울 층
+    for(let i=0;i<3;i++){ const r=2.4-i*0.62; const layer=new THREE.Mesh(new THREE.SphereGeometry(r,16,12,0,Math.PI*2,0,Math.PI*0.62), mat(ally?0x8a9a64:0x9a7a64)); layer.position.y=2.6-i*0.72; grp.add(layer); }
+    const b=new THREE.Mesh(new THREE.SphereGeometry(1.95,16,14), mat(ally?0x96a474:0xa48474)); b.position.y=1.4; grp.add(b);
+    hole(0.5,0,0.8,1.7); top=new THREE.Mesh(new THREE.ConeGeometry(0.45,0.7,12), mat(accent,accent)); top.position.y=3.7; grp.add(top); topY=4.3;
+  } else if(arche===4){     // 🕷️ 거미줄 둥지 — 돔 + 깔때기 + 거미줄
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(2.35,18,12,0,Math.PI*2,0,Math.PI*0.55), mat(ally?0x36463a:0x46363a)); dome.position.y=0.4; grp.add(dome);
+    const fn=new THREE.Mesh(new THREE.ConeGeometry(0.95,1.5,16,1,true), mat(dark)); fn.position.set(0,1.3,1.4); fn.rotation.x=Math.PI*0.5; grp.add(fn);
+    for(let i=1;i<=3;i++){ const w=new THREE.Mesh(new THREE.TorusGeometry(0.55*i,0.03,4,22), new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.22})); w.rotation.x=Math.PI/2; w.position.y=2.0; grp.add(w); }
+    top=new THREE.Mesh(new THREE.SphereGeometry(0.4,10,10), mat(accent,accent)); top.position.y=2.7; grp.add(top); topY=3.3;
+  } else {                  // 🪵 통나무 굴
+    const log=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,4.0,16), mat(ally?0x5a4a2a:0x5a3a2a)); log.rotation.x=Math.PI/2; log.position.y=1.5; grp.add(log);
+    const bark=new THREE.Mesh(new THREE.TorusGeometry(1.5,0.12,6,20), mat(ally?0x40331c:0x40281c)); bark.position.set(0,1.5,1.9); grp.add(bark);
+    const burrow=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.6,16), mat(dark)); burrow.position.set(0,1.5,2.0); grp.add(burrow);
+    top=new THREE.Mesh(new THREE.SphereGeometry(0.42,10,10), mat(accent,accent)); top.position.y=3.4; grp.add(top); topY=4.0;
+  }
+  return { grp, top, topY };
+}
+function makeBase(team, x){   // 🏠 본진(둥지) — 부수면 승리하는 목표물(스테이지마다 형태가 다름)
+  const ally = team==='ally';
+  const roofCol = ally?0x39d353:0xe0432e;
+  const nest = buildNest(team, G.teamStage||1);
+  const grp = nest.grp; const roof = nest.top;
   scene.add(grp); grp.position.set(x,0,0);
   const e={ isBase:true, team, type:'__base', mesh:grp, roofMesh:roof, d:{range:1.5,rate:1,atk:0,speed:0,col:roofCol},
     turretDmg:10, turretRange:8.5,   // 🔫 포탑 기본치(적 본진은 스테이지마다 강화)
@@ -3605,7 +3765,7 @@ function makeBase(team, x){   // 🏠 본진(집) — 부수면 승리하는 목
     hp:780, hpMax:780, energy:100, size:2.4, atkCd:1e9, spCd:0, hurtFlash:0, dead:false, corpse:false,
     zombie:false, isPlayer:false, target:null, ai:0, wander:new THREE.Vector3(), wanderCd:0,
     atkAnim:0, special:0, stun:0, slow:0, poison:0, poisonT:0, muts:[], boss:false, flyer:false, cmdTarget:null, moveTarget:null };
-  const hb=makeHpBar(); hb.position.set(0,4.6,0); hb.scale.setScalar(1.6); grp.add(hb); e.hpbar=hb;
+  const hb=makeHpBar(); hb.position.set(0,(nest.topY||4.6)+0.6,0); hb.scale.setScalar(1.6); grp.add(hb); e.hpbar=hb;
   G.entities.push(e);
   return e;
 }
@@ -3707,6 +3867,7 @@ function startTeamBattle(myTeam, enemyTeam, stage){
   G.zombieTimer=1e9; G.spawnTimer=1e9; G.bossEnt=null; G.enemyRaidTimer=4;   // 시작 4초 뒤부터 본진 공백 감시
   document.getElementById('bossBar').classList.remove('on');
   G.state='play'; G.teamStance=null; updateTeamHUD(); showTeamCmd(true); if(typeof updateStanceUI==='function') updateStanceUI();
+  if((G.teamRetries||0)===0){ try{ teamEntranceFlourish(myTeam, enemyTeam); }catch(e){} }   // 🎬 새 스테이지 진입 시 양 팀 등장 연출
   if((G.teamRetries||0)>0){ const rn=G.teamRetries; setTimeout(()=>flashBanner(LANG==='en'
       ? ('🎁 Retry bonus — 🧪'+(rn*3)+' start, +'+(rn*8)+'% team HP')
       : ('🎁 재도전 보너스 — 시작 🧪'+(rn*3)+', 팀 체력 +'+(rn*8)+'%'),'kill'), 700); }
@@ -3818,7 +3979,7 @@ function allDefend(){   // 🛡️ 전군 수비 — 모든 아군이 본진 방
   if(typeof updateTeamHUD==='function') updateTeamHUD();
 }
 // 🎮 액티브 스킬 — 쿨다운 버튼으로 전황에 직접 개입(회복·광폭·집중) + 선택 곤충 필살 수동 발동
-const SKILLS={ heal:{cd:14, ko:'회복'}, rage:{cd:18, ko:'광폭'}, focus:{cd:10, ko:'집중'} };
+const SKILLS={ heal:{cd:11, ko:'회복'}, rage:{cd:19, ko:'광폭'}, focus:{cd:10, ko:'집중'} };   // 회복=짧게 자주, 광폭=길게 한방, 집중=중간(각자 독립 쿨다운)
 function skillReady(k){ const t=(G.skillCd&&G.skillCd[k])||0; return (G.t||0)>=t; }
 function useSkill(k){
   if(G.mode!=='team' || G.state!=='play' || !G.allies) return;
@@ -3860,8 +4021,7 @@ function useSkill(k){
     try{ SND.ui&&SND.ui('select'); }catch(e){}
     updateSkillBar(); return;   // 쿨다운 미소모 — 표적 클릭 시 confirmFocus에서 처리
   }
-  G.skillCd[k]=(G.t||0)+SKILLS[k].cd;
-  if(k==='heal'||k==='rage'){ const cd=Math.max(SKILLS.heal.cd,SKILLS.rage.cd); G.skillCd.heal=(G.t||0)+cd; G.skillCd.rage=(G.t||0)+cd; }   // 💚🔥 둘은 한 묶음 — 하나 쓰면 둘 다 충전(매번 택1)
+  G.skillCd[k]=(G.t||0)+SKILLS[k].cd;   // 💚 회복·🔥 광폭은 이제 각자 독립 쿨다운(공유 해제)
   try{ SND.ui&&SND.ui('lock'); }catch(e){}
   updateSkillBar();
 }
@@ -3896,7 +4056,8 @@ function updateSkillBar(){   // 스킬 버튼 상태(쿨다운·필살 충전) �
   const rei=document.getElementById('skReinforce'); if(rei){ const canR=(G.teamRes||0)>=5 && (G.respawnQ||[]).some(q=>q.team==='ally'); rei.classList.toggle('cool',!canR); rei.classList.toggle('ready',canR); }
   const ult=document.getElementById('skUlt');
   if(ult){ const p=G.player, sp=(p&&!p.dead)?Math.max(0,Math.min(100,p.spReady||0)):0;
-    const f=ult.querySelector('.sk-fill'); if(f){ f.style.height=sp+'%'; f.style.opacity = sp>=100?'1':'0.85'; }
+    const f=ult.querySelector('.sk-fill'); if(f){ const deg=Math.round(sp*3.6); const col='rgba(255,200,60,0.5)';   // 🕐 시계 방향으로 차오름
+      f.style.background = sp>=100 ? col : ('conic-gradient('+col+' '+deg+'deg, rgba(0,0,0,0.22) '+deg+'deg)'); f.style.opacity = sp>=100?'1':'0.9'; }
     ult.classList.toggle('ready', sp>=100); ult.classList.toggle('cool', sp<100);
     const cdEl=ult.querySelector('.sk-cd'); if(cdEl) cdEl.textContent='';
   }
@@ -3905,10 +4066,11 @@ function updateSkillBar(){   // 스킬 버튼 상태(쿨다운·필살 충전) �
     if(!b) continue; const ready=skillReady(k); b.classList.toggle('ready',ready); b.classList.toggle('cool',!ready);
     const cdEl=b.querySelector('.sk-cd'); const left=Math.max(0,Math.ceil(((G.skillCd&&G.skillCd[k])||0)-(G.t||0)));
     if(cdEl) cdEl.textContent = ready?'':left;
-    const f=b.querySelector('.sk-fill');   // ⏳ 색이 점점 차오르는 게이지(빈→가득=준비완료)
+    const f=b.querySelector('.sk-fill');   // 🕐 시계 방향으로 차오르는 게이지(빈→가득=준비완료)
     if(f){ const charge = ready?100:Math.max(0,Math.min(100,100*(1-left/SKILLS[k].cd)));
-      f.style.height=charge+'%'; f.style.background=SKCOL[k]||'rgba(120,200,120,0.5)';
-      f.style.opacity = ready?'1':'0.85'; }
+      const deg=Math.round(charge*3.6); const col=SKCOL[k]||'rgba(120,200,120,0.5)';
+      f.style.background = ready ? col : ('conic-gradient('+col+' '+deg+'deg, rgba(0,0,0,0.22) '+deg+'deg)');
+      f.style.opacity = ready?'1':'0.9'; }
     if(k==='focus') b.classList.toggle('aiming', !!G.focusAim);   // 🎯 표적 지정 중 강조
   }
 }
@@ -3924,11 +4086,10 @@ function showTeamCmd(on){   // 전군 명령 바 표시/숨김 + 라벨 언어 �
   if(on && typeof updateSkillBar==='function') updateSkillBar();
   if(on && typeof updateAllyBar==='function') updateAllyBar();
   const hint=document.getElementById('hintEl'); if(hint && on) hint.style.display='none';
-  // 🕹️ 반자율 팀전 — 터치 기기에서는 조종 스틱·공격 버튼을 숨김(클릭/탭 지휘만)
-  const touch = !(typeof window!=='undefined' && window.matchMedia && window.matchMedia('(pointer:fine)').matches);
+  // 🕹️ 3:3 전투에서도 조이스틱·공격 버튼을 그대로 사용(조이스틱 옆 곤충선택 / 공격 버튼 옆 명령과 함께)
   const st=document.getElementById('stick'), at=document.getElementById('atk');
-  if(st) st.style.display = (on && touch) ? 'none' : '';
-  if(at) at.style.display = (on && touch) ? 'none' : '';
+  if(st) st.style.display = '';
+  if(at) at.style.display = '';
   const cc=document.getElementById('cmdCharge'), cd=document.getElementById('cmdDefend');
   if(cc) cc.textContent = LANG==='en'?'⚔️ Charge':'⚔️ 전군 돌격';
   if(cd) cd.textContent = LANG==='en'?'🛡️ Defend':'🛡️ 전군 수비';
@@ -4894,6 +5055,32 @@ function tsStarHTML(t){ const s=tsBugStars(t);
 function tsSetScore(html){ const el=document.getElementById('tsPrevScore'); if(el) el.innerHTML=html; }
 function tsRoleHTML(t){ if(!SPECIES[t]&&t!=='__hybrid') return ''; const o=bugRoleInfo(t);
   return ' · <span style="color:'+o.col+'">'+o.ic+' '+o.ko+'</span>'; }
+function teamEntranceFlourish(mine, foe){   // 🎬 전투 직전 — 양 팀이 좌우에서 등장해 가운데서 맞붙는 연출
+  try{
+    const old=document.getElementById('teamEntrance'); if(old&&old.remove) old.remove();
+    const ico=(arr)=>(arr||[]).map(t=>'<span class="te-bug">'+emo(t)+'</span>').join('');
+    const ov=document.createElement('div'); ov.id='teamEntrance'; ov.className='te-overlay';
+    ov.innerHTML='<div class="te-row te-mine">'+ico(mine)+'</div>'+
+      '<div class="te-vs">⚔️ VS</div>'+
+      '<div class="te-row te-foe">'+ico(foe)+'</div>';
+    if(document.body) document.body.appendChild(ov);
+    try{ SND.ui&&SND.ui('charge'); }catch(e){}
+    setTimeout(()=>{ if(ov.parentNode) ov.parentNode.removeChild(ov); }, 1500);
+  }catch(e){}
+}
+function tsSquadFlourish(){   // ⚔️ 3마리 완성 — 부대 정렬 + "출전 준비 완료!" 연출
+  const wrap=document.getElementById('teamSetup'); if(!wrap) return;
+  try{ const fx=document.createElement('div'); fx.className='ts-flourish';
+    fx.innerHTML='<div class="ts-fl-card">⚔️ '+(LANG==='en'?'SQUAD READY!':'출전 준비 완료!')+'</div>';
+    wrap.appendChild(fx); setTimeout(()=>{ if(fx.parentNode) fx.parentNode.removeChild(fx); }, 1300);
+  }catch(e){}
+  const h=document.getElementById('tsPrevHost'); if(h&&h.classList){ h.classList.remove('ts-prev-big'); try{ void h.offsetWidth; }catch(e){} h.classList.add('ts-prev-big'); setTimeout(()=>{ if(h.classList) h.classList.remove('ts-prev-big'); }, 900); }
+  try{ SND.ui&&SND.ui('rally'); }catch(e){}
+}
+function tsPreviewPulse(){   // 🔍 카드 탭 — 미리보기를 잠깐 크게 확대했다 복귀(작은 화면에서 선택 확인)
+  const h=document.getElementById('tsPrevHost'); if(!h||!h.classList) return;
+  h.classList.remove('ts-prev-pop'); try{ void h.offsetWidth; }catch(e){} h.classList.add('ts-prev-pop');
+}
 function tsPreviewShow(type){
   const p=tsPreviewEnsure(); if(!p||!type) return;
   if(p.type===type && !p.team) return;
@@ -4984,25 +5171,40 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
     const eroles=(enemyTeam||[]).map(t=>bugRole(t)); const ea=eroles.filter(r=>r==='atk').length, ed=eroles.filter(r=>r==='def').length;
     const foeTag = ea>ed?{t:LANG==='en'?'⚔️ Attack squad':'⚔️ 공격형 부대',c:'#ff8a6a'} : ed>ea?{t:LANG==='en'?'🛡️ Tanky squad':'🛡️ 체력형 부대',c:'#7ad7ff'} : {t:LANG==='en'?'⚖️ Balanced squad':'⚖️ 균형형 부대',c:'#cfe8be'};
     const foeTagHtml='<span class="ts-foetag" style="color:'+foeTag.c+';border-color:'+foeTag.c+'">'+foeTag.t+'</span>';
-    const enemyCards=enemyTeam.map(t=>'<div class="ts-unit foe" data-t="'+t+'"><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>').join('');
+    const enemyCards=enemyTeam.map(t=>'<div class="ts-unit foe ts-r-'+bugRole(t)+'" data-t="'+t+'"><span class="ts-emo">'+bugSvg(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>').join('');
     const slots=[0,1,2].map(i=>{ const t=pick[i];
-      if(t) return '<div class="ts-unit mine filled" data-t="'+t+'"><span class="ts-slotnum">'+(i+1)+'</span><span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+(SPECIES[t]?SPECIES[t].ko:'합성체')+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>';
+      if(t) return '<div class="ts-unit mine filled ts-r-'+bugRole(t)+'" data-t="'+t+'"><span class="ts-slotnum">'+(i+1)+'</span><span class="ts-emo">'+bugSvg(t)+'</span><span class="ts-nm">'+(SPECIES[t]?SPECIES[t].ko:'합성체')+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>';
       return '<div class="ts-unit mine empty"><span class="ts-plus">+</span><span class="ts-nm dim">'+(LANG==='en'?'pick':'선택')+'</span></div>'; }).join('');
-    let cards=ORDER.map(t=>{ const on=pick.includes(t); const idx=pick.indexOf(t);
-      return '<div class="ts-card'+(on?' on':'')+'" data-t="'+t+'">'+
+    const roleRank={atk:0,bal:1,def:2};   // ⚔️ 공격 → ⚖️ 균형 → 🛡️ 수비 순으로 묶어 정렬(좁은 화면서도 균형 조합 고르기 쉽게)
+    const baseTypes=ORDER.slice().sort((a,b)=>(roleRank[bugRole(a)]-roleRank[bugRole(b)]) || (ORDER.indexOf(a)-ORDER.indexOf(b)));
+    let cards=baseTypes.map(t=>{ const on=pick.includes(t); const idx=pick.indexOf(t);
+      return '<div class="ts-card ts-r-'+bugRole(t)+(on?' on':'')+'" data-t="'+t+'">'+
         (on?'<span class="ts-num">'+(idx+1)+'</span>':'')+
-        '<span class="ts-emo">'+emo(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>'; }).join('');
+        '<span class="ts-emo">'+bugSvg(t)+'</span><span class="ts-nm">'+SPECIES[t].ko+'</span>'+cardStars(t)+cardRole(t)+statMini(t)+'</div>'; }).join('');
     // 🧬 합성 도감(Q1) — 모은 합성체를 모두 픽 후보로 노출(+ 명예의전당 합성). 골라서 1마리 합류
     const dexF=fusionDexGet(); const hallF=(hall||[]).filter(it=>it.h).map(it=>it.h);
     const fusionList=[]; const seen={};
     [...dexF, ...hallF].forEach(f=>{ if(!f||!f.base||!f.sub) return; const key=f.base+'+'+f.sub; if(seen[key]) return; seen[key]=1; fusionList.push(f); });
+    let fusionCards='';   // 🧬 합성체는 기본 9마리와 분리된 영역에 모아 표시(고르기 쉽게)
     fusionList.forEach((fz,fi)=>{ try{ makeHybridSpecies(fz.base, fz.sub);
       const on = pick.includes('__hybrid') && G.teamHybrid && G.teamHybrid.base===fz.base && G.teamHybrid.sub===fz.sub;
       const fnm=(SPECIES['__hybrid']&&SPECIES['__hybrid'].ko)||'합성체';
-      cards += '<div class="ts-card fusion'+(on?' on':'')+'" data-t="__hybrid" data-fb="'+fz.base+'" data-fs="'+fz.sub+'">'+
+      const isLeg = bugStars('__hybrid').n>=6;   // ⭐ 전설(6성) 합성체 — 금색·반짝임으로 강조
+      fusionCards += '<div class="ts-card fusion'+(isLeg?' legend':'')+(on?' on':'')+'" data-t="__hybrid" data-fb="'+fz.base+'" data-fs="'+fz.sub+'">'+
         (on?'<span class="ts-num">'+(pick.indexOf('__hybrid')+1)+'</span>':'')+
-        '<span class="ts-emo">🧬</span><span class="ts-nm">'+fnm+'</span>'+cardStars('__hybrid')+cardRole('__hybrid')+'</div>';
+        (isLeg?'<span class="ts-legtag">⭐</span>':'')+
+        '<span class="ts-emo">'+(isLeg?'⭐':'🧬')+'</span><span class="ts-nm">'+fnm+'</span>'+cardStars('__hybrid')+cardRole('__hybrid')+'</div>';
     }catch(e){} });
+    // 🔒 아직 못 모은 전설 조합 — 흐릿한 잠금 카드로 "여기 더 강한 게 있다" 수집 동기 부여(레시피만 살짝 공개)
+    let lockedCards='';
+    try{ const foundL=(typeof getFoundLegends==='function')?getFoundLegends():[];
+      Object.keys(LEGEND_HYBRID).forEach(key=>{ if(foundL.includes(key)) return;
+        const ab=key.split('+'); const e1=emo(ab[0]), e2=emo(ab[1]);
+        lockedCards += '<div class="ts-card fusion legend locked ts-locked" title="'+(LANG==='en'?'Fuse to unlock':'합성하면 해금')+'">'+
+          '<span class="ts-lockbadge">🔒</span><span class="ts-emo">⭐</span>'+
+          '<span class="ts-nm dim">???</span><span class="ts-recipe">'+e1+'+'+e2+'</span></div>';
+      });
+    }catch(e){}
     const bestBadge=(STATS.teamBest||0)>0?'<span class="ts-best">🏆 '+(LANG==='en'?('Best '+STATS.teamBest+'/9'):('최고 '+STATS.teamBest+'/9'))+'</span>':'';
     wrap.innerHTML='<div class="sp-detail-box ts-box ts-pro">'+
       '<div class="ts-top"><span class="ts-title">⚔️ <b>'+(LANG==='en'?'3:3 Team Setup':'3:3 팀전 편성')+'</b></span>'+bestBadge+'</div>'+
@@ -5014,27 +5216,30 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
           roleSynergyHtml(pick)+
           '<div class="ts-prev"><div id="tsPrevHost"></div><div id="tsPrevName" class="ts-prev-nm"></div><div id="tsPrevScore" class="ts-prev-score"></div><div class="ts-prev-hint">'+(LANG==='en'?'drag to rotate · scroll/pinch to zoom':'드래그로 회전 · 휠/핀치로 확대')+'</div></div>'+
           powerBars(pick, enemyTeam)+
-          '<div class="ts-pick-label">▾ '+(LANG==='en'?'pick 3 of 9':'9마리 중 3마리 선택')+' ▾</div>'+
-          '<div class="ts-grid">'+cards+'</div>'+
         '</div>'+
         '<div class="ts-side foe"><div class="ts-team-label foe">🔴 '+(LANG==='en'?'ENEMY TEAM':'상대 팀')+' '+foeTagHtml+'</div><div class="ts-col">'+enemyCards+'</div></div>'+
       '</div>'+
+      '<div class="ts-pickbar"><div class="ts-pick-label">▾ '+(LANG==='en'?'pick 3 of 9':'9마리 중 3마리 선택')+' ▾</div>'+
+        '<div class="ts-pickwrap"><div class="ts-grid ts-bgrid">'+cards+'</div>'+
+        ((fusionCards||lockedCards)?'<div class="ts-fusionzone"><span class="ts-fz-label">🧬 '+(LANG==='en'?'Fusions':'합성체')+'</span><div class="ts-grid ts-fgrid">'+fusionCards+lockedCards+'</div></div>':'')+
+      '</div></div>'+
       '<button class="ts-go" id="tsGo"'+(pick.length===3?'':' disabled')+'>'+(pick.length===3?(LANG==='en'?'⚔️ Start Battle ▸':'⚔️ 전투 시작 ▸'):(LANG==='en'?('pick '+(3-pick.length)+' more'):('곤충 '+(3-pick.length)+'마리 더 선택')))+'</button>'+
       '<button class="ts-cancel" id="tsCancel">'+(LANG==='en'?'‹ Back to modes':'‹ 모드 선택으로')+'</button></div>';
     wrap.querySelectorAll('.ts-card').forEach(c=>{ c.addEventListener('click',()=>{ const t=c.dataset.t;
+      if(c.classList.contains('ts-locked')){ try{ SND.ui&&SND.ui('lock'); }catch(e){} flashBanner(LANG==='en'?'🔒 Fuse this combo to unlock':'🔒 이 조합을 합성하면 해금','warn'); return; }   // 미수집 전설 — 선택 불가, 안내만
       if(t==='__hybrid'){   // 🧬 합성 카드 — 도감에서 고른 합성체로 설정/교체/해제
         const fb=c.dataset.fb, fs=c.dataset.fs; const cur=G.teamHybrid;
         const same = pick.includes('__hybrid') && cur && cur.base===fb && cur.sub===fs;
         if(same){ const ix=pick.indexOf('__hybrid'); if(ix>=0) pick.splice(ix,1); G.teamHybrid=null; render(); return; }
         try{ makeHybridSpecies(fb, fs); }catch(e){} G.teamHybrid={base:fb, sub:fs};
         if(!pick.includes('__hybrid')){ if(pick.length<3) pick.push('__hybrid'); }
-        render(); tsPreviewShow('__hybrid'); return;
+        render(); tsPreviewShow('__hybrid'); tsPreviewPulse(); if(pick.length===3) tsSquadFlourish(); return;
       }
       const i=pick.indexOf(t);
       if(i>=0){ pick.splice(i,1); render(); return; }
       if(pick.length<3){
         const fromRect=c.getBoundingClientRect(); const slotIdx=pick.length;
-        pick.push(t); render(); tsPreviewShow(t);
+        pick.push(t); render(); tsPreviewShow(t); tsPreviewPulse();
         requestAnimationFrame(()=>{   // 🪽 고른 곤충이 내 팀 슬롯으로 날아가 꽂힘
           const slots=wrap.querySelectorAll('.ts-side.mine .ts-unit');
           const toEl=slots&&slots[slotIdx]; if(!toEl || !fromRect) return;
@@ -5047,6 +5252,7 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
           requestAnimationFrame(()=>{ fly.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px) scale(.7)'; fly.style.opacity='0.2'; });
           setTimeout(()=>{ fly.remove();
             try{ const su=wrap.querySelectorAll('.ts-side.mine .ts-unit')[slotIdx]; if(su) su.classList.add('ts-pop'); }catch(e){}
+            if(pick.length===3) tsSquadFlourish();   // ⚔️ 마지막 한 마리가 꽂히며 출전 준비 연출
           }, 440);
           try{ SND.ui&&SND.ui('select'); }catch(e){}
         });
@@ -5083,6 +5289,14 @@ function openTeamSetup(){   // ⚔️ 3:3 팀전 편성 — 적 3마리를 보�
   }
   render();
   if(document.body) document.body.appendChild(wrap);
+  // 🔄 가로·세로 전환 — 고른 3마리·적 구성(pick/enemyTeam)은 그대로 두고 배치만 다시 그림(셋업 닫히면 자동 해제)
+  let tsResizeT=null;
+  function onTsResize(){
+    const alive = document.body && document.body.contains && document.body.contains(wrap);
+    if(!alive){ try{ removeEventListener('resize', onTsResize); removeEventListener('orientationchange', onTsResize); }catch(e){} return; }
+    clearTimeout(tsResizeT); tsResizeT=setTimeout(()=>{ if(document.body && document.body.contains && document.body.contains(wrap)) render(); }, 180);
+  }
+  try{ addEventListener('resize', onTsResize); addEventListener('orientationchange', onTsResize); }catch(e){}
 }
 
 function setCoins(delta){      // 코인 증감 — 상단 숫자 갱신 + 깜빡임 + 떠오르는 +N/-N
