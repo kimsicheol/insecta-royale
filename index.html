@@ -199,6 +199,10 @@
     #teamSetup .ts-arena{margin-bottom:8px;grid-template-columns:1.25fr 0.9fr 1fr;align-items:start;}
     #teamSetup #tsPrevHost{height:112px;max-width:100%;}
     #teamSetup .ts-side.mine .ts-prev{margin-top:8px;}
+    /* 🟢 내 팀 슬롯도 적 팀 카드처럼 내용만큼만(세로로 늘어나 비지 않게) */
+    #teamSetup .ts-col{flex-direction:column;align-items:stretch;gap:10px;}
+    #teamSetup .ts-col .ts-unit{flex:0 0 auto;}
+    #teamSetup .ts-unit.mine.empty{min-height:120px;}
     #teamSetup .ts-prev{margin-bottom:6px;}
     #teamSetup .ts-prev-hint{display:none;}
     #teamSetup .ts-power{margin-bottom:6px;padding:7px 11px;}
