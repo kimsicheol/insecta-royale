@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>곤충 배틀로얄 — INSECTA ROYALE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
+  /* 🎮 게임 헤딩 폰트 — 로드 실패 시 시스템 폰트로 자연 대체 */
+  h1,.mc-title,.mode-badge,.ts-team-label,.thp-stage,.ts-go,.tbt-lab,.sh-title,.si-title{font-family:'Jua','Trebuchet MS','Segoe UI',system-ui,sans-serif;}
   :root{
     --void:#080b07;
     --soil:#11160d;
@@ -821,6 +825,104 @@
     #atk{width:96px;height:96px;}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+  /* ===== 🎛️ 전투 HUD 상용화 ===== */
+  body.teammode .vitals{display:none !important;}   /* 팀전은 상단 본진 막대+하단 부대 바로 통일(겹침 제거) */
+  #engageToast{top:136px !important;}               /* 교전 토스트를 팀 HUD 아래로 */
+  #teamKeys{bottom:calc(268px + env(safe-area-inset-bottom)) !important;background:rgba(8,11,7,.82);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px 10px;backdrop-filter:blur(6px);}
+  @media (pointer:coarse){ #teamKeys{display:none !important;} }   /* 터치 기기에선 키보드 안내 숨김 */
+  .skbtn{background:linear-gradient(170deg,rgba(24,32,16,.92),rgba(10,14,7,.94)) !important;border:1.5px solid rgba(255,255,255,.14) !important;border-radius:17px !important;box-shadow:0 6px 16px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.08) inset;backdrop-filter:blur(6px);transition:transform .1s,box-shadow .15s;}
+  .skbtn:active{transform:scale(.93);}
+  .tcmd{background:rgba(10,14,8,.85) !important;border:1.5px solid rgba(255,255,255,.16) !important;border-radius:14px !important;padding:9px 14px !important;backdrop-filter:blur(6px);box-shadow:0 6px 16px rgba(0,0,0,.45);letter-spacing:.3px;transition:transform .1s;}
+  .tcmd:active{transform:scale(.95);}
+  #cmdCharge{border-color:rgba(255,120,90,.55) !important;color:#ffd9cd !important;}
+  #cmdDefend{border-color:rgba(122,215,255,.55) !important;color:#dbf3ff !important;}
+  #atk{background:radial-gradient(circle at 35% 30%,#ff8a5a,#d8422a 62%,#a82616) !important;border:3px solid rgba(255,255,255,.22) !important;box-shadow:0 10px 26px rgba(216,66,42,.5),0 0 0 6px rgba(216,66,42,.14) !important;text-shadow:0 2px 4px rgba(0,0,0,.4);transition:transform .08s;}
+  #atk:active{transform:scale(.94);}
+  #teamBaseTop .tbt-row{background:rgba(6,9,5,.8);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(6px);}
+  .team-hud{background:rgba(6,9,5,.8) !important;border:1px solid rgba(255,255,255,.12) !important;backdrop-filter:blur(6px);}
+  /* ===== 🗺️ 원정 맵 ===== */
+  .em-box{background:#11160c;border:1px solid var(--chitin);border-radius:16px;padding:20px 22px;max-width:560px;width:92%;box-shadow:0 12px 50px rgba(0,0,0,.7);max-height:92vh;overflow-y:auto;text-align:center;}
+  .em-title{font-family:'Jua',sans-serif;font-size:22px;color:#f2ead6;margin:0 0 2px;}
+  .em-sub{font-size:12px;color:var(--bone-dim);margin-bottom:6px;}
+  .em-medal{display:inline-block;font-size:12.5px;font-weight:900;color:#ffd24a;background:rgba(255,210,74,.08);border:1px solid rgba(255,210,74,.35);border-radius:20px;padding:4px 14px;margin-bottom:12px;}
+  .em-path{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+  .em-node{position:relative;border-radius:13px;padding:12px 6px 10px;border:1.5px dashed #3a4a2a;background:rgba(255,255,255,.03);opacity:.72;}
+  .em-node .em-emo{font-size:26px;display:block;margin-bottom:2px;filter:grayscale(.4);}
+  .em-node .em-nm{font-size:12px;font-weight:800;color:#c9d4ba;}
+  .em-node .em-st{display:block;font-size:10px;margin-top:3px;color:#8a967c;}
+  .em-node.clear{border:1.5px solid #39d353;background:linear-gradient(170deg,rgba(57,211,83,.14),rgba(8,12,7,.2));opacity:1;}
+  .em-node.clear .em-emo{filter:none;}
+  .em-node.clear .em-st{color:#8fe06a;font-weight:800;}
+  .em-node.next{border:2px solid #ffd24a;background:linear-gradient(170deg,rgba(255,210,74,.16),rgba(40,28,6,.25));opacity:1;box-shadow:0 0 16px rgba(255,210,74,.3);animation:emNext 1.6s ease-in-out infinite;}
+  .em-node.next .em-emo{filter:none;}
+  .em-node.next .em-st{color:#ffd24a;font-weight:900;}
+  @keyframes emNext{0%,100%{box-shadow:0 0 12px rgba(255,210,74,.25);}50%{box-shadow:0 0 22px rgba(255,210,74,.55);}}
+  .em-node.boss .em-emo{font-size:30px;}
+  .em-go{display:block;width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#3aa64a,#8fd13b);color:#06210a;box-shadow:0 8px 22px rgba(143,209,59,.3);font-family:'Jua',sans-serif;}
+  .em-back{display:block;margin:10px auto 0;background:none;border:none;color:#8a967c;font-size:12px;cursor:pointer;text-decoration:underline;}
+  /* 진군 연출 — 방금 클리어 ✅ 도장 + 다음 지역으로 행군 🐜 */
+  .em-stamp{position:absolute;top:-8px;right:-6px;font-size:20px;filter:drop-shadow(0 2px 3px #000);animation:emStamp .5s cubic-bezier(.2,.9,.3,1.4) both;}
+  @keyframes emStamp{0%{transform:scale(2.4);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .em-march{position:absolute;top:-10px;left:-8px;font-size:18px;filter:drop-shadow(0 2px 3px #000);animation:emMarch 1.1s ease .35s both;}
+  @keyframes emMarch{0%{transform:translateX(-46px) scale(.7);opacity:0;}60%{opacity:1;}100%{transform:translateX(0) scale(1);opacity:1;}}
+  .em-progress-hint{font-size:11px;color:#8a967c;margin-top:2px;}
+  /* 🎖️ 훈장 영구 업그레이드 */
+  .em-up{margin:2px 0 14px;border:1px solid rgba(255,210,74,.3);border-radius:13px;padding:10px;background:rgba(255,210,74,.04);}
+  .em-up-t{font-size:12.5px;font-weight:900;color:#ffd24a;margin-bottom:8px;}
+  .em-up-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  @media (max-width:430px){ .em-up-grid{grid-template-columns:1fr;} }
+  .em-up-item{border:1px solid #3a4a2a;border-radius:11px;padding:9px 7px;background:rgba(255,255,255,.03);display:flex;flex-direction:column;gap:3px;align-items:center;}
+  .em-up-item .eu-emo{font-size:20px;}
+  .em-up-item .eu-nm{font-size:12px;font-weight:900;color:#e8f0da;}
+  .em-up-item .eu-desc{font-size:10.5px;color:#a9b598;line-height:1.35;text-align:center;min-height:28px;}
+  .em-up-item .eu-lv{font-size:10.5px;color:#7ad7ff;font-weight:800;}
+  .eu-buy{border:none;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#c89a2e,#ffd24a);color:#231a04;width:100%;}
+  .eu-buy:disabled{background:#2a3122;color:#6a7458;cursor:default;}
+  /* 👑 여왕 처치 — 왕관 낙하 */
+  .crown-drop{position:fixed;left:50%;top:-70px;transform:translateX(-50%);z-index:80;font-size:64px;pointer-events:none;filter:drop-shadow(0 6px 14px rgba(255,210,74,.6));animation:crownFall 1.6s cubic-bezier(.3,.7,.4,1.2) forwards;}
+  @keyframes crownFall{0%{top:-70px;transform:translateX(-50%) rotate(-30deg);opacity:1;}55%{top:38%;transform:translateX(-50%) rotate(14deg);}70%{top:33%;transform:translateX(-50%) rotate(-6deg);}82%{top:36%;transform:translateX(-50%) rotate(3deg);opacity:1;}100%{top:36%;transform:translateX(-50%) rotate(0);opacity:0;}}
+  /* 🏆 완주 엔딩 카드 */
+  .end-overlay{position:fixed;inset:0;z-index:82;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(60,44,8,.6),rgba(4,6,3,.94));animation:siCard .5s ease both;}
+  .end-card{max-width:min(500px,90vw);text-align:center;padding:30px 32px;border-radius:20px;background:linear-gradient(175deg,rgba(34,28,10,.97),rgba(12,10,4,.97));border:2px solid #ffd24a;box-shadow:0 0 60px rgba(255,210,74,.35),0 20px 70px rgba(0,0,0,.8);}
+  .end-trophy{font-size:56px;display:block;margin-bottom:4px;animation:endTrophy 1.4s ease-in-out infinite;filter:drop-shadow(0 6px 16px rgba(255,210,74,.55));}
+  @keyframes endTrophy{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-7px) scale(1.05);}}
+  .end-title{font-family:'Jua',sans-serif;font-size:30px;color:#ffd24a;margin:0 0 4px;text-shadow:0 2px 10px rgba(255,210,74,.4);}
+  .end-epi{font-size:13.5px;line-height:1.7;color:#e8dfc2;margin-bottom:12px;}
+  .end-squad{font-size:30px;letter-spacing:8px;margin-bottom:10px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5));}
+  .end-stats{font-size:13px;font-weight:800;color:#ffd24a;background:rgba(255,210,74,.08);border:1px solid rgba(255,210,74,.3);border-radius:12px;padding:8px;margin-bottom:14px;}
+  .end-home{display:block;width:100%;padding:13px;border:none;border-radius:13px;font-size:15px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#c89a2e,#ffd24a);color:#231a04;font-family:'Jua',sans-serif;}
+  /* ===== 🎖️ 타이틀 폴리시 ===== */
+  .ver-chip{display:inline-block;margin-left:8px;font-size:10px;letter-spacing:.1em;color:#0a1206;background:var(--chitin);border-radius:8px;padding:1px 8px;vertical-align:middle;}
+  .title-feats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 18px;}
+  .title-feats span{font-size:12px;font-weight:800;color:var(--bone);background:rgba(255,255,255,.05);border:1px solid rgba(212,160,60,.35);border-radius:20px;padding:5px 13px;}
+  .mode-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .mode-card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(212,160,60,.35) inset;}
+  /* ===== 📖 스테이지 스토리 인트로 ===== */
+  .si-overlay{position:fixed;inset:0;z-index:72;display:flex;align-items:center;justify-content:center;background:rgba(4,6,3,.82);animation:siFade 3s ease forwards;pointer-events:auto;}
+  .si-card{max-width:min(520px,88vw);text-align:center;padding:26px 30px;border-radius:18px;background:linear-gradient(175deg,rgba(20,26,14,.96),rgba(9,12,6,.96));border:1px solid rgba(212,160,60,.5);box-shadow:0 18px 60px rgba(0,0,0,.7);animation:siCard .6s cubic-bezier(.2,.9,.3,1.15) both;}
+  .si-ch{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.4em;color:var(--chitin);margin-bottom:8px;}
+  .si-emo{font-size:44px;display:block;margin-bottom:6px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));}
+  .si-title{font-size:26px;font-weight:900;color:#f2ead6;margin:0 0 4px;}
+  .si-sub{font-size:12.5px;color:var(--chitin);font-weight:800;margin-bottom:10px;}
+  .si-story{font-size:13.5px;line-height:1.65;color:#cfd8c0;}
+  .si-skip{margin-top:12px;font-size:11px;color:#8a967c;}
+  @keyframes siCard{0%{transform:scale(.86) translateY(14px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+  @keyframes siFade{0%,78%{opacity:1;}100%{opacity:0;}}
+  /* ===== 🛒 전리품 상점 ===== */
+  .sh-box{background:#11160c;border:1px solid var(--chitin);border-radius:16px;padding:18px 20px;max-width:520px;width:92%;box-shadow:0 12px 50px rgba(0,0,0,.7);max-height:92vh;overflow-y:auto;}
+  .sh-title{text-align:center;font-size:21px;font-weight:900;color:#f2ead6;margin:0 0 2px;}
+  .sh-sub{text-align:center;font-size:12px;color:var(--bone-dim);margin-bottom:10px;}
+  .sh-coins{text-align:center;font-size:15px;font-weight:900;color:#ffd24a;background:rgba(255,210,74,.08);border:1px solid rgba(255,210,74,.35);border-radius:12px;padding:7px;margin-bottom:12px;}
+  .sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:430px){ .sh-grid{grid-template-columns:1fr;} }
+  .sh-item{position:relative;border:1px solid #3a4a2a;border-radius:13px;padding:12px 12px 10px;background:linear-gradient(170deg,rgba(255,255,255,.04),rgba(0,0,0,.12));display:flex;flex-direction:column;gap:4px;}
+  .sh-item .sh-emo{font-size:24px;}
+  .sh-item .sh-nm{font-size:14px;font-weight:900;color:#e8f0da;}
+  .sh-item .sh-desc{font-size:11.5px;color:#a9b598;line-height:1.4;min-height:30px;}
+  .sh-item .sh-lv{font-size:11px;color:#7ad7ff;font-weight:800;}
+  .sh-buy{margin-top:5px;border:none;border-radius:10px;padding:8px;font-size:13px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#c89a2e,#ffd24a);color:#231a04;}
+  .sh-buy:disabled{background:#2a3122;color:#6a7458;cursor:default;}
+  .sh-next{display:block;width:100%;margin-top:12px;padding:13px;border:none;border-radius:13px;font-size:15px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#3aa64a,#8fd13b);color:#06210a;box-shadow:0 8px 22px rgba(143,209,59,.3);}
 </style>
 </head>
 <body>
@@ -831,10 +933,11 @@
     <button class="lang-btn on" data-lang="ko">한국어</button>
     <button class="lang-btn" data-lang="en">EN</button>
   </div>
-  <div class="eyebrow">Entomological Combat Arena</div>
+  <div class="eyebrow">Entomological Combat Arena <span class="ver-chip">v3.5</span></div>
   <h1 class="title-h1"><span id="titleName">곤충 대전</span><span class="x">I N S E C T A &nbsp; W A R S</span></h1>
   <p class="title-sub" id="titleSub">🔥 진짜 곤충 9종이 격돌하는 곤충 대전! 혼자 살아남아 <b>최후의 1마리</b>가 될 것인가,
     부대를 이끌고 <b>적 본진</b>을 부술 것인가 — 너의 전장을 골라라.</p>
+  <div class="title-feats" id="titleFeats"><span>🐞 실존 곤충 9종</span><span>⭐ 전설 합성체</span><span>🗺️ 9지역 원정</span><span>🛒 전리품 상점</span></div>
   <div class="mode-cards">
     <button class="mode-card royale" data-mode="royale">
       <span class="mc-emo">🏆</span>
@@ -844,7 +947,7 @@
     <button class="mode-card team" data-mode="team">
       <span class="mc-emo">⚔️</span>
       <span class="mc-title" id="mcT2">3:3 팀전</span>
-      <span class="mc-desc" id="mcD2">3마리 부대 지휘 · 적 본진 격파</span>
+      <span class="mc-desc" id="mcD2">9지역 원정 · 상점 · 본진 격파</span>
     </button>
   </div>
 </section>
@@ -2726,6 +2829,7 @@ function applyHit(e,o,dmg,special){
 
 function killEntity(o, by){
   o.dead=true;
+  if(o.isQueen && G.mode==='team'){ try{ queenDeathCinematic(o); }catch(e){} }   // 👑 여왕 처치 전용 연출
   if(o.isBase){   // 🏠 본진 파괴 — 무너지는 연출 후 승패는 checkTeamWinLose가 결정
     o.removing=true;
     spawnHitFx(o.pos, o.team==='ally'?0xe0432e:0x39d353, 2.5, 'burst');
@@ -3542,6 +3646,7 @@ function loop(now){
 }
 function step(dt){
   if(G.hitStop>0){ G.hitStop=Math.max(0,G.hitStop-dt); dt*=0.35; }   // 자석 적중 순간 짧은 슬로우(타격감)
+  if(G.slowmoT>0){ G.slowmoT=Math.max(0,G.slowmoT-dt); dt*=0.3; }    // 👑 여왕 처치 슬로모션
   if(G.mode!=='team') maybeSpawn(dt);   // 팀전은 6마리 고정(웨이브·좀비 없음)
   if(G.mode==='team' && G.buffZone){   // 🌟 버프 지대 판정 + 펄스
     for(const e of G.entities){ if(e.isBase||e.dead||e.corpse){ continue; }
@@ -3570,6 +3675,24 @@ function step(dt){
         if(!G.teamEscOn){ G.teamEscOn=true; try{ SND.ui&&SND.ui('charge'); }catch(e){} flashBanner(LANG==='en'?'⏱️ OVERTIME! Turrets & resources ramp up':'⏱️ 후반 가속! 포탑·자원이 점점 강해진다','warn'); }
         G.teamEscResCd=(G.teamEscResCd||0)-0.25; if(G.teamEscResCd<=0){ G.teamEscResCd=3.5; G.teamRes=(G.teamRes||0)+2; if(typeof updateSkillBar==='function') updateSkillBar(); }
       } else { G.teamEsc=1; }
+      // 👑 여왕 패턴 — 부름(증원 소환)·격노(35% 미만)·황금 오라
+      if(G.teamStage===9){ const q=(G.enemies||[]).find(x=>x&&x.isQueen&&!x.dead&&!x.corpse);
+        if(q){
+          try{ spawnHitFx(q.pos, 0xffd24a, 0.9, 'ring'); }catch(e){}
+          G.queenCd=(G.queenCd||12)-0.25;
+          const alive=(G.enemies||[]).filter(x=>x&&!x.dead&&!x.corpse).length;
+          if(G.queenCd<=0 && alive<6){ G.queenCd=13;
+            const t=ORDER[Math.floor(Math.random()*ORDER.length)];
+            G.respawnQ.push({ type:t, team:'enemy', wasPlayer:false, lane:(Math.floor(Math.random()*3)-1)*4, at:(G.t||0)+0.6, oldRef:null });
+            flashBanner(LANG==='en'?'👑 The Queen calls reinforcements!':'👑 여왕의 부름 — 적 증원 소환!','hurt');
+            try{ SND.ui&&SND.ui('whiff'); }catch(e){}
+          }
+          if(!G.queenEnraged && q.hp < q.hpMax*0.35){ G.queenEnraged=true; q.atkBuff=(q.atkBuff||1)*1.35; q.rageT=(G.t||0)+9999;
+            flashBanner(LANG==='en'?'👑 QUEEN ENRAGED! Finish her!':'👑 여왕 격노! 지금 끝장내라!','hurt');
+            try{ spawnHitFx(q.pos, 0xff5a2a, 2.0, 'ring'); SND.ui&&SND.ui('charge'); }catch(e){}
+          }
+        }
+      }
     }
     // 🚨 우리 본진 위급(30% 이하) — 화면 가장자리 붉은 박동 + 경고음
     { const vig=document.getElementById('critVig');
@@ -3856,8 +3979,13 @@ function makeTeamField(){   // ▭ 클래시로얄식 좁은 직사각형 경기
   scene.add(g); G.teamField={group:g, fx, fz};
 }
 function startTeamBattle(myTeam, enemyTeam, stage){
+  G.mode='team';   // 🛡️ 팀전 규칙(오사 방지·피해 완화 등)이 항상 적용되도록 모드 보장
+  try{ if(document.body&&document.body.classList) document.body.classList.add('teammode'); }catch(e){}   // 🎛️ 팀전 HUD 모드(상단 정리)
   stage = stage||1; G.teamStage=stage; G.teamRoster=myTeam.slice();
-  if(stage===1) G.teamHpBonus=0;   // 새 도전 시작 시 보너스 초기화
+  if(stage===1){ G.teamHpBonus=0; G.teamShop={hp:0,atk:0,base:0,supply:0};
+    G.teamCoins=Math.min(6, Math.floor(getMedals()/10));   // 🎖️ 훈장 10개당 시작 전리품 +1(최대 +6)
+    if(G.teamCoins>0){ setTimeout(()=>flashBanner(LANG==='en'?('🎖️ Medal bonus — start with 🪙'+G.teamCoins):('🎖️ 훈장 보너스 — 시작 전리품 🪙'+G.teamCoins),'kill'), 1400); }
+  }   // 새 도전 시작 시 보너스·상점 초기화(전리품은 훈장 보너스로 시작)
   for(const e of G.entities){scene.remove(e.mesh);} G.entities.length=0; NAMES_BY.clear();
   for(const sh of G.shadows){scene.remove(sh.mesh);} G.shadows.length=0;
   for(const w of G.webs){if(w.mesh)scene.remove(w.mesh);} G.webs.length=0;
@@ -3881,6 +4009,8 @@ function startTeamBattle(myTeam, enemyTeam, stage){
   const retryHpMul = 1 + (G.teamRetries||0)*0.08;   // 🎁 재도전 보너스 — 재도전마다 팀 체력 +8%
   G.focusAim=false; G.focusTarget=null;
   G.baseAlly=makeBase('ally', -13);     // 🏠 양 팀 본진(맵 축소 — 한 화면 직사각형)
+  if(G.teamShop&&G.teamShop.base>0){ const bMul=1+G.teamShop.base*0.15; G.baseAlly.hp=Math.round(G.baseAlly.hp*bMul); G.baseAlly.hpMax=Math.round(G.baseAlly.hpMax*bMul); }   // 🏰 본진 보강
+  if(G.teamShop&&G.teamShop.supply>0){ G.teamRes=(G.teamRes||0)+G.teamShop.supply*2; }   // 🧪 보급 계약
   G.baseEnemy=makeBase('enemy', 13); const baseAdd = stage*42 + late*36; G.baseEnemy.hp += baseAdd; G.baseEnemy.hpMax += baseAdd;   // 본진도 점점 단단하게(후반 가파르게)
   G.baseEnemy.turretDmg = 10 + sx*2 + late*1.5;        // 🔫 적 포탑 강화 — 후반 공성이 점점 까다롭게
   G.baseEnemy.turretRange = 8.5 + sx*0.25;
@@ -3889,7 +4019,9 @@ function startTeamBattle(myTeam, enemyTeam, stage){
     if(item==='__hybrid' && G.teamHybrid){ makeHybridSpecies(G.teamHybrid.base, G.teamHybrid.sub); e=makeEntity('__hybrid', i===0, false, 'ally'); absorb(e, G.teamHybrid.sub); const lm=e.muts[e.muts.length-1]; if(lm) lm.t=1e9; }
     else e=makeEntity(item, i===0, false, 'ally');
     e.team='ally'; e.pos.set(-8, 0, (i-1)*4); e.lane=(i-1)*4; e.mesh.position.copy(e.pos); spawnTeamRing(e,true); spawnCtrlMarker(e);
-    const hpBonus=(1+(G.teamHpBonus||0))*retryHpMul*1.25; e.hpMax=Math.round(e.hpMax*hpBonus); e.hp=e.hpMax;   // 🩹 클리어 누적 강화 + 재도전 보너스 + 팀전 체력 ↑(교전이 더 오래 가도록) + 풀 체력 시작
+    const shopHp=(1+((G.teamShop&&G.teamShop.hp)||0)*0.10)*(1+(getMedalUp().mhp||0)*0.05);   // 🩹 상점 체력 단련 + 💪 훈장 부대 단련
+    const hpBonus=(1+(G.teamHpBonus||0))*retryHpMul*1.25*shopHp; e.hpMax=Math.round(e.hpMax*hpBonus); e.hp=e.hpMax;   // 🩹 클리어 누적 강화 + 재도전 보너스 + 팀전 체력 ↑ + 상점 강화 + 풀 체력 시작
+    if(G.teamShop&&G.teamShop.atk>0){ e.atkBuff=(e.atkBuff||1)*(1+G.teamShop.atk*0.08); }   // ⚔️ 상점 공격 연마
     NAMES_BY.set(e, (item==='__hybrid'&&SPECIES['__hybrid'])?SPECIES['__hybrid'].ko:SPECIES[item].ko); G.allies.push(e);
   });
   // 적 팀 3마리(편성 화면에서 본 그대로) + 스테이지 강화
@@ -3900,6 +4032,9 @@ function startTeamBattle(myTeam, enemyTeam, stage){
     e.cmdTarget=G.baseAlly;   // ⚔️ 적은 처음부터 우리 본진으로 진격(길막는 아군 처치 후 계속)
     NAMES_BY.set(e, SPECIES[t].ko); G.enemies.push(e);
   });
+  if(stage===9){ crownQueen(G.enemies[1]); G.queenCd=12; G.queenEnraged=false;   // 👑 최종장 — 가운데 적이 거대 개미 여왕
+    setTimeout(()=>{ flashBanner(LANG==='en'?'👑 THE ANT QUEEN APPEARS!':'👑 거대 개미 여왕이 나타났다!','hurt'); try{ SND.ui&&SND.ui('charge'); }catch(e){} }, 3200);
+  }
   G.player=G.allies[0]; G.selected=[G.allies[0]];
   G.roleSyn = (typeof teamRoleSynergy==='function') ? teamRoleSynergy(myTeam).mul : 1;   // ⚖️ 역할 다양성 시너지
   if(G.roleSyn>1){ G.allies.forEach(a=>{ a.hpMax=Math.round(a.hpMax*G.roleSyn); a.hp=a.hpMax; a.atkBuff=(a.atkBuff||1)*G.roleSyn; }); }
@@ -3917,7 +4052,7 @@ function startTeamBattle(myTeam, enemyTeam, stage){
   document.getElementById('bossBar').classList.remove('on');
   G.state='play'; G.teamStance=null; G.teamFightStart=(G.t||0); G.teamEsc=1; G.teamEscOn=false; G.teamEscResCd=0;   // ⏱️ 후반 가속 타이머 초기화
   updateTeamHUD(); showTeamCmd(true); if(typeof updateStanceUI==='function') updateStanceUI();
-  if((G.teamRetries||0)===0){ try{ teamEntranceFlourish(myTeam, enemyTeam); }catch(e){} }   // 🎬 새 스테이지 진입 시 양 팀 등장 연출
+  if((G.teamRetries||0)===0){ try{ teamStoryIntro(stage||1); setTimeout(()=>{ try{ teamEntranceFlourish(myTeam, enemyTeam); }catch(e){} }, 2400); }catch(e){} }   // 📖 스테이지 장(章) 스토리 → 🎬 양 팀 등장 연출
   if((G.teamRetries||0)>0){ const rn=G.teamRetries; setTimeout(()=>flashBanner(LANG==='en'
       ? ('🎁 Retry bonus — 🧪'+(rn*3)+' start, +'+(rn*8)+'% team HP')
       : ('🎁 재도전 보너스 — 시작 🧪'+(rn*3)+', 팀 체력 +'+(rn*8)+'%'),'kill'), 700); }
@@ -4235,7 +4370,7 @@ function processRespawns(){   // 🔄 대기열의 곤충을 본진에서 재출
     const bx = r.team==='ally' ? -11 : 11;
     e.pos.set(bx, 0, r.lane); e.mesh.position.copy(e.pos);
     spawnTeamRing(e, r.team==='ally'); if(r.team==='ally') spawnCtrlMarker(e);
-    if(r.team==='ally'){ const hpBonus=(1+(G.teamHpBonus||0))*1.25; e.hpMax=Math.round(e.hpMax*hpBonus); }   // 증원도 동일한 팀전 체력 ↑
+    if(r.team==='ally'){ const shopHp=(1+((G.teamShop&&G.teamShop.hp)||0)*0.10)*(1+(getMedalUp().mhp||0)*0.05); const hpBonus=(1+(G.teamHpBonus||0))*1.25*shopHp; e.hpMax=Math.round(e.hpMax*hpBonus); if(G.teamShop&&G.teamShop.atk>0) e.atkBuff=(e.atkBuff||1)*(1+G.teamShop.atk*0.08); }   // 증원도 동일한 팀전·상점·훈장 강화
     else { const s=(G.teamStage||1), lt=Math.max(0,s-5); const eh=(1+(s-1)*0.10+lt*0.06)*1.25, ea=1+(s-1)*0.07+lt*0.035; e.hp*=eh; e.hpMax*=eh; e.atkBuff=ea; e.cmdTarget=G.baseAlly; }
     e.hp=e.hpMax;
     NAMES_BY.set(e, (SPECIES[r.type]&&SPECIES[r.type].ko)||'');
@@ -4282,10 +4417,15 @@ function teamEnd(win, final){
       return;
     }
   }
-  flashBanner(final?(LANG==='en'?'🏆 ALL 9 STAGES CLEARED!':'🏆 9스테이지 완전 정복!'):(win?(LANG==='en'?'🏆 TEAM VICTORY!':'🏆 팀 승리!'):(LANG==='en'?'💀 TEAM DEFEAT — out of options':'💀 팀 패배 — 더 이상 시도 없음')), win?'kill':'hurt');
+  const medalGain = Math.floor((G.teamCoins||0)/2) + (win&&final?10:0) + (G.teamStage||1)-1;   // 🎖️ 남은 전리품 절반 + 완주 10 + 진행 지역 수
+  if(medalGain>0) addMedals(medalGain);
+  if(win && final){ setTimeout(()=>showEndingCard(medalGain), 1600); return; }   // 🏆 완주 — 왕국 탈환 엔딩 카드(닫으면 메인으로)
+  if(medalGain>0){ setTimeout(()=>flashBanner(LANG==='en'?('🎖️ +'+medalGain+' Medals of Honor (total '+getMedals()+')'):('🎖️ 명예 훈장 +'+medalGain+' (보유 '+getMedals()+')'),'kill'), 900); }
+  flashBanner((win?(LANG==='en'?'🏆 TEAM VICTORY!':'🏆 팀 승리!'):(LANG==='en'?'💀 TEAM DEFEAT — out of options':'💀 팀 패배 — 더 이상 시도 없음')), win?'kill':'hurt');
   returnToModeSelect();
 }
 function returnToModeSelect(){   // 🚪 팀전 UI 정리 후 모드 선택 화면으로 복귀
+  try{ if(document.body&&document.body.classList) document.body.classList.remove('teammode'); }catch(e){}
   if(typeof showTeamCmd==='function') showTeamCmd(false);
   { const rc=document.getElementById('retryChoice'); if(rc && rc.remove) rc.remove(); }
   { const al=document.getElementById('baseAlert'); if(al) al.style.display='none'; }
@@ -4361,22 +4501,27 @@ function advanceTeam(){   // 스테이지 클리어 → 다음(3·6 통과 시 �
   if((STATS.teamBest||0) < passed){ STATS.teamBest=passed; saveStats(); }   // 🏆 최고 스테이지 기록
   if(passed>=9){ teamEnd(true, true); return; }   // 9스테이지 완전 정복
   G.teamHpBonus=(G.teamHpBonus||0)+0.12;   // 🩹 클리어마다 팀 최대 체력 +12% 누적
-  flashBanner(LANG==='en'?('✅ Stage '+passed+' cleared! Team +12% HP → Stage '+(passed+1)):('✅ 스테이지 '+passed+' 클리어! 팀 체력 +12% → '+(passed+1)+'스테이지'),'kill');
+  const loot=4+passed+((getMedalUp().mloot||0)); G.teamCoins=(G.teamCoins||0)+loot;   // 🪙 전리품 — 깊을수록 + 💰 전리품 감각 훈장 업그레이드
+  flashBanner(LANG==='en'?('✅ Stage '+passed+' cleared! +'+loot+' 🪙 spoils · Team +12% HP'):('✅ 스테이지 '+passed+' 클리어! 🪙 전리품 +'+loot+' · 팀 체력 +12%'),'kill');
   const thrifty = !G.teamRefitUsed;   // 🧪 정비를 한 번도 안 쓰고 클리어 → 다음 스테이지 시작 자원 보상
   G.teamThriftPending = thrifty ? 3 : 0;
   if(thrifty){ setTimeout(()=>flashBanner(LANG==='en'?'🧪 Thrift bonus — no refit used · next start 🧪+3':'🧪 정비 아낌 보너스 — 다음 스테이지 시작 🧪+3','kill'), 800); }
   G.teamStage = passed+1;
   G.teamRetries = 0;   // 🔁 새 스테이지 진입 → 재도전 횟수 초기화(스테이지마다 3번)
   G.teamRefitUsed = false;   // 🧬 새 스테이지 → 무료 정비 1회 복구
-  if(passed%3===0){ setTimeout(openTeamFuse, 1300); }   // 3·6 통과 시 합성 보너스
-  else setTimeout(nextTeamFight, 1300);
+  // 🗺️ 진군 연출 → 🛒 전리품 상점 → (3·6 통과 시) 합성 → 다음 전투
+  const next = (passed%3===0) ? openTeamFuse : nextTeamFight;
+  setTimeout(()=>openExpeditionProgress(passed, ()=>openTeamShop(next)), 1200);
 }
 function nextTeamFight(){
   const pool=ORDER.slice(); const enemy=[];
-  const hard = G.teamStage>=7 ? 1 : 0;   // 후반부엔 강한 종 가중
-  for(let i=0;i<3;i++){ let t=pool[Math.floor(Math.random()*pool.length)];
-    if(hard){ const strong=['rhino','stag','scorpion','hornet']; t=strong[Math.floor(Math.random()*strong.length)]; }
-    enemy.push(t); }
+  if(G.teamStage>=9){ enemy.push('ant','ant','ant'); }   // 👑 최종장 — 여왕 친위대(가운데가 여왕으로 승격)
+  else {
+    const hard = G.teamStage>=7 ? 1 : 0;   // 후반부엔 강한 종 가중
+    for(let i=0;i<3;i++){ let t=pool[Math.floor(Math.random()*pool.length)];
+      if(hard){ const strong=['rhino','stag','scorpion','hornet']; t=strong[Math.floor(Math.random()*strong.length)]; }
+      enemy.push(t); }
+  }
   const hd=document.getElementById('hud'); if(hd) hd.style.display='block';
   startTeamBattle(G.teamRoster, enemy, G.teamStage);
 }
@@ -4461,7 +4606,8 @@ function updateTeamHUD(){
       '" style="background:'+(a.dead?'#333':col)+'">'+ic+'</span>'; }).join('');
   const baseBar=(b,col)=>{ if(!b) return ''; const r=Math.max(0,b.hp/b.hpMax*100);
     return '<span class="thp-base">🏠<span class="thp-bbar"><i style="width:'+r+'%;background:'+col+'"></i></span></span>'; };
-  el.innerHTML='<span class="thp-stage">'+(LANG==='en'?'STAGE ':'스테이지 ')+(G.teamStage||1)+'/9</span>'+
+  el.innerHTML='<span class="thp-stage">'+(LANG==='en'?'STAGE ':'스테이지 ')+(G.teamStage||1)+'/9'+
+    (STAGE_LORE[(G.teamStage||1)-1]?(' · '+STAGE_LORE[(G.teamStage||1)-1].emo+' '+(LANG==='en'?STAGE_LORE[(G.teamStage||1)-1].en:STAGE_LORE[(G.teamStage||1)-1].ko)):'')+'</span>'+
     '<span class="thp-side">'+(LANG==='en'?'US':'우리')+' '+dots(G.allies,'#39d353',true)+baseBar(G.baseAlly,'#39d353')+'</span>'+
     '<span class="thp-vs">VS</span>'+
     '<span class="thp-side">'+baseBar(G.baseEnemy,'#e0432e')+dots(G.enemies,'#e0432e',false)+' '+(LANG==='en'?'ENEMY':'적')+'</span>';
@@ -5019,7 +5165,7 @@ document.querySelectorAll('.mode-card').forEach(card=>{
     if(badge) badge.textContent = G.mode==='team' ? (LANG==='en'?'⚔️ 3:3 Team':'⚔️ 3:3 팀전') : (LANG==='en'?'🏆 Battle Royale':'🏆 배틀로얄');
     if(typeof applyModeUI==='function') applyModeUI();
     if(typeof updateCarUI==='function') updateCarUI();
-    if(G.mode==='team'){ try{ SND.ui('start'); }catch(e){} if(typeof openTeamSetup==='function') openTeamSetup(); }   // 팀전은 바로 편성 화면
+    if(G.mode==='team'){ try{ SND.ui('start'); }catch(e){} if(typeof openExpeditionMap==='function' && typeof openTeamSetup==='function') openExpeditionMap(openTeamSetup); else if(typeof openTeamSetup==='function') openTeamSetup(); }   // 🗺️ 원정 맵 → 편성 화면
   });
 });
 (function(){ const bk=document.getElementById('backToTitle');
@@ -5113,6 +5259,224 @@ function tsStarHTML(t){ const s=tsBugStars(t);
 function tsSetScore(html){ const el=document.getElementById('tsPrevScore'); if(el) el.innerHTML=html; }
 function tsRoleHTML(t){ if(!SPECIES[t]&&t!=='__hybrid') return ''; const o=bugRoleInfo(t);
   return ' · <span style="color:'+o.col+'">'+o.ic+' '+o.ko+'</span>'; }
+/* ===== 📖 원정 스토리 — 9지역 탈환 캠페인 ===== */
+const STAGE_LORE=[
+  {emo:'🌱', ko:'풀숲 외곽', en:'Grass Frontier', sub:'제1장 — 침략의 시작', subEn:'Ch.1 — The Invasion Begins',
+   story:'평화롭던 풀숲 왕국에 침략군이 들이닥쳤다. 국경의 개미집 요새를 되찾아 반격의 발판을 마련하라!',
+   storyEn:'Invaders storm the peaceful Grass Kingdom. Retake the frontier ant-hill and begin the counterattack!'},
+  {emo:'🍄', ko:'버섯 골짜기', en:'Mushroom Vale', sub:'제2장 — 포자 안개', subEn:'Ch.2 — Spore Fog',
+   story:'독포자 안개가 깔린 골짜기. 벌집 진지를 점거한 적의 보급선을 끊어라.',
+   storyEn:'A vale veiled in spore fog. Cut the enemy supply line at the hive outpost.'},
+  {emo:'🪨', ko:'바위 협곡', en:'Stone Gorge', sub:'제3장 — 흰개미 탑', subEn:'Ch.3 — Termite Tower',
+   story:'협곡 사이 우뚝 선 흰개미 탑. 이곳을 넘으면 왕국 심장부로 가는 길이 열린다.',
+   storyEn:'A termite tower looms over the gorge. Beyond it lies the road to the heartland.'},
+  {emo:'🌊', ko:'이슬 습지', en:'Dew Marsh', sub:'제4장 — 젖은 전선', subEn:'Ch.4 — The Wet Front',
+   story:'물방울 말벌집이 습지를 장악했다. 발이 묶이기 전에 본진을 부숴라.',
+   storyEn:'Teardrop wasp nests rule the marsh. Smash their base before the mud slows you.'},
+  {emo:'🌲', ko:'고목 심장부', en:'Elder Grove', sub:'제5장 — 거목의 그림자', subEn:'Ch.5 — Shadow of the Elder',
+   story:'수백 년 고목 아래 적 정예가 매복 중이다. 그림자 속 거미줄 돔을 걷어내라.',
+   storyEn:'Elites lurk beneath the ancient tree. Tear down the silk dome in the shadows.'},
+  {emo:'🕸️', ko:'거미줄 미궁', en:'Silk Labyrinth', sub:'제6장 — 얽힌 함정', subEn:'Ch.6 — Tangled Traps',
+   story:'사방이 끈끈한 거미줄 미궁. 길을 잃으면 먹이가 된다 — 단숨에 꿰뚫어라.',
+   storyEn:'A maze of sticky silk. Lose your way and become prey — punch straight through.'},
+  {emo:'🌋', ko:'화산재 벌판', en:'Ash Fields', sub:'제7장 — 불탄 땅', subEn:'Ch.7 — Scorched Earth',
+   story:'재가 흩날리는 벌판, 적의 최정예 군단이 기다린다. 여기서부터 진짜 전쟁이다.',
+   storyEn:'Ash drifts over the plain where elite legions wait. The real war starts here.'},
+  {emo:'❄️', ko:'서리 초원', en:'Frost Meadow', sub:'제8장 — 마지막 관문', subEn:'Ch.8 — The Last Gate',
+   story:'서리 내린 초원 너머로 여왕의 둥지가 보인다. 최후 방어선을 돌파하라!',
+   storyEn:'Past the frosted meadow lies the Queen\'s nest. Break the final defense line!'},
+  {emo:'👑', ko:'여왕의 둥지', en:'Queen\'s Nest', sub:'최종장 — 왕국 탈환', subEn:'Final — Retake the Kingdom',
+   story:'모든 것이 이 전투에 달렸다. 여왕의 둥지를 무너뜨리고 풀숲 왕국을 되찾아라!',
+   storyEn:'Everything rides on this battle. Topple the Queen\'s nest and free the kingdom!'}
+];
+/* ===== 🐞 곤충 세계관 한 줄 ===== */
+const BUG_LORE={
+  mantis:'꽃잎으로 위장한 풀숲의 암살자. 낫이 번뜩이면 이미 늦었다.',
+  stag:'검은 갑주의 결투 왕. 큰턱에 물리면 빠져나갈 수 없다.',
+  rhino:'곤충계 최강의 힘. 뿔 하나로 성문을 부순다.',
+  spider:'푸른 맹독의 사냥꾼. 거미줄 함정 위에서 춤춘다.',
+  centipede:'백 개의 다리로 달리는 맹독 열차. 스치면 중독이다.',
+  scorpion:'사막에서 온 용병. 꼬리 독침은 왕도 쓰러뜨린다.',
+  hornet:'풀숲의 공포, 편대 비행의 지배자. 침 한 방에 전세가 뒤집힌다.',
+  dragonfly:'하늘의 곡예사. 잡을 수 없는 것은 이길 수 없다.',
+  ant:'작지만 결코 혼자가 아니다. 여왕을 위해 폭발도 불사한다.',
+  __hybrid:'두 혈통이 섞인 금단의 존재. 무엇이 나올지는 아무도 모른다.'};
+function teamStoryIntro(stage){   // 📖 스테이지 인트로 — 장(章) 카드 연출(탭으로 건너뛰기)
+  try{
+    const L=STAGE_LORE[Math.min((stage||1)-1, STAGE_LORE.length-1)]; if(!L) return;
+    const old=document.getElementById('storyIntro'); if(old&&old.remove) old.remove();
+    const en=(LANG==='en');
+    const ov=document.createElement('div'); ov.id='storyIntro'; ov.className='si-overlay';
+    ov.innerHTML='<div class="si-card"><div class="si-ch">STAGE '+(stage||1)+' / 9</div>'+
+      '<span class="si-emo">'+L.emo+'</span>'+
+      '<div class="si-title">'+(en?L.en:L.ko)+'</div>'+
+      '<div class="si-sub">'+(en?L.subEn:L.sub)+'</div>'+
+      '<div class="si-story">'+(en?L.storyEn:L.story)+'</div>'+
+      '<div class="si-skip">'+(en?'tap to skip':'화면을 누르면 건너뜁니다')+'</div></div>';
+    const kill=()=>{ if(ov.parentNode) ov.parentNode.removeChild(ov); };
+    ov.addEventListener('click',kill);
+    if(document.body) document.body.appendChild(ov);
+    setTimeout(kill, 3000);
+  }catch(e){}
+}
+/* ===== 🛒 전리품 상점 — 스테이지 클리어 보상으로 부대 영구 강화 ===== */
+const TEAM_SHOP_ITEMS=[
+  {id:'hp',    emo:'🩹', ko:'체력 단련', en:'Vitality',  desc:'팀 전원 최대 체력 +10%', descEn:'All allies +10% max HP', base:5, inc:2, eff:0.10},
+  {id:'atk',   emo:'⚔️', ko:'공격 연마', en:'Whetstone', desc:'팀 전원 공격력 +8%',    descEn:'All allies +8% attack',  base:5, inc:2, eff:0.08},
+  {id:'base',  emo:'🏰', ko:'본진 보강', en:'Fortify',   desc:'우리 본진 체력 +15%',   descEn:'Our base +15% HP',       base:4, inc:2, eff:0.15},
+  {id:'supply',emo:'🧪', ko:'보급 계약', en:'Supply',    desc:'매 스테이지 시작 자원 🧪+2', descEn:'Start each stage with 🧪+2', base:4, inc:2, eff:2}
+];
+function shopPrice(item, lv){ const d=1-((getMedalUp().mdisc||0)*0.05); return Math.max(1, Math.round((item.base + item.inc*lv)*d)); }   // 🤝 보급 인맥 훈장 할인 반영
+/* ===== 🎖️ 명예 훈장 — 원정을 거듭할수록 쌓이는 영구 재화(장기 성장) ===== */
+function getMedals(){ try{ return parseInt(localStorage.getItem('insecta_medals')||'0',10)||0; }catch(e){ return 0; } }
+function addMedals(n){ try{ localStorage.setItem('insecta_medals', String(getMedals()+Math.max(0,n|0))); }catch(e){} }
+function spendMedals(n){ const m=getMedals(); if(m<n) return false; try{ localStorage.setItem('insecta_medals', String(m-n)); }catch(e){ return false; } return true; }
+/* 🎖️ 훈장 영구 업그레이드 — 원정 맵에서 구매(장기 목표) */
+const MEDAL_UPGRADES=[
+  {id:'mhp',  emo:'💪', ko:'부대 단련', en:'Drill',    desc:'팀 기본 체력 +5%/Lv', descEn:'+5% squad HP per Lv', max:5, cost:lv=>15+10*lv},
+  {id:'mdisc',emo:'🤝', ko:'보급 인맥', en:'Contacts', desc:'상점 가격 -5%/Lv',    descEn:'Shop -5% per Lv',    max:4, cost:lv=>15+10*lv},
+  {id:'mloot',emo:'💰', ko:'전리품 감각', en:'Plunder', desc:'클리어 전리품 +1/Lv',  descEn:'+1 spoils per clear/Lv', max:3, cost:lv=>20+10*lv}
+];
+function getMedalUp(){ try{ const o=JSON.parse(localStorage.getItem('insecta_medalUp')||'{}'); return {mhp:o.mhp||0, mdisc:o.mdisc||0, mloot:o.mloot||0}; }catch(e){ return {mhp:0,mdisc:0,mloot:0}; } }
+function saveMedalUp(o){ try{ localStorage.setItem('insecta_medalUp', JSON.stringify(o)); }catch(e){} }
+/* ===== 🗺️ 원정 맵 — 9개 지역 진행도 + 훈장 영구 업그레이드 ===== */
+function emNodesHtml(best, stampStage, marchStage){
+  const en=(LANG==='en'); let nodes='';
+  STAGE_LORE.forEach((L,i)=>{ const st=i+1;
+    const cls = st<=best ? 'clear' : (st===best+1 ? 'next' : '');
+    const stTx = st<=best ? (en?'CLEARED ⭐':'클리어 ⭐') : (st===best+1 ? (en?'NEXT GOAL':'다음 목표') : (en?'locked':'미탐사'));
+    const stamp = (st===stampStage)?'<span class="em-stamp">✅</span>':'';
+    const march = (st===marchStage)?'<span class="em-march">🐜🐜</span>':'';
+    nodes+='<div class="em-node '+cls+(st===9?' boss':'')+'">'+stamp+march+'<span class="em-emo">'+L.emo+'</span><span class="em-nm">'+(en?L.en:L.ko)+'</span><span class="em-st">'+st+'/9 · '+stTx+'</span></div>';
+  });
+  return nodes;
+}
+function openExpeditionMap(next){
+  const cont=(typeof next==='function')?next:()=>{};
+  const old=document.getElementById('expMap'); if(old&&old.remove) old.remove();
+  const en=(LANG==='en');
+  const wrap=document.createElement('div'); wrap.id='expMap'; wrap.className='sp-detail';
+  function render(){
+    const best=(STATS&&STATS.teamBest)||0; const medals=getMedals(); const up=getMedalUp();
+    let ups='';
+    MEDAL_UPGRADES.forEach(u=>{ const lv=up[u.id]||0; const maxed=lv>=u.max; const price=u.cost(lv);
+      ups+='<div class="em-up-item"><span class="eu-emo">'+u.emo+'</span><span class="eu-nm">'+(en?u.en:u.ko)+'</span>'+
+        '<span class="eu-desc">'+(en?u.descEn:u.desc)+'</span><span class="eu-lv">Lv.'+lv+'/'+u.max+'</span>'+
+        '<button class="eu-buy" data-id="'+u.id+'"'+((maxed||medals<price)?' disabled':'')+'>'+(maxed?(en?'MAX':'최대'):('🎖️ '+price))+'</button></div>'; });
+    wrap.innerHTML='<div class="em-box"><div class="em-title">🗺️ '+(en?'Expedition Map':'원정 맵 — 풀숲 왕국 탈환')+'</div>'+
+      '<div class="em-sub">'+(en?'Reclaim all 9 regions from the invaders':'침략군에게 빼앗긴 9개 지역을 되찾아라')+'</div>'+
+      '<div class="em-medal">🎖️ '+(en?'Medals of Honor':'명예 훈장')+' '+medals+(medals>=10?(' · '+(en?'start bonus 🪙+':'시작 전리품 +')+Math.min(6,Math.floor(medals/10))):'')+'</div>'+
+      '<div class="em-up"><div class="em-up-t">🎖️ '+(en?'Permanent Upgrades':'훈장 영구 업그레이드')+'</div><div class="em-up-grid">'+ups+'</div></div>'+
+      '<div class="em-path">'+emNodesHtml(best,0,0)+'</div>'+
+      '<button class="em-go" id="emGo">⚔️ '+(en?'Begin Expedition':'원정 출발')+'</button>'+
+      '<button class="em-back" id="emBack">‹ '+(en?'Back':'뒤로')+'</button></div>';
+    wrap.querySelectorAll('.eu-buy').forEach(b=>{ b.addEventListener('click',()=>{
+      const u=MEDAL_UPGRADES.find(x=>x.id===b.dataset.id); if(!u) return;
+      const o=getMedalUp(); const lv=o[u.id]||0; if(lv>=u.max) return;
+      if(!spendMedals(u.cost(lv))) return;
+      o[u.id]=lv+1; saveMedalUp(o);
+      try{ SND.ui&&SND.ui('select'); }catch(e){}
+      render();
+    }); });
+    const go=wrap.querySelector('#emGo'); if(go) go.addEventListener('click',()=>{ try{ SND.ui&&SND.ui('start'); }catch(e){} if(wrap.remove) wrap.remove(); cont(); });
+    const bk=wrap.querySelector('#emBack'); if(bk) bk.addEventListener('click',()=>{ if(wrap.remove) wrap.remove();
+      const ti=document.getElementById('title'), se=document.getElementById('select'); if(se) se.style.display='none'; if(ti) ti.style.display='flex'; });
+  }
+  render();
+  if(document.body) document.body.appendChild(wrap);
+}
+/* 🗺️ 진군 연출 — 클리어 직후 맵에서 현재 위치가 다음 지역으로 행군 */
+function openExpeditionProgress(passed, next){
+  const cont=(typeof next==='function')?next:()=>{};
+  const old=document.getElementById('expProg'); if(old&&old.remove) old.remove();
+  const en=(LANG==='en');
+  const wrap=document.createElement('div'); wrap.id='expProg'; wrap.className='sp-detail';
+  wrap.innerHTML='<div class="em-box"><div class="em-title">🗺️ '+(en?'Advancing!':'원정 전진!')+'</div>'+
+    '<div class="em-sub">'+(en?('Region '+passed+' liberated — marching to region '+(passed+1)):('제'+passed+'지역 해방 — 제'+(passed+1)+'지역으로 행군'))+'</div>'+
+    '<div class="em-path">'+emNodesHtml(passed, passed, Math.min(9,passed+1))+'</div>'+
+    '<div class="em-progress-hint">'+(en?'tap to continue':'화면을 누르면 계속')+'</div></div>';
+  let done=false;
+  const go=()=>{ if(done) return; done=true; if(wrap.remove) wrap.remove(); cont(); };
+  wrap.addEventListener('click', go);
+  if(document.body) document.body.appendChild(wrap);
+  try{ SND.ui&&SND.ui('rally'); }catch(e){}
+  setTimeout(go, 2800);
+}
+/* 👑 여왕 처치 연출 — 슬로모션 + 화면 흔들림 + 왕관 낙하 */
+function queenDeathCinematic(q){
+  try{
+    G.slowmoT=1.5;   // ⏱️ 잠깐의 슬로모션
+    G.shake=Math.max(G.shake||0, 1.2);
+    if(q&&q.pos){ spawnHitFx(q.pos, 0xffd24a, 2.6, 'burst'); spawnHitFx(q.pos, 0xffd24a, 1.8, 'ring'); floatText(q.pos, '👑', '#ffd24a'); }
+    const old=document.getElementById('crownDrop'); if(old&&old.remove) old.remove();
+    const c=document.createElement('div'); c.id='crownDrop'; c.className='crown-drop'; c.textContent='👑';
+    if(document.body) document.body.appendChild(c);
+    setTimeout(()=>{ if(c.parentNode) c.parentNode.removeChild(c); }, 1700);
+    flashBanner(LANG==='en'?'👑 THE QUEEN HAS FALLEN!':'👑 여왕 격파!','kill');
+    try{ SND.ui&&SND.ui('win'); }catch(e){}
+  }catch(e){}
+}
+/* 🏆 완주 엔딩 카드 — 왕국 탈환 축하 */
+function showEndingCard(medalGain){
+  try{
+    const old=document.getElementById('endCard'); if(old&&old.remove) old.remove();
+    const en=(LANG==='en');
+    const squad=(G.teamRoster||[]).map(t=>emo(t)).join(' ');
+    const wrap=document.createElement('div'); wrap.id='endCard'; wrap.className='end-overlay';
+    wrap.innerHTML='<div class="end-card"><span class="end-trophy">🏆</span>'+
+      '<div class="end-title">'+(en?'KINGDOM RECLAIMED!':'왕국 탈환!')+'</div>'+
+      '<div class="end-epi">'+(en?'The Queen has fallen and all 9 regions are free. The Grass Kingdom sings of your squad\'s courage — a legend that will be told for a hundred molts.'
+        :'여왕이 무너지고 9개 지역이 모두 해방됐다. 풀숲 왕국은 그대 부대의 용맹을 노래한다 — 백 번의 탈피 동안 전해질 전설로.')+'</div>'+
+      '<div class="end-squad">'+squad+'</div>'+
+      '<div class="end-stats">🗺️ 9/9 '+(en?'regions':'지역 해방')+' · 🎖️ +'+(medalGain||0)+' ('+(en?'total ':'보유 ')+getMedals()+')</div>'+
+      '<button class="end-home" id="endHome">🏠 '+(en?'Return to Title':'메인으로')+'</button></div>';
+    const hm=wrap.querySelector('#endHome'); if(hm) hm.addEventListener('click',()=>{ if(wrap.remove) wrap.remove(); returnToModeSelect(); });
+    if(document.body) document.body.appendChild(wrap);
+    try{ SND.ui&&SND.ui('win'); }catch(e){}
+  }catch(e){ returnToModeSelect(); }
+}
+/* ===== 👑 여왕 보스 — 최종장 전용 ===== */
+function crownQueen(e){   // 가운데 병사를 거대 개미 여왕으로 승격
+  if(!e) return;
+  e.isQueen=true; e.boss=true;
+  e.hpMax=Math.round(e.hpMax*5); e.hp=e.hpMax;
+  e.atkBuff=(e.atkBuff||1)*1.7; e.size=(e.size||1)*1.5;
+  try{ e.mesh.scale.multiplyScalar(1.9); }catch(err){}
+  try{ if(e.hpbar) e.hpbar.scale.setScalar(1.5); }catch(err){}
+  NAMES_BY.set(e, LANG==='en'?'👑 Ant Queen':'👑 개미 여왕');
+}
+function openTeamShop(after){   // 🛒 스테이지 사이 상점 — 🪙 전리품으로 영구 강화 구매
+  const cont=(typeof after==='function')?after:nextTeamFight;
+  if(!G.teamShop) G.teamShop={hp:0,atk:0,base:0,supply:0};
+  const old=document.getElementById('teamShop'); if(old&&old.remove) old.remove();
+  const wrap=document.createElement('div'); wrap.id='teamShop'; wrap.className='sp-detail';
+  const en=(LANG==='en');
+  function render(){
+    let items='';
+    TEAM_SHOP_ITEMS.forEach(it=>{ const lv=G.teamShop[it.id]||0; const price=shopPrice(it,lv);
+      const can=(G.teamCoins||0)>=price;
+      items+='<div class="sh-item"><span class="sh-emo">'+it.emo+'</span><span class="sh-nm">'+(en?it.en:it.ko)+'</span>'+
+        '<span class="sh-desc">'+(en?it.descEn:it.desc)+'</span>'+
+        '<span class="sh-lv">Lv.'+lv+(lv>0?' 보유':'')+'</span>'+
+        '<button class="sh-buy" data-id="'+it.id+'"'+(can?'':' disabled')+'>🪙 '+price+' '+(en?'Buy':'구매')+'</button></div>'; });
+    wrap.innerHTML='<div class="sh-box"><div class="sh-title">🛒 '+(en?'Spoils Shop':'전리품 상점')+'</div>'+
+      '<div class="sh-sub">'+(en?'Permanent upgrades for this expedition':'이번 원정 동안 유지되는 영구 강화')+'</div>'+
+      '<div class="sh-coins">🪙 '+(G.teamCoins||0)+' '+(en?'spoils':'전리품')+'</div>'+
+      '<div class="sh-grid">'+items+'</div>'+
+      '<button class="sh-next" id="shNext">'+(en?'To next battle ▸':'다음 전투로 ▸')+'</button></div>';
+    wrap.querySelectorAll('.sh-buy').forEach(b=>{ b.addEventListener('click',()=>{
+      const it=TEAM_SHOP_ITEMS.find(x=>x.id===b.dataset.id); if(!it) return;
+      const lv=G.teamShop[it.id]||0; const price=shopPrice(it,lv);
+      if((G.teamCoins||0)<price) return;
+      G.teamCoins-=price; G.teamShop[it.id]=lv+1;
+      try{ SND.ui&&SND.ui('select'); }catch(e){}
+      render();
+    }); });
+    const nx=wrap.querySelector('#shNext'); if(nx) nx.addEventListener('click',()=>{ try{ SND.ui&&SND.ui('start'); }catch(e){} if(wrap.remove) wrap.remove(); cont(); });
+  }
+  render();
+  if(document.body) document.body.appendChild(wrap);
+}
 function teamEntranceFlourish(mine, foe){   // 🎬 전투 직전 — 양 팀이 좌우에서 등장해 가운데서 맞붙는 연출
   try{
     const old=document.getElementById('teamEntrance'); if(old&&old.remove) old.remove();
@@ -5152,7 +5516,8 @@ function tsPreviewShow(type){
   const maxd=tsSetMesh(p,m,0); tsFrame(p,maxd);
   p.type=type; p.team=null;
   const lbl=document.getElementById('tsPrevName'); if(lbl) lbl.textContent=(SPECIES[type]&&SPECIES[type].ko)||'';
-  tsSetScore('🏅 '+(LANG==='en'?'Power':'종합')+' <b>'+tsBugScore(type)+'</b> &nbsp; '+tsStarHTML(type)+tsRoleHTML(type));
+  tsSetScore('🏅 '+(LANG==='en'?'Power':'종합')+' <b>'+tsBugScore(type)+'</b> &nbsp; '+tsStarHTML(type)+tsRoleHTML(type)+
+    (BUG_LORE[type]&&LANG!=='en'?'<br><span style="font-size:11px;color:#9aa888;font-style:italic;">"'+BUG_LORE[type]+'"</span>':''));
 }
 function tsPreviewShowTeam(arr){
   const p=tsPreviewEnsure(); if(!p||!arr||!arr.length) return;
